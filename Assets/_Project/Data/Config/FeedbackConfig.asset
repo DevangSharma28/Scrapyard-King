@@ -1,0 +1,40 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6fafa26f25ccd448fa3bc6f85d1a96eb, type: 3}
+  m_Name: FeedbackConfig
+  m_EditorClassIdentifier: ScrapYardKing.Runtime::ScrapYardKing.Feedback.FeedbackConfig
+  hitStopDuration: 0.025
+  hitStopTimeScale: 0.05
+  hitShakeDuration: 0.12
+  hitShakeAmplitude: 0.06
+  hitPunchScale: 0.05
+  hitCameraShake: 0.04
+  breakHitStopDuration: 0.07
+  breakCameraPunch: 1.2
+  breakPopupScale: 1.3
+  partFlySpeed: 5
+  pickupFlyDuration: 0.3
+  pickupArcHeight: 1.4
+  pickupPitchStep: 0.04
+  pickupPitchMaxSteps: 12
+  pickupComboWindow: 0.6
+  defaultHitVfx: {fileID: 6806905171106269395, guid: ee0539aa39f4146ab9ed4670ed5190b7, type: 3}
+  defaultBreakVfx: {fileID: 3167760599584323564, guid: 76e9a013430e24e1392200bfd10f57f7, type: 3}
+  spawnVfx: {fileID: 8738849911124880239, guid: bef4823b03654446498cd0cf6b7a3382, type: 3}
+  defaultHitSfx: {fileID: 11400000, guid: bef4c88ba71084d66aaad343db17c114, type: 2}
+  defaultBreakSfx: {fileID: 11400000, guid: f5c4e8a3d575c47819cc51506ecf4e2b, type: 2}
+  partDetachSfx: {fileID: 11400000, guid: 64709b90367a54ffa9541cd5e8808cb2, type: 2}
+  pickupSfx: {fileID: 11400000, guid: 4c8c128464ef246f28c08c83f88d3d3b, type: 2}
+  stackFullSfx: {fileID: 11400000, guid: 80e775823710e4e44a8f96d285abbfa2, type: 2}
+  spawnSfx: {fileID: 11400000, guid: 71b4e87abf4724ce9a12d7dc59a7e668, type: 2}
+  positivePopupColor: {r: 1, g: 0.85, b: 0.2, a: 1}
+  warningPopupColor: {r: 1, g: 0.35, b: 0.25, a: 1}

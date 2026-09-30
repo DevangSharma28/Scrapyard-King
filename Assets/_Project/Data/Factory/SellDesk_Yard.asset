@@ -1,0 +1,37 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5d459eef0f7cd4f0a8043b8c785bbbe1, type: 3}
+  m_Name: SellDesk_Yard
+  m_EditorClassIdentifier: ScrapYardKing.Runtime::ScrapYardKing.Factory.SellDeskDefinition
+  id: sell_desk
+  displayName: Sell
+  levels:
+  - saleInterval: 8
+    unitsPerSale: {x: 2, y: 4}
+    priceMultiplier: 1
+    counterCapacity: 12
+    queueCapacity: 3
+    upgradeCost: 0
+  - saleInterval: 6.5
+    unitsPerSale: {x: 2, y: 5}
+    priceMultiplier: 1.1
+    counterCapacity: 16
+    queueCapacity: 4
+    upgradeCost: 250
+  - saleInterval: 5
+    unitsPerSale: {x: 3, y: 6}
+    priceMultiplier: 1.25
+    counterCapacity: 20
+    queueCapacity: 5
+    upgradeCost: 700
+  firstSaleDelay: 1.2
+  saleSfx: {fileID: 11400000, guid: e790a3ca4e07449d3a10d9d3b1d8a3c4, type: 2}

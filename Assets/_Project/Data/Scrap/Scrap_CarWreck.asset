@@ -1,0 +1,41 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 33e589ad94f7c401c80c2db9e8f33ea3, type: 3}
+  m_Name: Scrap_CarWreck
+  m_EditorClassIdentifier: ScrapYardKing.Runtime::ScrapYardKing.Harvest.ScrapDefinition
+  id: car_wreck
+  displayName: Car Wreck
+  tier: 1
+  sizeClass: 1
+  prefab: {fileID: 6918816356941317455, guid: e7aafca69585a4652bb5327452b3476c, type: 3}
+  prefabVariants:
+  - {fileID: 6918816356941317455, guid: e7aafca69585a4652bb5327452b3476c, type: 3}
+  - {fileID: 6680063320073546140, guid: 867f442d1dcab4ab7b1144e5e65a9918, type: 3}
+  - {fileID: 5798016074544158275, guid: da8b5fecded6a4fb1a8a0dc36bc59087, type: 3}
+  maxHealth: 220
+  minCutPower: 0
+  dropItem: {fileID: 11400000, guid: f6593dbddf0854968bd6f7b3be117504, type: 2}
+  dropAmount: {x: 18, y: 22}
+  partDropShare: 0.35
+  dropLaunchSpeed: 7
+  dropSpread: 2
+  rareDropItem: {fileID: 0}
+  rareDropChance: 0
+  rareDropAmount: {x: 1, y: 1}
+  xpReward: 10
+  respawnDelay: 12
+  hitSfx: {fileID: 0}
+  breakSfx: {fileID: 0}
+  hitVfx: {fileID: 0}
+  breakVfx: {fileID: 0}
+  breakVfxScale: 1.5
+  breakShake: 0.45

@@ -1,0 +1,47 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 181722953d16648d1b998a69a350150d, type: 3}
+  m_Name: Machine_Crusher
+  m_EditorClassIdentifier: ScrapYardKing.Runtime::ScrapYardKing.Factory.MachineDefinition
+  id: crusher
+  displayName: Crusher
+  icon: {fileID: 0}
+  input: {fileID: 11400000, guid: f6593dbddf0854968bd6f7b3be117504, type: 2}
+  output: {fileID: 11400000, guid: 83055ce854d5646d3beb2a2d62c9174a, type: 2}
+  levels:
+  - inputCapacity: 10
+    cycleTime: 0.8
+    inputsPerCycle: 1
+    outputsPerCycle: 1
+    upgradeCost: 0
+  - inputCapacity: 14
+    cycleTime: 0.65
+    inputsPerCycle: 1
+    outputsPerCycle: 1
+    upgradeCost: 150
+  - inputCapacity: 20
+    cycleTime: 0.5
+    inputsPerCycle: 1
+    outputsPerCycle: 1
+    upgradeCost: 400
+  - inputCapacity: 26
+    cycleTime: 0.4
+    inputsPerCycle: 1
+    outputsPerCycle: 1
+    upgradeCost: 900
+  - inputCapacity: 32
+    cycleTime: 0.32
+    inputsPerCycle: 1
+    outputsPerCycle: 1
+    upgradeCost: 1800
+  cycleSfx: {fileID: 11400000, guid: 66537f46a2ea14b7ba191e5c6c40e809, type: 2}
+  outputSfx: {fileID: 11400000, guid: 8282ab267b6c644de9534457bbc2a55d, type: 2}
