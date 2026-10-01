@@ -33,6 +33,9 @@ namespace ScrapYardKing.Feedback
                 ProceduralSfxPreset.Clunk => Clunk(rng),
                 ProceduralSfxPreset.Whoosh => Whoosh(rng),
                 ProceduralSfxPreset.Coin => Coin(),
+                ProceduralSfxPreset.Upgrade => Arpeggio(new[] { 523.25f, 659.25f, 783.99f, 1046.5f }, 0.07f, 0.16f),
+                ProceduralSfxPreset.Fanfare => Arpeggio(new[] { 392f, 523.25f, 659.25f, 783.99f, 1046.5f }, 0.09f, 0.35f),
+                ProceduralSfxPreset.Denied => Denied(),
                 _ => new float[1]
             };
 
@@ -140,6 +143,35 @@ namespace ScrapYardKing.Feedback
                 float first = Mathf.Sin(Tau * 1975f * t) * Mathf.Exp(-t * 22f);
                 float second = t > 0.045f ? Mathf.Sin(Tau * 2637f * (t - 0.045f)) * Mathf.Exp(-(t - 0.045f) * 16f) : 0f;
                 d[i] = (first * 0.6f + second * 0.8f) * Mathf.Clamp01(t * 2000f);
+            }
+            return d;
+        }
+
+        /// <summary>Bright stepped notes with a short tail each; reads as "reward".</summary>
+        static float[] Arpeggio(float[] notes, float step, float tail)
+        {
+            var d = Buffer(step * notes.Length + tail);
+            for (int n = 0; n < notes.Length; n++)
+            {
+                int start = Mathf.RoundToInt(n * step * SampleRate);
+                for (int i = start; i < d.Length; i++)
+                {
+                    float t = (i - start) / (float)SampleRate;
+                    float env = Mathf.Exp(-t * 9f) * Mathf.Clamp01(t * 800f);
+                    d[i] += (Mathf.Sin(Tau * notes[n] * t) * 0.7f + Mathf.Sin(Tau * notes[n] * 2f * t) * 0.2f) * env;
+                }
+            }
+            return d;
+        }
+
+        static float[] Denied()
+        {
+            var d = Buffer(0.2f);
+            for (int i = 0; i < d.Length; i++)
+            {
+                float t = i / (float)SampleRate;
+                float square = Mathf.Sign(Mathf.Sin(Tau * 140f * t));
+                d[i] = square * 0.5f * Mathf.Exp(-t * 10f) * Mathf.Clamp01(t * 600f);
             }
             return d;
         }

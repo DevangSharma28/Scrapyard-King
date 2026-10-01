@@ -70,6 +70,13 @@ namespace ScrapYardKing.Items
         /// <summary>Whether this stack will take an item of <paramref name="item"/> type right now.</summary>
         public bool CanAccept(ItemDefinition item) => item != null && !IsFull;
 
+        public bool Contains(Func<ItemDefinition, bool> predicate)
+        {
+            foreach (var e in entries)
+                if (predicate(e.Item.Definition)) return true;
+            return false;
+        }
+
         public int CountOf(ItemDefinition item)
         {
             int count = 0;

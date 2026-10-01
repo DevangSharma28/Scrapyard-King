@@ -1,0 +1,28 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b9b3ffd6028b94c9fa60fd008bf0d49a, type: 3}
+  m_Name: Upgrade_Boots
+  m_EditorClassIdentifier: ScrapYardKing.Runtime::ScrapYardKing.Progression.PlayerStatUpgradeDefinition
+  id: boots
+  displayName: Boots
+  icon: {fileID: 21300000, guid: 129a4ce48f9624d68b62eddbbec24833, type: 3}
+  stat: 0
+  modifierType: 1
+  totalModifierPerLevel:
+  - 0
+  - 0.08
+  - 0.16
+  - 0.24
+  - 0.32
+  - 0.4
+  costs: 78000000000000002c010000000000008a02000000000000b0040000000000009808000000000000
+  effectFormat: "{0:0.0} \u2192 {1:0.0} speed"

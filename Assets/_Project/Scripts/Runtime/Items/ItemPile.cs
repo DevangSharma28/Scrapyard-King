@@ -83,6 +83,26 @@ namespace ScrapYardKing.Items
             return null;
         }
 
+        /// <summary>Items matching <paramref name="filter"/> (null = all).</summary>
+        public int CountOf(Func<ItemDefinition, bool> filter)
+        {
+            if (filter == null) return items.Count;
+            int n = 0;
+            foreach (var item in items)
+                if (filter(item.Definition)) n++;
+            return n;
+        }
+
+        /// <summary>Highest base value among items matching <paramref name="filter"/>, or -1 when none.</summary>
+        public int HighestValueOf(Func<ItemDefinition, bool> filter)
+        {
+            int best = -1;
+            foreach (var item in items)
+                if (filter == null || filter(item.Definition))
+                    best = Math.Max(best, item.Definition.BaseValue);
+            return best;
+        }
+
         /// <summary>Local position of slot <paramref name="index"/> (column-major within a layer, layers stack up).</summary>
         public Vector3 SlotPosition(int index)
         {

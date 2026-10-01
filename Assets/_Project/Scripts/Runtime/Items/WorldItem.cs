@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using DG.Tweening;
 using ScrapYardKing.Core;
 using UnityEngine;
@@ -36,6 +37,7 @@ namespace ScrapYardKing.Items
         Vector3 velocity, angularVelocity, baseScale;
         float groundY, collectableAt;
         Bounds bounds;
+        IReadOnlyList<Bounds> blocked;
 
         Transform moveParent;
         Vector3 moveFrom, moveTo;
@@ -65,8 +67,10 @@ namespace ScrapYardKing.Items
         }
 
         /// <summary>Throws the item from <paramref name="position"/>. It bounces inside <paramref name="area"/> and settles on the ground.</summary>
-        public void Launch(Vector3 position, Vector3 launchVelocity, float collectDelay, float groundHeight, Bounds area)
+        public void Launch(Vector3 position, Vector3 launchVelocity, float collectDelay, float groundHeight, Bounds area,
+            IReadOnlyList<Bounds> blockedAreas = null)
         {
+            blocked = blockedAreas;
             transform.SetPositionAndRotation(position, UnityEngine.Random.rotation);
             transform.localScale = baseScale;
             velocity = launchVelocity;
@@ -161,6 +165,10 @@ namespace ScrapYardKing.Items
                 velocity.z *= -bounciness;
             }
 
+            if (blocked != null)
+                for (int i = 0; i < blocked.Count; i++)
+                    PushOut(ref p, blocked[i]);
+
             float floor = groundY + halfHeight;
             if (p.y <= floor)
             {
@@ -182,6 +190,25 @@ namespace ScrapYardKing.Items
 
             transform.position = p;
             transform.Rotate(angularVelocity * dt, Space.World);
+        }
+
+        /// <summary>Moves <paramref name="p"/> out of <paramref name="area"/> (horizontally) along the shallowest side and bounces.</summary>
+        void PushOut(ref Vector3 p, Bounds area)
+        {
+            if (p.x <= area.min.x || p.x >= area.max.x || p.z <= area.min.z || p.z >= area.max.z) return;
+
+            float left = p.x - area.min.x, right = area.max.x - p.x, back = p.z - area.min.z, front = area.max.z - p.z;
+            float min = Mathf.Min(Mathf.Min(left, right), Mathf.Min(back, front));
+            if (min == left || min == right)
+            {
+                p.x = min == left ? area.min.x : area.max.x;
+                velocity.x = (min == left ? -1f : 1f) * Mathf.Abs(velocity.x) * bounciness;
+            }
+            else
+            {
+                p.z = min == back ? area.min.z : area.max.z;
+                velocity.z = (min == back ? -1f : 1f) * Mathf.Abs(velocity.z) * bounciness;
+            }
         }
 
         void SimulateMove(float dt)

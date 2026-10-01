@@ -12,8 +12,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9eb7aa00d47bf4d86bc94e0ebce05f2b, type: 3}
   m_Name: Sfx_RubberHit
   m_EditorClassIdentifier: ScrapYardKing.Runtime::ScrapYardKing.Feedback.SfxDefinition
-  clips: []
-  volume: 0.6
-  pitchRange: {x: 0.9, y: 1.1}
+  clips:
+  - {fileID: 8300000, guid: 8a452500cd2ab4cf491cd582a89b9bcc, type: 3}
+  - {fileID: 8300000, guid: cd76609de1029449191ba5e108787d24, type: 3}
+  - {fileID: 8300000, guid: ac160c6c597124140a60788351dbbcda, type: 3}
+  volume: 0.5
+  pitchRange: {x: 0.95, y: 1.1}
   minInterval: 0.04
   fallback: 4

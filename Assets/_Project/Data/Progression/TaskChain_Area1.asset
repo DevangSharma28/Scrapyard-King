@@ -1,0 +1,52 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 32f939855ad304e499b75d04e4da8d11, type: 3}
+  m_Name: TaskChain_Area1
+  m_EditorClassIdentifier: ScrapYardKing.Runtime::ScrapYardKing.Progression.TaskChain
+  mainTasks:
+  - {fileID: 11400000, guid: 9a75c74fa8c0a4de093aa7b7330959fb, type: 2}
+  - {fileID: 11400000, guid: eeabe3816dbf34cbb85b67d78903e68d, type: 2}
+  - {fileID: 11400000, guid: a6b824cc7b80e4e3bbdf544e9ed1254c, type: 2}
+  - {fileID: 11400000, guid: 29046187c71844a9787e68f830fff934, type: 2}
+  - {fileID: 11400000, guid: 613a53122ff754483a5db0af47495fbb, type: 2}
+  - {fileID: 11400000, guid: 6194c6bfc9f264af5b1111d9c2852bce, type: 2}
+  - {fileID: 11400000, guid: b182715addbdd47e0987856c3a82e3d3, type: 2}
+  - {fileID: 11400000, guid: cf99c8719d8504ec3829de82f12bf55b, type: 2}
+  - {fileID: 11400000, guid: 57bc3d09f16224b5cb2b76b02f673f05, type: 2}
+  - {fileID: 11400000, guid: b97c45d045d9a4473a2a2d082daf50b3, type: 2}
+  - {fileID: 11400000, guid: 134d4c88f1ed142dfb9df8f9d558edc2, type: 2}
+  - {fileID: 11400000, guid: 9128e8af405694b6e996f78f6a713408, type: 2}
+  - {fileID: 11400000, guid: 8d2f5454522ff449792605404c0be13b, type: 2}
+  - {fileID: 11400000, guid: 40de0ca8388cf4f61acba337f4662737, type: 2}
+  - {fileID: 11400000, guid: c4c074f6f83be41e4b21808616f9f2a2, type: 2}
+  - {fileID: 11400000, guid: 38c327029e0f74965b6e363d4d48fed4, type: 2}
+  - {fileID: 11400000, guid: fb01356b1ac1649b0baf0f222df7f3ce, type: 2}
+  - {fileID: 11400000, guid: ff1d802f733694f1e8fe9bde344189fa, type: 2}
+  - {fileID: 11400000, guid: 253d8b508738a4a84b4675e64b1c824b, type: 2}
+  - {fileID: 11400000, guid: 9a32993dec8414221afdf50136e183d3, type: 2}
+  - {fileID: 11400000, guid: 208685e675f1a413b93c89544d02227f, type: 2}
+  - {fileID: 11400000, guid: 199c2582ee1f44691a4bbc7455d7edc5, type: 2}
+  - {fileID: 11400000, guid: e5282d3f0d4d54a43aae4a0291bd1639, type: 2}
+  - {fileID: 11400000, guid: d62e28f3221504c5a8f2a7446847f34e, type: 2}
+  - {fileID: 11400000, guid: fad07ac58ec8e44e19e591f560417a64, type: 2}
+  - {fileID: 11400000, guid: f5214162545be41989f70b65bf26fec3, type: 2}
+  - {fileID: 11400000, guid: 528078878ad384c0a8f98247fde18597, type: 2}
+  - {fileID: 11400000, guid: b40f7f17866f442cdb8a3982260244ff, type: 2}
+  sideTasks:
+  - {fileID: 11400000, guid: da254133649a248cab59c42050c382c5, type: 2}
+  - {fileID: 11400000, guid: 9d7776b6ae51a486299c564118fe8961, type: 2}
+  - {fileID: 11400000, guid: b09bcb34cecc742bb9ba8a72d0f9f0d6, type: 2}
+  - {fileID: 11400000, guid: 5ec0ea99dfae443709caa9d99d2af641, type: 2}
+  - {fileID: 11400000, guid: 8ccc163b1ce3a4ae39ec669a6540bf5f, type: 2}
+  - {fileID: 11400000, guid: 960946688d8b0432f9b35a370e66abcd, type: 2}
+  sideTasksFromMainIndex: 7
+  maxActiveSideTasks: 1

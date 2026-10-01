@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9eb7aa00d47bf4d86bc94e0ebce05f2b, type: 3}
+  m_Name: Sfx_TilePay
+  m_EditorClassIdentifier: ScrapYardKing.Runtime::ScrapYardKing.Feedback.SfxDefinition
+  clips:
+  - {fileID: 8300000, guid: e5dafe4dfa5e949919f535201f17d663, type: 3}
+  - {fileID: 8300000, guid: 2aa30e681754d4a889c5e6f91d9bb56e, type: 3}
+  - {fileID: 8300000, guid: 36354f5f2c3d747d69f126d1a4f180d0, type: 3}
+  - {fileID: 8300000, guid: 7b3332579a79c4f019ab0987da30f897, type: 3}
+  volume: 0.3
+  pitchRange: {x: 1, y: 1}
+  minInterval: 0.035
+  fallback: 7

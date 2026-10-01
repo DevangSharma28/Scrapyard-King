@@ -47,6 +47,7 @@ namespace ScrapYardKing.Harvest
         public float Health01 => definition != null ? health / definition.MaxHealth : 0f;
         public bool IsTargetable => phase == Phase.Alive && isActiveAndEnabled;
         public Vector3 Center => hitCollider != null ? hitCollider.bounds.center : transform.position;
+        public float TopHeight => hitCollider != null ? hitCollider.bounds.max.y : transform.position.y + 1f;
 
         void Awake()
         {

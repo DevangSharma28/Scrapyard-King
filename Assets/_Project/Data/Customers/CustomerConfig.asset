@@ -1,0 +1,28 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3e5eb1274bba646618805c760dadeb28, type: 3}
+  m_Name: CustomerConfig
+  m_EditorClassIdentifier: ScrapYardKing.Runtime::ScrapYardKing.Customers.CustomerConfig
+  prefabs:
+  - {fileID: 4557858398750089121, guid: ca93f2126303440c399c972a36dea8ee, type: 3}
+  - {fileID: 7133953375390644615, guid: 24b8a53e1f46a4a67b4dd8f74b48d710, type: 3}
+  - {fileID: 5594446275219783494, guid: 9995e94e1f58e4d17a3e7303364fea92, type: 3}
+  - {fileID: 3278780331258654020, guid: 2e847638178844655a89ccb945d04207, type: 3}
+  - {fileID: 6386448838519402476, guid: a9f03df64c93c41efbad55411dab382c, type: 3}
+  walkSpeed: 2.8
+  arrivalInterval: {x: 1.2, y: 3}
+  handOverInterval: 0.16
+  orderItem: {fileID: 11400000, guid: 83055ce854d5646d3beb2a2d62c9174a, type: 2}
+  orderOptions: []
+  preferInStock: 0.8
+  arriveSfx: {fileID: 11400000, guid: de0f4a1c9f1f64ba6a7bcc7f5f897277, type: 2}
+  happySfx: {fileID: 11400000, guid: 1e10d6a13c536401999118d8103c7ae3, type: 2}

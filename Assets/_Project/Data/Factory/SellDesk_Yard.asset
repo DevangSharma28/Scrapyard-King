@@ -13,7 +13,10 @@ MonoBehaviour:
   m_Name: SellDesk_Yard
   m_EditorClassIdentifier: ScrapYardKing.Runtime::ScrapYardKing.Factory.SellDeskDefinition
   id: sell_desk
-  displayName: Sell
+  displayName: Sell Desk
+  icon: {fileID: 21300000, guid: c53062f6376554f158a17f20483ae2b9, type: 3}
+  sells:
+  - {fileID: 11400000, guid: 83055ce854d5646d3beb2a2d62c9174a, type: 2}
   levels:
   - saleInterval: 8
     unitsPerSale: {x: 2, y: 4}
@@ -33,5 +36,17 @@ MonoBehaviour:
     counterCapacity: 20
     queueCapacity: 5
     upgradeCost: 700
+  - saleInterval: 4
+    unitsPerSale: {x: 3, y: 7}
+    priceMultiplier: 1.4
+    counterCapacity: 24
+    queueCapacity: 6
+    upgradeCost: 1500
+  - saleInterval: 3.2
+    unitsPerSale: {x: 4, y: 8}
+    priceMultiplier: 1.6
+    counterCapacity: 30
+    queueCapacity: 7
+    upgradeCost: 3000
   firstSaleDelay: 1.2
   saleSfx: {fileID: 11400000, guid: e790a3ca4e07449d3a10d9d3b1d8a3c4, type: 2}

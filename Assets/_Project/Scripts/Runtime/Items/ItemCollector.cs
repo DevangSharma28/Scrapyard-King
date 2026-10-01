@@ -19,6 +19,8 @@ namespace ScrapYardKing.Items
         [SerializeField, Min(0f)] float pickupInterval = 0.03f;
         [SerializeField, Min(1)] int maxPickupsPerFrame = 3;
         [SerializeField] bool playFeedback = true;
+        [Tooltip("Only pick up these item types. Empty = anything the stack accepts.")]
+        [SerializeField] ItemDefinition[] onlyItems;
 
         HarvestManager harvest;
         Func<ItemDefinition, bool> acceptFilter;
@@ -36,7 +38,16 @@ namespace ScrapYardKing.Items
             set => radius = Mathf.Max(0f, value);
         }
 
-        void Awake() => acceptFilter = item => stack != null && stack.CanAccept(item);
+        public float PickupInterval
+        {
+            get => pickupInterval;
+            set => pickupInterval = Mathf.Max(0f, value);
+        }
+
+        /// <summary>Whether this collector would ever pick up <paramref name="item"/> (ignores stack space).</summary>
+        public bool Wants(ItemDefinition item) => item != null && (onlyItems == null || onlyItems.Length == 0 || Array.IndexOf(onlyItems, item) >= 0);
+
+        void Awake() => acceptFilter = item => stack != null && Wants(item) && stack.CanAccept(item);
 
         void Start() => Services.TryGet(out harvest);
 

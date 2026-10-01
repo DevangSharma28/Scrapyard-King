@@ -22,6 +22,8 @@ namespace ScrapYardKing.Harvest
         [SerializeField, Min(0f)] float footprintMargin = 0.15f;
         [Tooltip("Loose items inside this radius are hopped out of the way on respawn.")]
         [SerializeField, Min(0.1f)] float clearRadius = 1.8f;
+        [Tooltip("Pop the first object in with the spawn animation (e.g. spawn points revealed by an expansion).")]
+        [SerializeField] bool animateFirstSpawn;
 
         ScrapManager manager;
         ScrapObject current;
@@ -36,7 +38,7 @@ namespace ScrapYardKing.Harvest
         {
             if (!Services.TryGet(out manager)) return;
             PrepareNext();
-            SpawnNow(false);
+            SpawnNow(animateFirstSpawn);
         }
 
         void OnDisable()

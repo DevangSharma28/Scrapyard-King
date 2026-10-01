@@ -247,6 +247,7 @@ GameObject:
   - component: {fileID: 6176088465015721779}
   - component: {fileID: 2988855301064982980}
   - component: {fileID: 5623840548969898453}
+  - component: {fileID: 6173416125014510600}
   m_Layer: 8
   m_Name: Scrap_TireStack
   m_TagString: Untagged
@@ -308,6 +309,22 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 1.5046082, y: 2.1, z: 1.4704727}
   m_Center: {x: 0.042932153, y: 1.05, z: 0}
+--- !u!208 &6173416125014510600
+NavMeshObstacle:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3620271230097365865}
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Shape: 1
+  m_Extents: {x: 0.7523041, y: 1.05, z: 0.73523635}
+  m_MoveThreshold: 0.1
+  m_Carve: 1
+  m_CarveOnlyStationary: 1
+  m_Center: {x: 0.042932153, y: 1.05, z: 0}
+  m_TimeToStationary: 0.5
 --- !u!1 &5078312197214373070
 GameObject:
   m_ObjectHideFlags: 0

@@ -19,6 +19,14 @@ namespace ScrapYardKing.Factory
         [Min(0)] public int upgradeCost;
     }
 
+    /// <summary>One possible product of a splitting machine (Sorter) and its share of the output.</summary>
+    [Serializable]
+    public struct WeightedOutput
+    {
+        public ItemDefinition item;
+        [Min(0f)] public float weight;
+    }
+
     /// <summary>
     /// Data for one processing machine (Crusher, Sorter, Furnace, Press...). New machine types are new assets,
     /// not new code: input item, output item and per-level numbers are all here.
@@ -31,6 +39,8 @@ namespace ScrapYardKing.Factory
         [SerializeField] Sprite icon;
         [SerializeField] ItemDefinition input;
         [SerializeField] ItemDefinition output;
+        [Tooltip("Splitting machines (Sorter): each cycle makes one of these, spread evenly by weight. Empty = always Output.")]
+        [SerializeField] WeightedOutput[] outputMix;
         [SerializeField] MachineLevel[] levels = { new() { inputCapacity = 10, cycleTime = 0.8f, inputsPerCycle = 1, outputsPerCycle = 1 } };
 
         [Header("Feedback")]
@@ -42,6 +52,18 @@ namespace ScrapYardKing.Factory
         public Sprite Icon => icon;
         public ItemDefinition Input => input;
         public ItemDefinition Output => output;
+        public WeightedOutput[] OutputMix => outputMix;
+        public bool HasOutputMix => outputMix != null && outputMix.Length > 0;
+
+        /// <summary>True when this machine can produce <paramref name="item"/>.</summary>
+        public bool Produces(ItemDefinition item)
+        {
+            if (item == null) return false;
+            if (!HasOutputMix) return item == output;
+            foreach (var o in outputMix)
+                if (o.item == item && o.weight > 0f) return true;
+            return false;
+        }
         public int MaxLevel => levels.Length;
         public SfxDefinition CycleSfx => cycleSfx;
         public SfxDefinition OutputSfx => outputSfx;

@@ -213,6 +213,7 @@ GameObject:
   - component: {fileID: 96346653841767694}
   - component: {fileID: 6918816356941317455}
   - component: {fileID: 474339609695751629}
+  - component: {fileID: 6196278502756016918}
   m_Layer: 8
   m_Name: Scrap_Car_sedan
   m_TagString: Untagged
@@ -274,6 +275,22 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 2.605816, y: 2.414984, z: 4.239375}
   m_Center: {x: -0.07745528, y: 1.143391, z: -0.043750048}
+--- !u!208 &6196278502756016918
+NavMeshObstacle:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2274953657648036914}
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Shape: 1
+  m_Extents: {x: 1.302908, y: 1.207492, z: 2.1196876}
+  m_MoveThreshold: 0.1
+  m_Carve: 1
+  m_CarveOnlyStationary: 1
+  m_Center: {x: -0.07745528, y: 1.143391, z: -0.043750048}
+  m_TimeToStationary: 0.5
 --- !u!1 &6077152708302961628
 GameObject:
   m_ObjectHideFlags: 0

@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 2578461067053880392}
   - component: {fileID: 5798016074544158275}
   - component: {fileID: 7665103101651073599}
+  - component: {fileID: 7374948426861749563}
   m_Layer: 8
   m_Name: Scrap_Car_hatchback-sports
   m_TagString: Untagged
@@ -72,6 +73,22 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 2.2536373, y: 2.0549533, z: 4.738125}
   m_Center: {x: -0.066771865, y: 0.9633757, z: -0.043750048}
+--- !u!208 &7374948426861749563
+NavMeshObstacle:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 542373031633906313}
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Shape: 1
+  m_Extents: {x: 1.1268187, y: 1.0274767, z: 2.3690624}
+  m_MoveThreshold: 0.1
+  m_Carve: 1
+  m_CarveOnlyStationary: 1
+  m_Center: {x: -0.066771865, y: 0.9633757, z: -0.043750048}
+  m_TimeToStationary: 0.5
 --- !u!1 &613183446363787680
 GameObject:
   m_ObjectHideFlags: 0

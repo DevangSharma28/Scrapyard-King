@@ -91,6 +91,7 @@ GameObject:
   - component: {fileID: 8468656092069205853}
   - component: {fileID: 6680063320073546140}
   - component: {fileID: 3959221467524141582}
+  - component: {fileID: 7962121243529311203}
   m_Layer: 8
   m_Name: Scrap_Car_suv
   m_TagString: Untagged
@@ -152,6 +153,22 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 2.6007411, y: 2.414984, z: 4.48875}
   m_Center: {x: -0.08012617, y: 1.143391, z: 0.00000023841858}
+--- !u!208 &7962121243529311203
+NavMeshObstacle:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 433141283167225671}
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Shape: 1
+  m_Extents: {x: 1.3003706, y: 1.207492, z: 2.244375}
+  m_MoveThreshold: 0.1
+  m_Carve: 1
+  m_CarveOnlyStationary: 1
+  m_Center: {x: -0.08012617, y: 1.143391, z: 0.00000023841858}
+  m_TimeToStationary: 0.5
 --- !u!1 &3955864035208289502
 GameObject:
   m_ObjectHideFlags: 0

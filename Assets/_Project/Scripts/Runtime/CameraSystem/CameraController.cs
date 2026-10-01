@@ -39,8 +39,15 @@ namespace ScrapYardKing.CameraSystem
         [SerializeField, Min(0f)] float punchStiffness = 220f;
         [SerializeField, Min(0f)] float punchDamping = 16f;
 
+        [Header("Cinematic")]
+        [Tooltip("Smoothing for focus shifts (UI sheets) and pans to points of interest.")]
+        [SerializeField, Min(0.01f)] float shiftSmoothTime = 0.3f;
+        [SerializeField, Min(0.01f)] float panSmoothTime = 0.45f;
+
         Vector3 focus, focusVelocity, lookAheadOffset, lookAheadVelocity, lastTargetPosition;
-        float trauma, punchOffset, punchVelocity;
+        Vector3 shift, shiftTarget, shiftVelocity;
+        Vector3? panPoint;
+        float trauma, punchOffset, punchVelocity, panUntil, returnUntil;
 
         public Transform Target => target;
         public Camera Camera => cam;
@@ -56,6 +63,18 @@ namespace ScrapYardKing.CameraSystem
 
         /// <summary>Kicks the camera toward the focus point; a spring returns it.</summary>
         public void Punch(float strength) => punchVelocity += strength * 10f;
+
+        /// <summary>Offsets the follow focus (e.g. so the player stays above a bottom sheet). Zero restores it.</summary>
+        public void SetFocusShift(Vector3 worldShift) => shiftTarget = worldShift;
+
+        /// <summary>Pans to <paramref name="point"/> for <paramref name="hold"/> seconds (unscaled), then returns to the target.</summary>
+        public void Focus(Vector3 point, float hold)
+        {
+            panPoint = point;
+            panUntil = Time.unscaledTime + hold;
+        }
+
+        public bool IsPanning => panPoint.HasValue;
 
         public void SnapToTarget()
         {
@@ -88,7 +107,16 @@ namespace ScrapYardKing.CameraSystem
             float speed01 = Mathf.Clamp01(velocity.magnitude / lookAheadFullSpeed);
             Vector3 desiredLookAhead = velocity.sqrMagnitude > 0.01f ? velocity.normalized * (lookAhead * speed01) : Vector3.zero;
             lookAheadOffset = Vector3.SmoothDamp(lookAheadOffset, desiredLookAhead, ref lookAheadVelocity, lookAheadSmoothTime, Mathf.Infinity, dt);
-            focus = Vector3.SmoothDamp(focus, targetPosition + focusOffset + lookAheadOffset, ref focusVelocity, followSmoothTime, Mathf.Infinity, dt);
+            shift = Vector3.SmoothDamp(shift, shiftTarget, ref shiftVelocity, shiftSmoothTime, Mathf.Infinity, dt);
+            if (panPoint.HasValue && Time.unscaledTime >= panUntil)
+            {
+                panPoint = null;
+                returnUntil = Time.unscaledTime + panSmoothTime * 3f;
+            }
+
+            Vector3 desired = panPoint.HasValue ? panPoint.Value + focusOffset : targetPosition + focusOffset + lookAheadOffset + shift;
+            float smooth = panPoint.HasValue || Time.unscaledTime < returnUntil ? panSmoothTime : followSmoothTime;
+            focus = Vector3.SmoothDamp(focus, desired, ref focusVelocity, smooth, Mathf.Infinity, dt);
 
             punchVelocity += (-punchStiffness * punchOffset - punchDamping * punchVelocity) * dt;
             punchOffset += punchVelocity * dt;

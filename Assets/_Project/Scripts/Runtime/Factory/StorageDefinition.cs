@@ -18,10 +18,12 @@ namespace ScrapYardKing.Factory
     {
         [SerializeField] string id;
         [SerializeField] string displayName;
+        [SerializeField] Sprite icon;
         [SerializeField] StorageLevel[] levels = { new() { capacity = 40, pickupInterval = 0.07f } };
 
         public string Id => id;
         public string DisplayName => displayName;
+        public Sprite Icon => icon;
         public int MaxLevel => levels.Length;
 
         public StorageLevel GetLevel(int level) => levels[Mathf.Clamp(level - 1, 0, levels.Length - 1)];

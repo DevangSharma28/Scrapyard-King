@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: ScrapYardKing.Runtime::ScrapYardKing.Factory.MachineDefinition
   id: crusher
   displayName: Crusher
-  icon: {fileID: 0}
+  icon: {fileID: 21300000, guid: cbc298f09e8ad4a3b862516014d6b626, type: 3}
   input: {fileID: 11400000, guid: f6593dbddf0854968bd6f7b3be117504, type: 2}
   output: {fileID: 11400000, guid: 83055ce854d5646d3beb2a2d62c9174a, type: 2}
   levels:

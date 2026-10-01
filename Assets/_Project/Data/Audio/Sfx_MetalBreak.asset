@@ -12,8 +12,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9eb7aa00d47bf4d86bc94e0ebce05f2b, type: 3}
   m_Name: Sfx_MetalBreak
   m_EditorClassIdentifier: ScrapYardKing.Runtime::ScrapYardKing.Feedback.SfxDefinition
-  clips: []
-  volume: 0.9
+  clips:
+  - {fileID: 8300000, guid: d70541228fb7643a39460bf058fcac1b, type: 3}
+  - {fileID: 8300000, guid: 62f4af36bc2034158878d31d89b575dc, type: 3}
+  - {fileID: 8300000, guid: 6d1a8ba855ddd4fd097bc6c70ed512f0, type: 3}
+  - {fileID: 8300000, guid: 78e812f7c953c47249fd962d350fe4b4, type: 3}
+  - {fileID: 8300000, guid: 81374a877565846e58aa6e92258848b3, type: 3}
+  volume: 0.75
   pitchRange: {x: 0.92, y: 1.05}
   minInterval: 0.05
   fallback: 2

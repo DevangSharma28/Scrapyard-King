@@ -28,7 +28,7 @@ MonoBehaviour:
   rareDropItem: {fileID: 0}
   rareDropChance: 0
   rareDropAmount: {x: 1, y: 1}
-  xpReward: 2
+  xpReward: 1
   respawnDelay: 6
   hitSfx: {fileID: 0}
   breakSfx: {fileID: 0}

@@ -12,8 +12,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9eb7aa00d47bf4d86bc94e0ebce05f2b, type: 3}
   m_Name: Sfx_CashCollect
   m_EditorClassIdentifier: ScrapYardKing.Runtime::ScrapYardKing.Feedback.SfxDefinition
-  clips: []
-  volume: 0.22
-  pitchRange: {x: 1.1, y: 1.15}
+  clips:
+  - {fileID: 8300000, guid: ae03dd90e03194d78978065493c9c80e, type: 3}
+  - {fileID: 8300000, guid: dfbdc1fd7b78544ed93ad9ebb5c4d687, type: 3}
+  - {fileID: 8300000, guid: 9dcf7c39ea57e453c9b63bb13f7044fa, type: 3}
+  volume: 0.4
+  pitchRange: {x: 1, y: 1}
   minInterval: 0.02
   fallback: 7

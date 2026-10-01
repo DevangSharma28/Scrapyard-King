@@ -1,0 +1,21 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d01d0f62b22fb4973b3846f19f9be713, type: 3}
+  m_Name: OverdriveConfig
+  m_EditorClassIdentifier: ScrapYardKing.Runtime::ScrapYardKing.Factory.OverdriveConfig
+  speedMultiplier: 2
+  duration: 10
+  chargeTime: 1.5
+  cooldown: 6
+  chargeSfx: {fileID: 11400000, guid: c86172042210d4ec89a9eaf02247acbc, type: 2}
+  startSfx: {fileID: 11400000, guid: c18771734b29441738cd13cd231509de, type: 2}
+  endSfx: {fileID: 11400000, guid: 21d5d6a9784204c3a868a41b3adc736a, type: 2}

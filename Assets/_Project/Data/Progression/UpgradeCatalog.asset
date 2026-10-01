@@ -1,0 +1,75 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1ccd6292d53964a5abd4e2b2a7402ac8, type: 3}
+  m_Name: UpgradeCatalog
+  m_EditorClassIdentifier: ScrapYardKing.Runtime::ScrapYardKing.Progression.UpgradeCatalog
+  entries:
+  - upgradeId: chainsaw
+    unlockLevel: 1
+    inPanel: 1
+    group: YOU
+  - upgradeId: backpack
+    unlockLevel: 2
+    inPanel: 1
+    group: YOU
+  - upgradeId: boots
+    unlockLevel: 4
+    inPanel: 1
+    group: YOU
+  - upgradeId: crusher
+    unlockLevel: 1
+    inPanel: 1
+    group: OLD YARD
+  - upgradeId: sell_desk
+    unlockLevel: 1
+    inPanel: 1
+    group: OLD YARD
+  - upgradeId: storage_yard
+    unlockLevel: 3
+    inPanel: 1
+    group: OLD YARD
+  - upgradeId: sorter
+    unlockLevel: 6
+    inPanel: 1
+    group: RECYCLING PLANT
+  - upgradeId: metal_bins
+    unlockLevel: 6
+    inPanel: 1
+    group: RECYCLING PLANT
+  - upgradeId: market
+    unlockLevel: 6
+    inPanel: 1
+    group: RECYCLING PLANT
+  - upgradeId: porter
+    unlockLevel: 3
+    inPanel: 0
+    group: 
+  - upgradeId: helper
+    unlockLevel: 4
+    inPanel: 0
+    group: 
+  - upgradeId: back_lot
+    unlockLevel: 5
+    inPanel: 0
+    group: 
+  - upgradeId: recycling_plant
+    unlockLevel: 6
+    inPanel: 0
+    group: 
+  - upgradeId: hauler
+    unlockLevel: 6
+    inPanel: 0
+    group: 
+  - upgradeId: runner
+    unlockLevel: 7
+    inPanel: 0
+    group: 

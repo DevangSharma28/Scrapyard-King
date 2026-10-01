@@ -24,6 +24,9 @@ namespace ScrapYardKing.Factory
     {
         [SerializeField] string id;
         [SerializeField] string displayName;
+        [SerializeField] Sprite icon;
+        [Tooltip("Items this desk sells. Empty = anything with a price.")]
+        [SerializeField] Items.ItemDefinition[] sells;
         [SerializeField] SellDeskLevel[] levels =
         {
             new() { saleInterval = 8f, unitsPerSale = new Vector2Int(2, 4), priceMultiplier = 1f, counterCapacity = 12, queueCapacity = 3 }
@@ -34,7 +37,24 @@ namespace ScrapYardKing.Factory
 
         public string Id => id;
         public string DisplayName => displayName;
+        public Sprite Icon => icon;
         public int MaxLevel => levels.Length;
+
+        /// <summary>True when the desk sells the item with <paramref name="itemId"/> (any item for an open desk).</summary>
+        public bool SellsId(string itemId)
+        {
+            if (sells == null || sells.Length == 0) return true;
+            foreach (var item in sells)
+                if (item != null && item.Id == itemId) return true;
+            return false;
+        }
+
+        public bool Sells(Items.ItemDefinition item)
+        {
+            if (item == null || item.BaseValue <= 0) return false;
+            if (sells == null || sells.Length == 0) return true;
+            return System.Array.IndexOf(sells, item) >= 0;
+        }
         public float FirstSaleDelay => firstSaleDelay;
         public SfxDefinition SaleSfx => saleSfx;
 

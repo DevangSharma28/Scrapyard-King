@@ -1,0 +1,38 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 33e589ad94f7c401c80c2db9e8f33ea3, type: 3}
+  m_Name: Scrap_Washer
+  m_EditorClassIdentifier: ScrapYardKing.Runtime::ScrapYardKing.Harvest.ScrapDefinition
+  id: washer
+  displayName: Washer
+  tier: 2
+  sizeClass: 1
+  prefab: {fileID: 6393470645836771905, guid: 704aa77bdf3f946ca9202c8239b03f46, type: 3}
+  prefabVariants: []
+  maxHealth: 180
+  minCutPower: 15
+  dropItem: {fileID: 11400000, guid: f6593dbddf0854968bd6f7b3be117504, type: 2}
+  dropAmount: {x: 10, y: 14}
+  partDropShare: 0.35
+  dropLaunchSpeed: 6.5
+  dropSpread: 1.4
+  rareDropItem: {fileID: 0}
+  rareDropChance: 0
+  rareDropAmount: {x: 1, y: 1}
+  xpReward: 3
+  respawnDelay: 9
+  hitSfx: {fileID: 0}
+  breakSfx: {fileID: 0}
+  hitVfx: {fileID: 0}
+  breakVfx: {fileID: 0}
+  breakVfxScale: 1.3
+  breakShake: 0.3

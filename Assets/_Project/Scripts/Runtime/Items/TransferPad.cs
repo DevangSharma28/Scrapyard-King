@@ -40,6 +40,10 @@ namespace ScrapYardKing.Items
         int streak;
 
         public CarryStack Occupant => occupant;
+        /// <summary>Withdraw pads: what the pad takes items from.</summary>
+        public IItemSource Source => source;
+        /// <summary>Deposit pads: what the pad puts items into.</summary>
+        public IItemReceiver Receiver => receiver;
         public TransferMode Mode => mode;
 
         public float Interval

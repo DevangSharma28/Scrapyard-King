@@ -11,7 +11,10 @@ namespace ScrapYardKing.Feedback
         Thud,
         Clunk,
         Whoosh,
-        Coin
+        Coin,
+        Upgrade,
+        Fanfare,
+        Denied
     }
 
     /// <summary>A playable sound: clip variations, volume, pitch jitter and a rate limit.</summary>

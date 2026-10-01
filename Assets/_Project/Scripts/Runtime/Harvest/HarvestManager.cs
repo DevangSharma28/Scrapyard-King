@@ -22,6 +22,7 @@ namespace ScrapYardKing.Harvest
         [SerializeField, Min(0f)] float collectDelay = 0.35f;
 
         readonly List<WorldItem> loose = new();
+        readonly List<Bounds> blockedAreas = new();
         ItemPool pool;
         bool warnedCap;
 
@@ -35,6 +36,23 @@ namespace ScrapYardKing.Harvest
         }
 
         Transform Root => looseItemRoot != null ? looseItemRoot : transform;
+
+        /// <summary>Areas (e.g. a fenced, locked expansion) that flying items bounce off instead of landing in.</summary>
+        public void AddBlockedArea(Bounds area)
+        {
+            if (!blockedAreas.Contains(area)) blockedAreas.Add(area);
+        }
+
+        public void RemoveBlockedArea(Bounds area) => blockedAreas.Remove(area);
+
+        /// <summary>Grows the drop area to include <paramref name="area"/> (expansions).</summary>
+        public void ExpandDropBounds(Bounds area)
+        {
+            var size = area.size;
+            size.y = Mathf.Max(size.y, dropBounds.size.y);
+            area.size = size;
+            dropBounds.Encapsulate(area);
+        }
 
         /// <summary>
         /// Throws <paramref name="count"/> items out of <paramref name="origin"/> in a burst.
@@ -66,9 +84,36 @@ namespace ScrapYardKing.Harvest
                 float vertical = launchSpeed * UnityEngine.Random.Range(0.9f, 1.5f);
                 Vector3 start = origin + new Vector3(random.x, 0f, random.y) * (spread * 0.3f);
 
-                worldItem.Launch(start, direction * horizontal + Vector3.up * vertical, collectDelay, groundHeight, dropBounds);
+                worldItem.Launch(start, direction * horizontal + Vector3.up * vertical, collectDelay, groundHeight, dropBounds, blockedAreas);
                 loose.Add(worldItem);
             }
+        }
+
+        /// <summary>Finds (without taking) the nearest collectable item within <paramref name="radius"/>. Used by AI to pick a destination.</summary>
+        public bool TryFindNearestCollectable(Vector3 position, float radius, Func<ItemDefinition, bool> accept, out Vector3 itemPosition) =>
+            TryFindNearestCollectable(position, radius, accept, null, out itemPosition);
+
+        /// <summary>As above, also skipping items whose position fails <paramref name="where"/> (e.g. outside a worker's zones).</summary>
+        public bool TryFindNearestCollectable(Vector3 position, float radius, Func<ItemDefinition, bool> accept, Func<Vector3, bool> where,
+            out Vector3 itemPosition)
+        {
+            float bestSqr = radius * radius;
+            itemPosition = default;
+            bool found = false;
+            foreach (var item in loose)
+            {
+                if (!item.IsCollectable) continue;
+                if (accept != null && !accept(item.Definition)) continue;
+                Vector3 delta = item.transform.position - position;
+                float sqr = delta.x * delta.x + delta.z * delta.z;
+                if (sqr > bestSqr) continue;
+                if (where != null && !where(item.transform.position)) continue;
+                bestSqr = sqr;
+                itemPosition = item.transform.position;
+                found = true;
+            }
+
+            return found;
         }
 
         /// <summary>Removes and returns the nearest collectable item within <paramref name="radius"/> (horizontal distance).</summary>
@@ -115,7 +160,7 @@ namespace ScrapYardKing.Harvest
                 Vector3 direction = distance > 0.01f ? offset / distance : Quaternion.Euler(0f, UnityEngine.Random.Range(0f, 360f), 0f) * Vector3.forward;
                 float flightTime = 2f * hopSpeed / Mathf.Max(1f, item.Gravity);
                 float travel = radius + 0.6f - distance;
-                item.Launch(item.transform.position, direction * (travel / flightTime) + Vector3.up * hopSpeed, 0.1f, groundHeight, dropBounds);
+                item.Launch(item.transform.position, direction * (travel / flightTime) + Vector3.up * hopSpeed, 0.1f, groundHeight, dropBounds, blockedAreas);
             }
         }
 
@@ -124,7 +169,7 @@ namespace ScrapYardKing.Harvest
         {
             if (item == null || loose.Contains(item)) return;
             item.transform.SetParent(Root, true);
-            item.Launch(item.transform.position, Vector3.up * 2f, collectDelay, groundHeight, dropBounds);
+            item.Launch(item.transform.position, Vector3.up * 2f, collectDelay, groundHeight, dropBounds, blockedAreas);
             loose.Add(item);
         }
 

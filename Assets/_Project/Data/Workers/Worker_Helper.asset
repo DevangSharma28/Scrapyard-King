@@ -1,0 +1,27 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f277c0476a2104eb8aef3ce2788738b2, type: 3}
+  m_Name: Worker_Helper
+  m_EditorClassIdentifier: ScrapYardKing.Runtime::ScrapYardKing.Workers.WorkerDefinition
+  id: helper
+  displayName: Delivery Helper
+  icon: {fileID: 21300000, guid: 30c6ccef7a86145688fcd31b34963467, type: 3}
+  tagline: STOCKS THE SELL DESK FOR YOU
+  role: 0
+  prefab: {fileID: 5005287366614547506, guid: f171e0f631edc4ab187502f2130a0e21, type: 3}
+  siteId: delivery
+  moveSpeed: 3.4
+  carryCapacity: 8
+  efficiency: 1
+  pickupRadius: 1
+  collectLooseItems: 0
+  hireCosts: 2003000000000000d007000000000000
