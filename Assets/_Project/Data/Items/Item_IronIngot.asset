@@ -1,0 +1,21 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fb70fd218a2cc4b6eaabd5460880a3cf, type: 3}
+  m_Name: Item_IronIngot
+  m_EditorClassIdentifier: ScrapYardKing.Runtime::ScrapYardKing.Items.ItemDefinition
+  id: iron_ingot
+  displayName: Iron Ingot
+  icon: {fileID: 21300000, guid: ef1b90425c70248c889560de056677f2, type: 3}
+  color: {r: 0.72, g: 0.78, b: 0.88, a: 1}
+  prefab: {fileID: 7926204944600634213, guid: 75217424c5abc49daa58b0b39cd8f340, type: 3}
+  stackHeight: 0.2
+  baseValue: 30

@@ -4010,6 +4010,14 @@ MonoBehaviour:
   size: {x: 2.2, y: 2.2}
   interval: 0.07
   engageDelay: 0.15
+  spillAfter: 1.2
+  spillItems:
+  - {fileID: 11400000, guid: f6593dbddf0854968bd6f7b3be117504, type: 2}
+  spillDirection: {fileID: 0}
+  spillInterval: 0.08
+  spillCount: 4
+  spillCollectDelay: 6
+  spillSfx: {fileID: 11400000, guid: 64709b90367a54ffa9541cd5e8808cb2, type: 2}
   visual: {fileID: 8902318909843305261}
   transferSfx: {fileID: 11400000, guid: 588da95260de34bfbb7419d411ccf062, type: 2}
   pitchStep: 0.025

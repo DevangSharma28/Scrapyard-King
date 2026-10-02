@@ -102,6 +102,45 @@ namespace ScrapYardKing.Tests
         }
 
         [Test]
+        public void Machine_RecipesMapEachInputToItsProduct()
+        {
+            var iron = Item("iron", 12);
+            var copper = Item("copper", 26);
+            var ironIngot = Item("iron_ingot", 30);
+            var copperIngot = Item("copper_ingot", 60);
+            var scrap = Item("scrap", 0);
+            var furnace = ScriptableObject.CreateInstance<MachineDefinition>();
+            var crusher = ScriptableObject.CreateInstance<MachineDefinition>();
+            try
+            {
+                Reflect.Set(furnace, "recipes", new[]
+                {
+                    new MachineRecipe { input = iron, output = ironIngot }, new MachineRecipe { input = copper, output = copperIngot }
+                });
+                Assert.IsTrue(furnace.HasRecipes);
+                Assert.IsTrue(furnace.Takes(iron));
+                Assert.IsTrue(furnace.Takes(copper));
+                Assert.IsFalse(furnace.Takes(scrap));
+                Assert.AreSame(copperIngot, furnace.OutputFor(copper));
+                Assert.IsNull(furnace.OutputFor(scrap));
+                Assert.IsTrue(furnace.Produces(ironIngot));
+                Assert.IsFalse(furnace.Produces(iron));
+                Assert.IsTrue(furnace.ProducesAny(i => i.BaseValue > 50), "copper ingots are worth more than 50");
+
+                Reflect.Set(crusher, "input", scrap);
+                Reflect.Set(crusher, "output", iron);
+                Assert.IsTrue(crusher.Takes(scrap), "without recipes the single input is used");
+                Assert.IsFalse(crusher.Takes(iron));
+                Assert.AreSame(iron, crusher.OutputFor(scrap));
+                Assert.IsTrue(crusher.Produces(iron));
+            }
+            finally
+            {
+                foreach (var o in new Object[] { iron, copper, ironIngot, copperIngot, scrap, furnace, crusher }) Object.DestroyImmediate(o);
+            }
+        }
+
+        [Test]
         public void RollOrder_PrefersStockAndFallsBackToOrderItem()
         {
             var iron = Item("iron", 12);
@@ -123,6 +162,14 @@ namespace ScrapYardKing.Tests
                 for (int i = 0; i < 400; i++)
                     if (config.RollOrder(_ => 0) == copper) copperPicks++;
                 Assert.Less(copperPicks, 100, "with nothing in stock the weights decide (10% copper)");
+
+                for (int i = 0; i < 100; i++)
+                    Assert.AreSame(iron, config.RollOrder(_ => 0, item => item == iron), "nobody orders what the yard cannot make yet");
+                Reflect.Set(config, "preferInStock", 0f);
+                int stocked = 0;
+                for (int i = 0; i < 200; i++)
+                    if (config.RollOrder(item => item == copper ? 2 : 0, item => item == iron) == copper) stocked++;
+                Assert.Greater(stocked, 0, "an unmakeable item that is already in stock can still be ordered");
             }
             finally
             {

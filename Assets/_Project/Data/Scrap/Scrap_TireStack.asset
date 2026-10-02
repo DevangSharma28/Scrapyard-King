@@ -25,6 +25,7 @@ MonoBehaviour:
   partDropShare: 0.4
   dropLaunchSpeed: 5
   dropSpread: 0.8
+  dropBurstDuration: 0
   rareDropItem: {fileID: 0}
   rareDropChance: 0
   rareDropAmount: {x: 1, y: 1}

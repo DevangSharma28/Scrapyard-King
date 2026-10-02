@@ -55,6 +55,7 @@ namespace ScrapYardKing.Factory
         IItemReceiver[] portReceivers;
         WeightedSpread spread;
         ItemPool pool;
+        ItemDefinition cycleInput;
         float progress;
 
         /// <summary>Throughput multiplier. Active Overdrive and Operators add modifiers here.</summary>
@@ -68,9 +69,12 @@ namespace ScrapYardKing.Factory
         public MachineLevel Stats => definition.GetLevel(level);
         public MachineState State { get; private set; }
         public MachineVisuals Visuals => visuals;
+        float SpeedPitch => Mathf.Pow(Mathf.Max(0.1f, Speed.Value), 0.3f);
         public float CycleTime => Stats.cycleTime / Mathf.Max(0.01f, Speed.Value);
         public float Progress01 => progress;
         public int QueuedInputs => hopper != null ? hopper.Count : 0;
+        /// <summary>The hopper cannot take anything more (the deposit pad has stopped).</summary>
+        public bool IsHopperFull => hopper != null && hopper.IsFull;
 
         public string StationId => definition != null ? definition.Id : name;
         public string UpgradeId => StationId;
@@ -85,6 +89,7 @@ namespace ScrapYardKing.Factory
 
         void Awake()
         {
+            Speed.Changed += _ => RefreshStatus();
             output = outputTarget as IItemReceiver;
             if (outputTarget != null && output == null) Debug.LogError($"[Machine] {name}: output target is not an IItemReceiver.", this);
             portReceivers = new IItemReceiver[outputPorts != null ? outputPorts.Length : 0];
@@ -139,7 +144,7 @@ namespace ScrapYardKing.Factory
 
         void IUpgradeable.ApplyLevel(int newLevel) => SetLevel(newLevel);
 
-        public bool CanAccept(ItemDefinition item) => definition != null && item == definition.Input && hopper.CanAccept(item);
+        public bool CanAccept(ItemDefinition item) => definition != null && definition.Takes(item) && hopper.CanAccept(item);
 
         public void Accept(WorldItem item)
         {
@@ -163,15 +168,43 @@ namespace ScrapYardKing.Factory
                 return;
             }
 
-            if (hopper.Count >= Stats.inputsPerCycle) StartCycle();
+            var batch = NextBatch();
+            if (batch != null) StartCycle(batch);
             else SetState(MachineState.Idle);
         }
 
-        void StartCycle()
+        /// <summary>The input of the next cycle, or null when the hopper holds less than one batch of any input.</summary>
+        ItemDefinition NextBatch()
         {
+            int needed = Stats.inputsPerCycle;
+            if (!definition.HasRecipes) return hopper.Count >= needed ? definition.Input : null;
+            // Multi-input machines run one input per cycle, in turn, so neither material starves.
+            var recipes = definition.Recipes;
+            int start = cycleInput != null ? RecipeIndex(cycleInput) + 1 : 0;
+            for (int k = 0; k < recipes.Length; k++)
+            {
+                var input = recipes[(start + k) % recipes.Length].input;
+                if (input != null && hopper.CountOf(i => i == input) >= needed) return input;
+            }
+
+            return null;
+        }
+
+        int RecipeIndex(ItemDefinition input)
+        {
+            var recipes = definition.Recipes;
+            for (int i = 0; i < recipes.Length; i++)
+                if (recipes[i].input == input) return i;
+            return -1;
+        }
+
+        void StartCycle(ItemDefinition input)
+        {
+            cycleInput = input;
+            Func<ItemDefinition, bool> filter = definition.HasRecipes ? i => i == input : null;
             for (int i = 0; i < Stats.inputsPerCycle; i++)
             {
-                var item = hopper.Take(null);
+                var item = hopper.Take(filter);
                 if (item == null) break;
                 var target = intake != null ? intake : transform;
                 item.MoveTo(target, Vector3.zero, Quaternion.identity, Mathf.Min(0.25f, CycleTime * 0.5f), 0.4f, Consume);
@@ -180,7 +213,8 @@ namespace ScrapYardKing.Factory
             progress = 0f;
             SetState(MachineState.Working);
             if (visuals != null) visuals.PlayCycle();
-            GameFeedback.Sfx(definition.CycleSfx);
+            // A faster machine sounds faster: pitch follows speed (overdrive, operators) gently.
+            GameFeedback.Sfx(definition.CycleSfx, SpeedPitch);
         }
 
         void CompleteCycle()
@@ -202,16 +236,17 @@ namespace ScrapYardKing.Factory
                 }
             }
 
-            GameEvents.RaiseItemsProcessed(new ItemsProcessedEvent(definition.Id, definition.Input, stats.inputsPerCycle, product,
+            GameEvents.RaiseItemsProcessed(new ItemsProcessedEvent(definition.Id, cycleInput, stats.inputsPerCycle, product,
                 stats.outputsPerCycle));
             if (visuals != null) visuals.PlayOutput();
-            GameFeedback.Sfx(definition.OutputSfx);
+            GameFeedback.Sfx(definition.OutputSfx, SpeedPitch);
             SetState(MachineState.Idle);
             FlushOutputs();
         }
 
         ItemDefinition NextProduct()
         {
+            if (definition.HasRecipes) return definition.OutputFor(cycleInput);
             if (spread == null) return definition.Output;
             int index = spread.Next();
             return index >= 0 ? definition.OutputMix[index].item : definition.Output;
@@ -262,7 +297,18 @@ namespace ScrapYardKing.Factory
             if (State == state) return;
             State = state;
             if (visuals != null) visuals.SetState(state);
+            RefreshStatus();
             Changed?.Invoke(this);
+        }
+
+        /// <summary>Label tag: boosted beats jammed beats a full hopper.</summary>
+        void RefreshStatus()
+        {
+            if (label == null || hopper == null) return;
+            if (Speed.Value > 1.01f) label.SetStatus(StationStatus.Boosted, $"x{Speed.Value:0.#} BOOST");
+            else if (State == MachineState.Blocked) label.SetStatus(StationStatus.Jammed);
+            else if (hopper.IsFull) label.SetStatus(StationStatus.Full);
+            else label.SetStatus(StationStatus.None);
         }
 
         void ApplyLevel(bool animate = false)
@@ -273,7 +319,11 @@ namespace ScrapYardKing.Factory
             RefreshLabel();
         }
 
-        void OnHopperChanged(ItemPile _) => RefreshLabel();
+        void OnHopperChanged(ItemPile _)
+        {
+            RefreshLabel();
+            RefreshStatus();
+        }
 
         void RefreshLabel()
         {

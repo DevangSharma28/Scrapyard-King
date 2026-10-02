@@ -47,8 +47,10 @@ namespace ScrapYardKing.Customers
         /// <summary>
         /// Picks what the next customer wants. <paramref name="stockOf"/> returns counter stock per item; with
         /// probability <see cref="preferInStock"/> the pick is limited to items in stock (when any are).
+        /// <paramref name="obtainable"/> rules out goods the yard cannot make yet (ingots before the Furnace is built),
+        /// so nobody waits at the counter for something that will never come.
         /// </summary>
-        public ItemDefinition RollOrder(Func<ItemDefinition, int> stockOf)
+        public ItemDefinition RollOrder(Func<ItemDefinition, int> stockOf, Func<ItemDefinition, bool> obtainable = null)
         {
             if (orderOptions == null || orderOptions.Length == 0) return orderItem;
 
@@ -63,13 +65,13 @@ namespace ScrapYardKing.Customers
 
             float total = 0f;
             foreach (var o in orderOptions)
-                if (Eligible(o, inStockOnly, stockOf)) total += o.weight;
+                if (Eligible(o, inStockOnly, stockOf, obtainable)) total += o.weight;
             if (total <= 0f) return orderItem;
 
             float roll = Random.value * total;
             foreach (var o in orderOptions)
             {
-                if (!Eligible(o, inStockOnly, stockOf)) continue;
+                if (!Eligible(o, inStockOnly, stockOf, obtainable)) continue;
                 roll -= o.weight;
                 if (roll <= 0f) return o.item;
             }
@@ -77,8 +79,9 @@ namespace ScrapYardKing.Customers
             return orderOptions[^1].item;
         }
 
-        static bool Eligible(OrderOption o, bool inStockOnly, Func<ItemDefinition, int> stockOf) =>
-            o.item != null && o.weight > 0f && (!inStockOnly || stockOf(o.item) > 0);
+        static bool Eligible(OrderOption o, bool inStockOnly, Func<ItemDefinition, int> stockOf, Func<ItemDefinition, bool> obtainable) =>
+            o.item != null && o.weight > 0f && (!inStockOnly || stockOf(o.item) > 0) &&
+            (obtainable == null || obtainable(o.item) || (stockOf != null && stockOf(o.item) > 0));
 
         public Customer PickPrefab(Customer avoid = null)
         {

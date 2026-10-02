@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using DG.Tweening;
 using ScrapYardKing.Core;
 using UnityEngine;
 
@@ -34,6 +35,8 @@ namespace ScrapYardKing.Items
         [Tooltip("Fly time and arc used when items are handed to this stack by pads and machines.")]
         [SerializeField, Min(0.05f)] float receiveDuration = 0.3f;
         [SerializeField, Min(0f)] float receiveArc = 1.2f;
+        [Tooltip("Jammed deposit pads may spill this stack onto the ground (player). Off for workers, who wait visibly instead.")]
+        [SerializeField] bool canSpill;
 
         [Header("Sway")]
         [Tooltip("Top-of-stack lean per unit of carrier speed.")]
@@ -52,6 +55,7 @@ namespace ScrapYardKing.Items
         public Transform StackRoot => stackRoot != null ? stackRoot : transform;
         public int Count => entries.Count;
         public bool IsFull => entries.Count >= capacity;
+        public bool CanSpill => canSpill;
         public int FreeSpace => Mathf.Max(0, capacity - entries.Count);
         public float TopHeight => entries.Count == 0 ? 0f : entries[^1].BaseY + entries[^1].Item.Definition.StackHeight;
 
@@ -97,7 +101,7 @@ namespace ScrapYardKing.Items
                 Yaw = UnityEngine.Random.Range(-12f, 12f)
             };
             entries.Add(entry);
-            item.MoveTo(StackRoot, new Vector3(0f, entry.BaseY, 0f), Quaternion.Euler(0f, entry.Yaw, 0f), flyDuration, arcHeight, null);
+            item.MoveTo(StackRoot, new Vector3(0f, entry.BaseY, 0f), Quaternion.Euler(0f, entry.Yaw, 0f), flyDuration, arcHeight, Land);
             Changed?.Invoke(this);
             return true;
         }
@@ -126,6 +130,17 @@ namespace ScrapYardKing.Items
         }
 
         void IItemReceiver.Accept(WorldItem item) => TryAdd(item, receiveDuration, receiveArc);
+
+        /// <summary>Squash as an item settles onto the stack, so a growing stack reads as weight piling up.</summary>
+        static void Land(WorldItem item)
+        {
+            var config = Feedback.GameFeedback.Config;
+            float punch = config != null ? config.StackLandPunch : 0f;
+            if (punch <= 0f) return;
+            var t = item.transform;
+            t.DOKill(true);
+            t.DOPunchScale(new Vector3(punch, -punch, punch) * t.localScale.x, 0.18f, 5, 0.6f);
+        }
 
         void OnEnable()
         {

@@ -15,6 +15,9 @@ namespace ScrapYardKing.Items
     /// <summary>
     /// A floor pad that moves items between whoever stands on it and a target. Works for the player and for workers,
     /// because it polls <see cref="CarryStack.Active"/> instead of relying on physics triggers.
+    /// A deposit pad can spill: when its target stays full while a carrier that allows spilling waits on it with a full
+    /// stack, matching items are thrown onto the ground beside the pad. This breaks the one deadlock the physical chain
+    /// has (storage full → machine jammed → full stack of raw scrap → can't pick up goods to sell).
     /// </summary>
     public sealed class TransferPad : MonoBehaviour
     {
@@ -26,6 +29,18 @@ namespace ScrapYardKing.Items
         [SerializeField, Min(0.01f)] float interval = 0.07f;
         [SerializeField, Min(0f)] float engageDelay = 0.15f;
 
+        [Header("Spill (deposit pads)")]
+        [Tooltip("Seconds a full carrier waits on a jammed pad before items spill. 0 = never spill.")]
+        [SerializeField, Min(0f)] float spillAfter;
+        [Tooltip("Only these items spill (e.g. raw scrap at the crusher). Empty = any item the target takes.")]
+        [SerializeField] ItemDefinition[] spillItems;
+        [SerializeField] Transform spillDirection;
+        [SerializeField, Min(0.02f)] float spillInterval = 0.08f;
+        [Tooltip("Items thrown per jam: enough to make room for a few goods without emptying the whole stack.")]
+        [SerializeField, Min(1)] int spillCount = 4;
+        [SerializeField, Min(0f)] float spillCollectDelay = 6f;
+        [SerializeField] SfxDefinition spillSfx;
+
         [Header("Visual")]
         [SerializeField] Transform visual;
         [SerializeField] SfxDefinition transferSfx;
@@ -36,8 +51,9 @@ namespace ScrapYardKing.Items
         IItemSource source;
         CarryStack occupant;
         Vector3 visualScale;
-        float occupiedSince, nextTransfer;
-        int streak;
+        float occupiedSince, nextTransfer, jammedSince = -1f, nextSpill;
+        int streak, spilled;
+        Harvest.HarvestManager harvest;
 
         public CarryStack Occupant => occupant;
         /// <summary>Withdraw pads: what the pad takes items from.</summary>
@@ -69,7 +85,13 @@ namespace ScrapYardKing.Items
 
             float now = Time.time;
             if (now - occupiedSince < engageDelay || now < nextTransfer) return;
-            if (!TryTransfer()) return;
+            if (!TryTransfer())
+            {
+                TrySpill(now);
+                return;
+            }
+
+            jammedSince = -1f;
 
             nextTransfer = now + interval;
             streak++;
@@ -103,10 +125,45 @@ namespace ScrapYardKing.Items
             return true;
         }
 
+        void TrySpill(float now)
+        {
+            if (spillAfter <= 0f || mode != TransferMode.Deposit || occupant == null || !occupant.CanSpill) return;
+            // A jam only matters for a full stack; once spilling starts, finish the batch.
+            if ((spilled == 0 && !occupant.IsFull) || !occupant.Contains(ShouldSpill)) return;
+            if (jammedSince < 0f)
+            {
+                jammedSince = now;
+                spilled = 0;
+                return;
+            }
+
+            if (now - jammedSince < spillAfter || now < nextSpill || spilled >= spillCount) return;
+            if (harvest == null && !Core.Services.TryGet(out harvest)) return;
+            var item = occupant.Take(ShouldSpill);
+            if (item == null) return;
+
+            nextSpill = now + spillInterval;
+            if (spilled++ == 0)
+            {
+                var config = GameFeedback.Config;
+                GameFeedback.Popup("FULL!", transform.position + Vector3.up * 2.2f, config != null ? config.WarningPopupColor : Color.red, 1f);
+            }
+
+            Vector3 away = spillDirection != null ? spillDirection.forward : -transform.forward;
+            away.y = 0f;
+            away = Quaternion.Euler(0f, Random.Range(-35f, 35f), 0f) * (away.sqrMagnitude > 0.001f ? away.normalized : Vector3.back);
+            harvest.Drop(item, away * Random.Range(2.5f, 3.5f) + Vector3.up * 4.5f, spillCollectDelay);
+            GameFeedback.Sfx(spillSfx, 1f + spilled * 0.05f);
+        }
+
+        bool ShouldSpill(ItemDefinition item) =>
+            spillItems == null || spillItems.Length == 0 ? receiver != null && item != null : System.Array.IndexOf(spillItems, item) >= 0;
+
         void SetOccupant(CarryStack stack)
         {
             occupant = stack;
             occupiedSince = Time.time;
+            jammedSince = -1f;
             streak = 0;
             if (visual == null) return;
             visual.DOKill();

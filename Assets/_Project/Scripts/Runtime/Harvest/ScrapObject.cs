@@ -32,7 +32,12 @@ namespace ScrapYardKing.Harvest
         [SerializeField] Collider hitCollider;
         [SerializeField] WorldHealthBar healthBar;
 
+        static MaterialPropertyBlock flashBlock;
+        static readonly int BaseColorId = Shader.PropertyToID("_BaseColor");
+
         ScrapPart[] parts = Array.Empty<ScrapPart>();
+        Renderer[] renderers = Array.Empty<Renderer>();
+        float flashTime;
         Vector3 visualBasePosition, visualBaseScale;
         Phase phase = Phase.Alive;
         float health, phaseTime, shakeTime, shakeDuration, shakeAmplitude, punchScale, breakHoldDuration;
@@ -55,6 +60,8 @@ namespace ScrapYardKing.Harvest
             visualBasePosition = visualRoot.localPosition;
             visualBaseScale = visualRoot.localScale;
             parts = GetComponentsInChildren<ScrapPart>(true);
+            renderers = visualRoot.GetComponentsInChildren<Renderer>(true);
+            FitHealthBar();
             Array.Sort(parts, (a, b) => a.DetachOrder.CompareTo(b.DetachOrder));
             breakHoldDuration = Mathf.Max(MinBreakHoldDuration, BreakSwellDuration + BreakCollapseDuration);
             foreach (var part in parts) breakHoldDuration = Mathf.Max(breakHoldDuration, part.Lifetime);
@@ -69,6 +76,15 @@ namespace ScrapYardKing.Harvest
         void OnDisable()
         {
             if (Services.TryGet(out ScrapManager manager)) manager.Unregister(this);
+        }
+
+        /// <summary>Centres the health bar over the hit box and sizes it to the object, so big scrap gets a big bar.</summary>
+        void FitHealthBar()
+        {
+            if (healthBar == null || hitCollider is not BoxCollider box) return;
+            Vector3 c = box.center, s = box.size;
+            healthBar.transform.localPosition = new Vector3(c.x, c.y + s.y * 0.5f + 0.55f, c.z);
+            healthBar.SetSize(Mathf.Clamp(Mathf.Max(s.x, s.z) * 0.7f, 1.1f, 3f), 0.24f);
         }
 
         /// <summary>Assigns data and restores full health. Called by the pool on every spawn.</summary>
@@ -88,6 +104,7 @@ namespace ScrapYardKing.Harvest
             visualRoot.localPosition = visualBasePosition;
             visualRoot.localScale = visualBaseScale;
             shakeTime = 0f;
+            SetFlash(false);
             if (hitCollider != null) hitCollider.enabled = true;
             if (healthBar != null) healthBar.Hide();
             phase = Phase.Alive;
@@ -137,6 +154,8 @@ namespace ScrapYardKing.Harvest
             if (healthBar != null) healthBar.Show(Health01);
             if (config == null) return;
 
+            flashTime = config.HitFlashDuration;
+            SetFlash(true, config.HitFlashColor);
             shakeDuration = config.HitShakeDuration;
             shakeTime = shakeDuration;
             shakeAmplitude = config.HitShakeAmplitude;
@@ -166,6 +185,8 @@ namespace ScrapYardKing.Harvest
 
         void Break(FeedbackConfig config)
         {
+            flashTime = 0f;
+            SetFlash(false);
             phase = Phase.Breaking;
             phaseTime = 0f;
             if (hitCollider != null) hitCollider.enabled = false;
@@ -179,7 +200,7 @@ namespace ScrapYardKing.Harvest
                 part.Detach(AwayFromCenter(part.transform.position, Vector3.forward), partSpeed * 1.3f, transform);
             }
 
-            DropPieces(piecesRemaining, center, Vector3.zero);
+            DropPieces(piecesRemaining, center, Vector3.zero, definition.DropBurstDuration);
             int rare = definition.RollRareDropAmount();
             if (rare > 0 && Services.TryGet(out HarvestManager harvest))
                 harvest.SpawnDrops(definition.RareDropItem, rare, center, Vector3.zero, definition.DropLaunchSpeed * 1.2f, definition.DropSpread);
@@ -201,13 +222,32 @@ namespace ScrapYardKing.Harvest
             Broken?.Invoke(this);
         }
 
-        void DropPieces(int count, Vector3 origin, Vector3 bias)
+        void DropPieces(int count, Vector3 origin, Vector3 bias, float overSeconds = 0f)
         {
             count = Mathf.Min(count, piecesRemaining);
             if (count <= 0) return;
             piecesRemaining -= count;
             if (Services.TryGet(out HarvestManager harvest))
-                harvest.SpawnDrops(definition.DropItem, count, origin, bias, definition.DropLaunchSpeed, definition.DropSpread);
+                harvest.SpawnDrops(definition.DropItem, count, origin, bias, definition.DropLaunchSpeed, definition.DropSpread, overSeconds);
+        }
+
+        /// <summary>Blink: HDR tint on every renderer still attached to the body (detached parts fly off unflashed).</summary>
+        void SetFlash(bool on, Color color = default)
+        {
+            if (on)
+            {
+                flashBlock ??= new MaterialPropertyBlock();
+                flashBlock.Clear();
+                flashBlock.SetColor(BaseColorId, color);
+            }
+
+            foreach (var r in renderers)
+            {
+                if (r == null || r is ParticleSystemRenderer) continue;
+                if (on && !r.transform.IsChildOf(visualRoot)) continue;
+                // A null block restores the material values (and SRP batching) once the blink is over.
+                r.SetPropertyBlock(on ? flashBlock : null);
+            }
         }
 
         Vector3 AwayFromCenter(Vector3 point, Vector3 fallback)
@@ -236,6 +276,7 @@ namespace ScrapYardKing.Harvest
 
                 case Phase.Alive:
                     UpdateShake(dt);
+                    UpdateFlash(dt);
                     break;
 
                 case Phase.Breaking:
@@ -247,6 +288,13 @@ namespace ScrapYardKing.Harvest
                     if (phaseTime >= breakHoldDuration) Die();
                     break;
             }
+        }
+
+        void UpdateFlash(float dt)
+        {
+            if (flashTime <= 0f) return;
+            flashTime -= dt;
+            if (flashTime <= 0f) SetFlash(false);
         }
 
         void UpdateShake(float dt)

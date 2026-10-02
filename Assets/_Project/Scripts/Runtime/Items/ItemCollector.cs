@@ -21,14 +21,18 @@ namespace ScrapYardKing.Items
         [SerializeField] bool playFeedback = true;
         [Tooltip("Only pick up these item types. Empty = anything the stack accepts.")]
         [SerializeField] ItemDefinition[] onlyItems;
+        [Tooltip("While full, the nearest wanted item hops every this many seconds so the player sees they can't carry more.")]
+        [SerializeField, Min(0.1f)] float fullNudgeInterval = 0.7f;
 
         HarvestManager harvest;
         Func<ItemDefinition, bool> acceptFilter;
-        float nextPickupTime, comboExpiresAt;
+        float nextPickupTime, comboExpiresAt, nextNudge;
         int combo;
         bool wasFull;
 
         public event Action<WorldItem> Collected;
+        /// <summary>Raised when a full collector bumps an item it would have picked up.</summary>
+        public event Action FullBump;
 
         public CarryStack Stack => stack;
 
@@ -57,7 +61,13 @@ namespace ScrapYardKing.Items
             if (harvest == null && !Services.TryGet(out harvest)) return;
 
             HandleFullState();
-            if (stack.IsFull || Time.time < nextPickupTime) return;
+            if (stack.IsFull)
+            {
+                NudgeWhileFull();
+                return;
+            }
+
+            if (Time.time < nextPickupTime) return;
 
             var config = playFeedback ? GameFeedback.Config : null;
             float flyDuration = config != null ? config.PickupFlyDuration : 0.3f;
@@ -90,6 +100,16 @@ namespace ScrapYardKing.Items
             comboExpiresAt = Time.time + config.PickupComboWindow;
             float pitch = 1f + Mathf.Min(combo, config.PickupPitchMaxSteps) * config.PickupPitchStep;
             GameFeedback.Sfx(config.PickupSfx, pitch);
+        }
+
+        void NudgeWhileFull()
+        {
+            if (!playFeedback || stack.Capacity == 0 || Time.time < nextNudge) return;
+            nextNudge = Time.time + fullNudgeInterval;
+            if (!harvest.NudgeNearest(transform.position, radius, Wants)) return;
+            FullBump?.Invoke();
+            var config = GameFeedback.Config;
+            if (config != null) GameFeedback.Sfx(config.StackFullSfx, 1f, 0.5f);
         }
 
         void HandleFullState()

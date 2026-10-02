@@ -17,6 +17,7 @@ MonoBehaviour:
   maxLevel: 30
   xpPerItemProcessed: 0
   xpPerSale: 2
+  xpPerCashSold: 0.08
   xpPerUpgrade: 8
   xpPerWorkerHired: 20
   cashPerLevel: 25

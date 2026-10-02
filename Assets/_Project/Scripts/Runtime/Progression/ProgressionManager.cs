@@ -12,6 +12,8 @@ namespace ScrapYardKing.Progression
     {
         [SerializeField] ProgressionConfig config;
 
+        float xpFromCash;
+
         public event Action<int, Vector3?> XpGained;
         public event Action<int> LevelChanged;
 
@@ -73,7 +75,12 @@ namespace ScrapYardKing.Progression
 
         void OnItemsSold(Items.ItemDefinition item, int units, long cash)
         {
-            if (config != null && units > 0) AddXp(config.XpPerSale);
+            if (config == null || units <= 0) return;
+            // Fractional XP from cash carries over between sales so small sales still count.
+            xpFromCash += cash * config.XpPerCashSold;
+            int whole = (int)xpFromCash;
+            xpFromCash -= whole;
+            AddXp(config.XpPerSale + whole);
         }
 
         void OnUpgradePurchased(string id, int level)

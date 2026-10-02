@@ -114,8 +114,9 @@ namespace ScrapYardKing.Factory
 
         void RefreshLabel()
         {
-            if (label != null && definition != null)
-                label.Set(!string.IsNullOrEmpty(labelTitle) ? labelTitle : definition.DisplayName, level, pile.Count, pile.Capacity);
+            if (label == null || definition == null) return;
+            label.Set(!string.IsNullOrEmpty(labelTitle) ? labelTitle : definition.DisplayName, level, pile.Count, pile.Capacity);
+            label.SetStatus(pile.IsFull ? StationStatus.Full : StationStatus.None);
         }
     }
 }

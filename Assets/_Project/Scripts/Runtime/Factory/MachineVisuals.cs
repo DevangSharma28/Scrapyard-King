@@ -6,7 +6,8 @@ namespace ScrapYardKing.Factory
     /// <summary>
     /// Makes a machine read as alive: body rumble and spinning cogs while working, piston stomp per cycle,
     /// a pop when output drops, and a status light (green working / amber idle / red blocked). In Active Overdrive
-    /// everything runs hotter: faster spin, harder rumble, sparks and a pulsing cyan light.
+    /// everything runs hotter: faster spin, harder rumble, sparks and a pulsing cyan light. Hot machines (Furnace) also
+    /// get a glowing mouth that breathes while working and flares on every output.
     /// </summary>
     public sealed class MachineVisuals : MonoBehaviour
     {
@@ -25,6 +26,15 @@ namespace ScrapYardKing.Factory
         [SerializeField] Color idleColor = new(1f, 0.75f, 0.15f);
         [SerializeField] Color blockedColor = new(1f, 0.25f, 0.2f);
 
+        [Header("Heat glow (optional)")]
+        [SerializeField] Renderer glow;
+        [SerializeField, ColorUsage(false, true)] Color glowColor = new(1f, 0.45f, 0.08f);
+        [SerializeField, Min(0f)] float glowIdle = 0.6f;
+        [SerializeField, Min(0f)] float glowWorking = 3.2f;
+        [SerializeField, Min(0f)] float glowFlare = 6f;
+        [Tooltip("One-shot burst per output (sparks from the furnace mouth).")]
+        [SerializeField] ParticleSystem outputBurst;
+
         [Header("Overdrive")]
         [SerializeField] ParticleSystem overdriveParticles;
         [SerializeField] Color overdriveColor = new(0.3f, 0.9f, 1f);
@@ -35,7 +45,7 @@ namespace ScrapYardKing.Factory
         Vector3 bodyScale, bodyPosition;
         Vector3[] pistonRest;
         Tween rumble;
-        float spinRate;
+        float spinRate, heat, flare;
         bool overdrive;
         Machine.MachineState state;
 
@@ -134,6 +144,8 @@ namespace ScrapYardKing.Factory
             body.DOKill(true);
             body.localScale = bodyScale;
             body.DOPunchScale(new Vector3(0.06f, -0.08f, 0.06f), 0.25f, 5, 0.5f);
+            flare = 1f;
+            if (outputBurst != null) outputBurst.Play(true);
             if (state == Machine.MachineState.Working) SetState(state);
         }
 
@@ -148,11 +160,27 @@ namespace ScrapYardKing.Factory
         void Update()
         {
             if (overdrive) PulseLight();
+            UpdateGlow();
             float target = state == Machine.MachineState.Working ? spinSpeed * (overdrive ? overdriveSpin : 1f) : 0f;
             spinRate = Mathf.Lerp(spinRate, target, 1f - Mathf.Exp(-6f * Time.deltaTime));
             if (spinners == null || Mathf.Abs(spinRate) < 0.5f) return;
             foreach (var s in spinners)
                 if (s != null) s.Rotate(spinAxis, spinRate * Time.deltaTime, Space.Self);
+        }
+
+        void UpdateGlow()
+        {
+            if (glow == null) return;
+            float target = state == Machine.MachineState.Working ? glowWorking * (overdrive ? 1.4f : 1f) : glowIdle;
+            heat = Mathf.Lerp(heat, target, 1f - Mathf.Exp(-4f * Time.deltaTime));
+            flare = Mathf.MoveTowards(flare, 0f, Time.deltaTime * 2.5f);
+            // A slow breath plus a fast flicker reads as fire without a particle per frame.
+            float flicker = 1f + Mathf.Sin(Time.time * 2.3f) * 0.12f + Mathf.Sin(Time.time * 17f) * 0.05f;
+            float intensity = heat * flicker + flare * flare * glowFlare;
+            block ??= new MaterialPropertyBlock();
+            glow.GetPropertyBlock(block);
+            block.SetColor(EmissionColorId, glowColor * intensity);
+            glow.SetPropertyBlock(block);
         }
 
         void ApplyLight()

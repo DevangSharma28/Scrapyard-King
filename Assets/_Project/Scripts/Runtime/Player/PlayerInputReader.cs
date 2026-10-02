@@ -7,6 +7,8 @@ namespace ScrapYardKing.Player
     /// <summary>
     /// Single source of movement intent. The on-screen joystick wins while touched; otherwise the Input System
     /// Move action (WASD/arrows/gamepad) is read, which keeps editor testing and device play on one code path.
+    /// <see cref="ExternalMove"/> lets a non-human driver (automated play test, cutscene) steer through the same path;
+    /// real input always overrides it.
     /// </summary>
     [DisallowMultipleComponent]
     public sealed class PlayerInputReader : MonoBehaviour
@@ -21,6 +23,9 @@ namespace ScrapYardKing.Player
         bool ownsAction;
 
         public Vector2 Move { get; private set; }
+
+        /// <summary>Movement from an automated driver; used only while the player gives no input. Null = none.</summary>
+        public Vector2? ExternalMove { get; set; }
         public bool HasInput => Move.sqrMagnitude > 0.0001f;
 
         public VirtualJoystick Joystick
@@ -59,6 +64,7 @@ namespace ScrapYardKing.Player
             Vector2 value = joystick != null && joystick.IsHeld
                 ? joystick.Value
                 : move != null ? move.ReadValue<Vector2>() : Vector2.zero;
+            if (value.sqrMagnitude < 0.0001f && ExternalMove.HasValue) value = ExternalMove.Value;
             Move = Vector2.ClampMagnitude(value, 1f);
         }
 

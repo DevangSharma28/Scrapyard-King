@@ -36,6 +36,7 @@ namespace ScrapYardKing.Feedback
                 ProceduralSfxPreset.Upgrade => Arpeggio(new[] { 523.25f, 659.25f, 783.99f, 1046.5f }, 0.07f, 0.16f),
                 ProceduralSfxPreset.Fanfare => Arpeggio(new[] { 392f, 523.25f, 659.25f, 783.99f, 1046.5f }, 0.09f, 0.35f),
                 ProceduralSfxPreset.Denied => Denied(),
+                ProceduralSfxPreset.EngineLoop => EngineLoop(rng),
                 _ => new float[1]
             };
 
@@ -177,6 +178,43 @@ namespace ScrapYardKing.Feedback
         }
 
         const float Tau = Mathf.PI * 2f;
+
+        /// <summary>
+        /// One second, so every partial (40 Hz engine firing, 1.2 kHz chain whine) completes whole cycles and the clip
+        /// loops without a click; the noise tail is cross-faded into its head for the same reason.
+        /// </summary>
+        static float[] EngineLoop(System.Random rng)
+        {
+            const float firing = 40f, whine = 1200f;
+            var d = Buffer(1f);
+            var noise = new float[d.Length];
+            float lp = 0f;
+            for (int i = 0; i < noise.Length; i++)
+            {
+                lp += (Noise(rng) - lp) * 0.35f;
+                noise[i] = lp;
+            }
+
+            const int fade = 2048;
+            for (int i = 0; i < fade; i++)
+            {
+                float k = i / (float)fade;
+                noise[i] = noise[i] * k + noise[noise.Length - fade + i] * (1f - k);
+            }
+
+            for (int i = 0; i < d.Length; i++)
+            {
+                float t = i / (float)SampleRate;
+                float phase = t * firing % 1f;
+                float pulse = Mathf.Exp(-phase * 5f);
+                float body = 0f;
+                for (int n = 1; n <= 10; n++) body += Mathf.Sin(Tau * firing * n * t) / (n == 2 || n == 3 ? 0.7f * n : n);
+                float chain = Mathf.Sin(Tau * whine * t) * 0.12f + Mathf.Sin(Tau * whine * 2f * t) * 0.05f;
+                d[i] = body * (0.35f + 0.65f * pulse) * 0.45f + noise[i] * (0.4f + 0.6f * pulse) * 0.5f + chain;
+            }
+
+            return d;
+        }
 
         static float[] Buffer(float seconds) => new float[Mathf.CeilToInt(seconds * SampleRate)];
 

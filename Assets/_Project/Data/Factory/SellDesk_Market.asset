@@ -18,6 +18,8 @@ MonoBehaviour:
   sells:
   - {fileID: 11400000, guid: 9034d1f71988b47d688b1b511574392e, type: 2}
   - {fileID: 11400000, guid: 7dde6c26b10ee4483bb025f35cfe3de9, type: 2}
+  - {fileID: 11400000, guid: f1dd9678f6c7d4e3193e7acc20b19bcb, type: 2}
+  - {fileID: 11400000, guid: d668d38012c8b426c951c31ecb263a7f, type: 2}
   levels:
   - saleInterval: 7
     unitsPerSale: {x: 2, y: 4}

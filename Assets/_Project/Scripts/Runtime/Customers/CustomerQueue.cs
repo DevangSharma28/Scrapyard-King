@@ -88,11 +88,15 @@ namespace ScrapYardKing.Customers
         void ServeFront()
         {
             var front = Front;
-            if (front == null || front.IsWalking) return;
+            if (front == null || front.IsWalking)
+            {
+                desk.SetWaitingFor(null, false);
+                return;
+            }
 
             if (!front.HasOrder)
             {
-                front.OrderItem = config.RollOrder(item => desk.StockOf(i => i == item));
+                front.OrderItem = config.RollOrder(item => desk.StockOf(i => i == item), Obtainable);
                 front.Wanted = desk.RollUnitsWanted();
                 front.Received = 0;
                 front.Owed = 0;
@@ -104,6 +108,7 @@ namespace ScrapYardKing.Customers
 
             var wants = front.OrderItem;
             Func<ItemDefinition, bool> matches = wants != null ? i => i == wants : null;
+            desk.SetWaitingFor(wants, desk.StockOf(matches) == 0);
             if (!serving)
             {
                 float interval = desk.Stats.saleInterval;
@@ -126,6 +131,18 @@ namespace ScrapYardKing.Customers
             front.Owed += value;
             front.Bubble.SetRemaining(front.Wanted - front.Received);
             if (front.Received >= front.Wanted) Finish(front);
+        }
+
+        /// <summary>Something in the yard can make <paramref name="item"/> now, or a bin already holds some.</summary>
+        static bool Obtainable(ItemDefinition item)
+        {
+            foreach (var s in StationRegistry.All)
+            {
+                if (s is Machine m && m.Definition != null && m.Definition.Produces(item)) return true;
+                if (s is Storage storage && storage.CountOf(i => i == item) > 0) return true;
+            }
+
+            return false;
         }
 
         void Finish(Customer customer)

@@ -27,6 +27,14 @@ namespace ScrapYardKing.Factory
         [Min(0f)] public float weight;
     }
 
+    /// <summary>One input → product pair of a multi-input machine (Furnace: iron → iron ingot, copper → copper ingot).</summary>
+    [Serializable]
+    public struct MachineRecipe
+    {
+        public ItemDefinition input;
+        public ItemDefinition output;
+    }
+
     /// <summary>
     /// Data for one processing machine (Crusher, Sorter, Furnace, Press...). New machine types are new assets,
     /// not new code: input item, output item and per-level numbers are all here.
@@ -41,6 +49,9 @@ namespace ScrapYardKing.Factory
         [SerializeField] ItemDefinition output;
         [Tooltip("Splitting machines (Sorter): each cycle makes one of these, spread evenly by weight. Empty = always Output.")]
         [SerializeField] WeightedOutput[] outputMix;
+        [Tooltip("Multi-input machines (Furnace): every input listed here is accepted and makes its own product. " +
+                 "Empty = Input → Output (or Output Mix).")]
+        [SerializeField] MachineRecipe[] recipes;
         [SerializeField] MachineLevel[] levels = { new() { inputCapacity = 10, cycleTime = 0.8f, inputsPerCycle = 1, outputsPerCycle = 1 } };
 
         [Header("Feedback")]
@@ -54,14 +65,44 @@ namespace ScrapYardKing.Factory
         public ItemDefinition Output => output;
         public WeightedOutput[] OutputMix => outputMix;
         public bool HasOutputMix => outputMix != null && outputMix.Length > 0;
+        public MachineRecipe[] Recipes => recipes;
+        public bool HasRecipes => recipes != null && recipes.Length > 0;
 
-        /// <summary>True when this machine can produce <paramref name="item"/>.</summary>
-        public bool Produces(ItemDefinition item)
+        /// <summary>True when <paramref name="item"/> goes into this machine (the input, or any recipe input).</summary>
+        public bool Takes(ItemDefinition item)
         {
             if (item == null) return false;
-            if (!HasOutputMix) return item == output;
+            if (!HasRecipes) return item == input;
+            foreach (var r in recipes)
+                if (r.input == item) return true;
+            return false;
+        }
+
+        /// <summary>Product of one cycle fed with <paramref name="item"/>. Null when this machine does not take it.</summary>
+        public ItemDefinition OutputFor(ItemDefinition item)
+        {
+            if (!HasRecipes) return item == input ? output : null;
+            foreach (var r in recipes)
+                if (r.input == item) return r.output;
+            return null;
+        }
+
+        /// <summary>True when this machine can produce <paramref name="item"/>.</summary>
+        public bool Produces(ItemDefinition item) => item != null && ProducesAny(i => i == item);
+
+        /// <summary>True when any product of this machine matches <paramref name="filter"/>.</summary>
+        public bool ProducesAny(Func<ItemDefinition, bool> filter)
+        {
+            if (HasRecipes)
+            {
+                foreach (var r in recipes)
+                    if (r.output != null && filter(r.output)) return true;
+                return false;
+            }
+
+            if (!HasOutputMix) return output != null && filter(output);
             foreach (var o in outputMix)
-                if (o.item == item && o.weight > 0f) return true;
+                if (o.item != null && o.weight > 0f && filter(o.item)) return true;
             return false;
         }
         public int MaxLevel => levels.Length;

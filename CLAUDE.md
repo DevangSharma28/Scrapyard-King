@@ -51,11 +51,16 @@ Loop: walk into scrap to auto-cut. Pieces fly onto your back (max 8). Then:
 - **Blue pad** at the Sell Desk stocks the counter. Customers queue on the road and buy from it.
 - **"$" pad** collects the cash.
 - **Orange UPGRADES tile** opens the upgrade panel while you stand on it (walk off to close).
-- **Dark tiles with a price** hire workers (Scrap Porter, Delivery Helper, Metal Hauler, Market Runner) or open an area
-  (Back Lot, Recycling Plant at the east gate): stand on one and your cash drains into it. "LV n" = yard level too low.
-- **Round BOOST pads** next to the Crusher and Sorter: stand on one for 1.5 s and the machine runs at 2x for 10 s.
+- **Dark tiles with a price** hire workers (Scrap Porter, Delivery Helper, Metal Hauler, Market Runner, Smelter) or open
+  an area (Back Lot, Recycling Plant at the east gate, Furnace hall in the plant, Heavy Scrap Yard at the north gate):
+  stand on one and your cash drains into it. "LV n" = yard level too low.
+- **Round BOOST pads** next to the Crusher, Sorter and Furnace: stand on one for 1.5 s and the machine runs at 2x for 10 s.
 - **Recycling Plant** (east of the yard): carry bales to the yellow Sorter; it splits them into iron and copper bins;
   stock the Metal Market from the bins. Market customers ask for one material each.
+- **Furnace** (plant, north-east corner): bring iron or copper from the bins; ingots ride a belt to the Ingot Rack and
+  sell at the Metal Market for about 2.5x.
+- **Heavy Scrap Yard** (through the gate in the north wall of the scrap field): tractors, trucks and garbage trucks need
+  a stronger chainsaw (power 30 / 35 / 45) and burst into 25–60 pieces, sometimes with iron or copper chunks.
 
 ## Project layout
 
@@ -153,18 +158,17 @@ Docs/                       ARCHITECTURE.md, THIRD_PARTY.md
 | 3 | Upgrade rail, task chain + guide arrow, XP/yard level, first Porter worker | Done |
 | 4 | Upgrade tile + panel, hire tiles, Delivery Helper, customer queue, Back Lot expansion (tier-2 scrap), UI restyle | Done |
 | 5 | Recycling Plant (Gate 2): Sorter → iron/copper bins → Metal Market, Hauler + Runner, Active Overdrive, CC0 audio, hats | Done |
-| 6 | Furnace (ingots), heavy scrap, Area 3 Heavy Scrap Yard | **Next** |
-| 7 | Operator/Loader/Seller specialisation, Giant Scrap event | |
+| 6 | Furnace hall (iron/copper → ingots, Ingot Rack, Smelter), Gate 3 + Heavy Scrap Yard (tractors, trucks, garbage trucks) | Done |
+| 7 | Operator/Loader/Seller specialisation, Giant Scrap event | **Next** |
 | 8 | Dockyard reveal, save/load, balance pass, polish | |
 
-Notes for M6:
-- Copper already comes out of the Sorter (blueprint gate 2: "Iron + Copper"). M6 adds the Furnace: a `MachineDefinition`
-  with input iron or copper → ingots (new `ItemDefinition`s), a boost pad, and ingots on the Metal Market's `sells` list.
-- Area 3 Heavy Scrap Yard (x 0–40, z 38–74) = `Expansion` + `PurchaseTile` + content, like the Back Lot and the Plant.
-  Heavy scrap needs high `minCutPower`; the guide already redirects to the chainsaw upgrade.
-- The main chain ends at task 27 ("Sort 100 metal bales"); append M6 tasks after it.
-- `Machine.Speed` is also the hook for the Operator worker (M7).
-- The cash/gem "+" buttons are still decorative (shop is out of scope until monetisation).
+Notes for M7:
+- `Machine.Speed` is the hook for the Operator worker (a lasting `Multiply` modifier while they stand at the machine).
+- The Giant Scrap event is a `ScrapDefinition` of size class Giant (120+ pieces, rare drops) on its own spawn point with
+  an announcement; heavy scrap (M6) already shows how big objects use `dropBurstDuration` and `minCutPower`.
+- The main chain ends at `t37_crush500`; append M7 tasks after it.
+- Multi-input machines use `MachineDefinition.recipes` (the Furnace); a Press (M8) is another recipe machine.
+- The cash/gem "+" buttons are hidden (shop is out of scope until monetisation).
 
 ## Tests
 
@@ -227,8 +231,17 @@ unity command screenshot --view game --output /abs/path.png                # cam
 - `FindAnyObjectByType<T>(true)` does not compile; use `FindAnyObjectByType<T>(FindObjectsInactive.Include)`.
 - If someone is playing in the Editor while Claude runs scripted play tests, teleports and cheats will fight their
   input. Agree who drives before a test run.
+- `run_tests` on a dirty scene opens a modal "Save modified scenes?" dialog that blocks the whole Editor (every CLI
+  command then times out). Save or check `SceneManager.GetActiveScene().isDirty` first; the scene tends to get dirty
+  after play mode.
 - Play-mode time only advances while Unity has focus, and focus can drop between commands. Wrap waits in a loop
-  that calls `editor_focus` and polls `Time.time` until it has advanced, instead of counting polls.
+  that calls `editor_focus` and polls `Time.time` until it has advanced, instead of counting polls. For long unattended
+  runs, set `EditorPrefs.SetInt("InteractionMode", 1)` (No Throttling) and `Application.runInBackground = true` in play
+  mode: the game then keeps running without stealing focus, but only at about 10 fps. At 4x that is 0.4 s of game time
+  per frame: the player overshoots pads and never stands on one long enough to engage. Run the guide bot at x2 with
+  `Time.maximumDeltaTime = 0.2f` instead (or keep Unity focused). Put InteractionMode back to 0 afterwards.
+- Every `run_script` call compiles a separate in-memory assembly, so static state is not shared between calls (a
+  `Status` call can't see a bot started by an earlier call). Talk to long-running editor tools through files.
 - A compile error in the test assembly leaves the old test DLL in place, so `run_tests` silently runs the old tests.
   If the test count did not change after adding tests, read `console --level error`.
 - Saving a changed baked mesh with `EditorUtility.CopySerialized` can leave the old mesh on screen; copy vertices,
@@ -237,6 +250,22 @@ unity command screenshot --view game --output /abs/path.png                # cam
 - ProBuilder `GenerateTorus(pivot, rows, columns, a, b, ...)`: `a` is the ring radius and `b` the tube radius, flat in XZ.
 - World-space canvases (tiles, bubbles, labels) sit at scale 0.01. Punch or shake a unit-scale child, never the canvas
   itself, or DOTween's additive punch makes it 100× bigger.
+
+### Play-test tools (`AgentScripts/Tools/`)
+
+Shell helpers for driving a play test from the CLI (all take care of `--project-path`):
+- `wait.sh SECONDS` waits until play-mode time has advanced (re-focusing Unity, which freezes in the background);
+  `keepfocus.sh SECONDS` just keeps Unity in front (run it in the background during long tests).
+- `cap.sh OUT.png` captures the Game view with UI; `capcam.sh OUT.png X Z` renders the world from a game-like camera
+  without moving the player (safe while someone else is playing); `tp.sh X Z` teleports the player; `state.sh` prints
+  a one-line state (task, stack, cash, storages, desks). `source _env.sh` gives `ucmd` and `ueval` for one-off calls.
+- `ContactSheet.cs` (`run_script ... --entry ContactSheet.Start --args '["/abs/out.png 16 0.1 4 2"]'`): tiles 16 frames
+  of game time into one PNG to judge motion and feedback.
+- `GuideBot.cs` (`--entry GuideBot.Start --args '["/abs/report.md 90 4"]'`): plays the game by following the guide
+  (plus shopping trips) at 4x and writes a pacing timeline; reports stalls where the guide dead-ends. Each `run_script`
+  is a separate assembly, so poll the report file for progress (it is rewritten every 30 s of game time).
+- `Cheat.cs` (`--entry Cheat.Run --args '["level 9; cash 50000; buy furnace_hall; give iron 6; tp 63 31"]'`): play-mode
+  shortcuts for testing later content (level, cash, buy through `UpgradeManager`, give items, teleport, timescale).
 
 ### Builder scripts (`AgentScripts/`)
 
@@ -259,6 +288,15 @@ keeps GUIDs. Run them in this order:
    copper, Sorter, bins, Metal Market, overdrive, Hauler/Runner, catalog sections, tasks; Sorter/boost/worker prefabs,
    item meshes and icons, round hard hats; Gate 2 expansion, Area 2 walls and content, routes, market line, NavMesh
    rebake over both areas. Also incremental. The Kenney audio must already sit in `Assets/ThirdParty/Kenney/Audio`.
+
+10. `Polish1_Build.All` (quality pass 1, after M5): chainsaw engine SFX, hit flash / stack landing / drop tuning in
+    data, `ToolAudio` + full-stack bump on the player, hides the dead currency "+" buttons, savings fill on upgrade cards.
+    `M5_Build.Hats` rebuilds the hard hats alone.
+11. `M6_Build.Assets`, `M6_Build.Prefabs`, `M6_Build.Scene` (or `M6_Build.All`; `M6_Build.Icons` re-renders the ingot,
+    Furnace, Smelter and Heavy Yard icons): ingots, Furnace recipes, Ingot Rack, Smelter, heavy scrap, both M6
+    expansions, catalog, tasks (also inserts the desk/crusher Lv.3 tasks before Gate 2 and sets Gate 2 to $3,000);
+    Furnace / smoke / Smelter / heavy vehicle prefabs; Furnace hall in the plant, Gate 3 + Area 3 walls and content,
+    worker routes, NavMesh over Areas 1–3. Incremental; it saves the open scene first if it is dirty.
 
 Later builders overwrite some data that earlier ones write (catalog, task chain, station label prefab). If you re-run
 an earlier builder, re-run every later one after it.

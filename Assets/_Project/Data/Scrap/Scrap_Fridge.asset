@@ -23,8 +23,9 @@ MonoBehaviour:
   dropItem: {fileID: 11400000, guid: f6593dbddf0854968bd6f7b3be117504, type: 2}
   dropAmount: {x: 20, y: 25}
   partDropShare: 0.35
-  dropLaunchSpeed: 6.5
+  dropLaunchSpeed: 6
   dropSpread: 1.4
+  dropBurstDuration: 0.35
   rareDropItem: {fileID: 0}
   rareDropChance: 0
   rareDropAmount: {x: 1, y: 1}

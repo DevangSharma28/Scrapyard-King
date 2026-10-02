@@ -14,8 +14,24 @@ namespace ScrapYardKing.UI
         [SerializeField, Min(0f)] float pulseSpeed = 7f;
         [SerializeField, Min(0f)] float pulseAmount = 0.12f;
 
+        [SerializeField] ItemCollector collector;
+        [SerializeField, Min(0f)] float bumpPunch = 0.6f;
+
         Transform cameraTransform;
         Vector3 baseScale;
+        float bump;
+
+        void OnEnable()
+        {
+            if (collector != null) collector.FullBump += OnFullBump;
+        }
+
+        void OnDisable()
+        {
+            if (collector != null) collector.FullBump -= OnFullBump;
+        }
+
+        void OnFullBump() => bump = 1f;
 
         void Awake()
         {
@@ -37,7 +53,8 @@ namespace ScrapYardKing.UI
             var tr = label.transform;
             tr.position = stack.StackRoot.position + Vector3.up * (stack.TopHeight + heightPadding);
             if (cameraTransform != null) tr.rotation = cameraTransform.rotation;
-            tr.localScale = baseScale * (1f + Mathf.Sin(Time.unscaledTime * pulseSpeed) * pulseAmount);
+            bump = Mathf.MoveTowards(bump, 0f, Time.unscaledDeltaTime * 4f);
+            tr.localScale = baseScale * (1f + Mathf.Sin(Time.unscaledTime * pulseSpeed) * pulseAmount + bump * bumpPunch);
         }
     }
 }

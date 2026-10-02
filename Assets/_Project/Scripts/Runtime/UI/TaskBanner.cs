@@ -97,7 +97,12 @@ namespace ScrapYardKing.UI
             shown = task;
             title.text = task.Definition.Title.ToUpperInvariant();
             if (check != null) check.localScale = Vector3.zero;
-            if (reward != null) reward.alpha = 0f;
+            // Show what the task pays up front: the reward is part of the pull.
+            if (reward != null)
+            {
+                reward.text = RewardText(task.Definition);
+                reward.alpha = 0.9f;
+            }
             fill.fillAmount = task.Progress01;
             UpdateProgress(false);
             panel.DOKill();

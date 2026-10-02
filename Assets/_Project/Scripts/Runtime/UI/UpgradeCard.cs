@@ -11,7 +11,8 @@ namespace ScrapYardKing.UI
 {
     /// <summary>
     /// One card in the upgrade panel (reference: icon, name, level, green cost button). Shows locked,
-    /// affordable, unaffordable and maxed states, a pip per level, and pulses when the guide says this is next.
+    /// affordable, unaffordable and maxed states and a pip per level. While unaffordable, the button fills up with your
+    /// cash ("almost there"); once affordable it breathes, and the whole card pulses when the guide says it is next.
     /// </summary>
     public sealed class UpgradeCard : MonoBehaviour
     {
@@ -29,6 +30,11 @@ namespace ScrapYardKing.UI
         [SerializeField] Color affordableColor = Color.white;
         [SerializeField] Color unaffordableColor = new(0.55f, 0.55f, 0.58f);
 
+        [Header("Savings (optional)")]
+        [Tooltip("Fill inside the buy button that grows with your cash until the upgrade is affordable.")]
+        [SerializeField] Image savingsFill;
+        [SerializeField, Range(1f, 1.2f)] float affordablePulse = 1.05f;
+
         [Header("Level pips (optional)")]
         [SerializeField] RectTransform pipRoot;
         [SerializeField] Image pipTemplate;
@@ -39,9 +45,12 @@ namespace ScrapYardKing.UI
         int shownLevel = -1;
 
         UpgradeManager manager;
+        EconomyManager economy;
         IUpgradeable upgrade;
         RectTransform rect;
-        Tween highlightTween;
+        Tween highlightTween, pulseTween;
+        Vector3 buttonScale = Vector3.one;
+        bool pulsing;
         bool wasLocked = true;
 
         public string UpgradeId { get; private set; }
@@ -52,6 +61,8 @@ namespace ScrapYardKing.UI
         {
             UpgradeId = upgradeId;
             manager = upgradeManager;
+            Services.TryGet(out economy);
+            buttonScale = buyButton.transform.localScale;
             buyButton.onClick.AddListener(OnBuy);
             SetHighlighted(false);
             gameObject.SetActive(false);
@@ -61,6 +72,7 @@ namespace ScrapYardKing.UI
         {
             if (upgrade != null) upgrade.UpgradeChanged -= OnUpgradeChanged;
             highlightTween?.Kill();
+            pulseTween?.Kill();
         }
 
         public void Bind(IUpgradeable target)
@@ -107,6 +119,8 @@ namespace ScrapYardKing.UI
                 coinIcon.SetActive(false);
                 buyButton.interactable = false;
                 buttonImage.color = unaffordableColor;
+                ShowSavings(false, 0f);
+                SetPulse(false);
                 return;
             }
 
@@ -116,6 +130,8 @@ namespace ScrapYardKing.UI
                 coinIcon.SetActive(false);
                 buyButton.interactable = false;
                 buttonImage.color = unaffordableColor;
+                ShowSavings(false, 0f);
+                SetPulse(false);
                 return;
             }
 
@@ -124,6 +140,26 @@ namespace ScrapYardKing.UI
             bool canBuy = unlocked && manager.CanAfford(upgrade);
             buyButton.interactable = unlocked;
             buttonImage.color = canBuy ? affordableColor : unaffordableColor;
+            long cash = economy != null ? economy.Cash : 0;
+            ShowSavings(!canBuy, upgrade.NextCost > 0 ? Mathf.Clamp01(cash / (float)upgrade.NextCost) : 1f);
+            SetPulse(canBuy);
+        }
+
+        void ShowSavings(bool on, float ratio)
+        {
+            if (savingsFill == null) return;
+            if (savingsFill.gameObject.activeSelf != on) savingsFill.gameObject.SetActive(on);
+            if (on) savingsFill.fillAmount = ratio;
+        }
+
+        void SetPulse(bool on)
+        {
+            if (on == pulsing) return;
+            pulsing = on;
+            pulseTween?.Kill();
+            var t = buyButton.transform;
+            t.localScale = buttonScale;
+            if (on) pulseTween = t.DOScale(buttonScale * affordablePulse, 0.55f).SetEase(Ease.InOutSine).SetLoops(-1, LoopType.Yoyo);
         }
 
         void RefreshPips()
@@ -169,6 +205,7 @@ namespace ScrapYardKing.UI
         {
             if (upgrade == null) return;
             Rect.DOKill(true);
+            SetPulse(false);
             if (manager.TryPurchase(upgrade))
             {
                 Rect.DOPunchScale(Vector3.one * 0.18f, 0.35f, 7, 0.6f);

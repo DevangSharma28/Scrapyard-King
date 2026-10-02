@@ -362,13 +362,36 @@ public static class M5_Build
         SetMany(Load<WorkerDefinition>(DataDir + "/Workers/Worker_Runner.asset"), ("prefab", runner.GetComponent<Worker>()));
 
         // ---------- Quality: round hard hats on everyone ----------
-        EditPrefab(PrefabDir + "/Player/Player.prefab", root => RebuildHat(root.transform, Load<Material>(MatDir + "/M_HardHat.mat"), true));
-        EditPrefab(PrefabDir + "/Workers/Worker_Porter.prefab", root => RebuildHat(root.transform, Load<Material>(MatDir + "/M_HardHatOrange.mat"), false));
-        EditPrefab(PrefabDir + "/Workers/Worker_Helper.prefab", root => RebuildHat(root.transform, Load<Material>(MatDir + "/M_CapBlue.mat"), false));
+        HatsOnly();
 
         Icons();
         AssetDatabase.SaveAssets();
         return Log.ToString();
+    }
+
+    /// <summary>Rebuilds the rounded hard hats on the player and every worker, then re-renders the worker icons.</summary>
+    public static string Hats()
+    {
+        Log.Clear();
+        HatsOnly();
+        foreach (var (asset, prefab, icon) in new[]
+                 {
+                     ("Worker_Porter", "Worker_Porter", "Icon_Porter"), ("Worker_Helper", "Worker_Helper", "Icon_Helper"),
+                     ("Worker_Hauler", "Worker_Hauler", "Icon_Hauler"), ("Worker_Runner", "Worker_Runner", "Icon_Runner"),
+                 })
+            SetMany(Load<WorkerDefinition>($"{DataDir}/Workers/{asset}.asset"),
+                ("icon", RenderIcon(icon, Load<GameObject>($"{PrefabDir}/Workers/{prefab}.prefab"), new Vector3(15f, 160f, 0f), "idle")));
+        AssetDatabase.SaveAssets();
+        return Log.ToString();
+    }
+
+    static void HatsOnly()
+    {
+        EditPrefab(PrefabDir + "/Player/Player.prefab", root => RebuildHat(root.transform, Load<Material>(MatDir + "/M_HardHat.mat"), true));
+        EditPrefab(PrefabDir + "/Workers/Worker_Porter.prefab", root => RebuildHat(root.transform, Load<Material>(MatDir + "/M_HardHatOrange.mat"), false));
+        EditPrefab(PrefabDir + "/Workers/Worker_Helper.prefab", root => RebuildHat(root.transform, Load<Material>(MatDir + "/M_CapBlue.mat"), false));
+        EditPrefab(PrefabDir + "/Workers/Worker_Hauler.prefab", root => RebuildHat(root.transform, Load<Material>(MatDir + "/M_CapGrey.mat"), false));
+        EditPrefab(PrefabDir + "/Workers/Worker_Runner.prefab", root => RebuildHat(root.transform, Load<Material>(MatDir + "/M_CapGreen.mat"), false));
     }
 
     /// <summary>Renders the M5 icons and assigns them.</summary>
@@ -629,40 +652,40 @@ public static class M5_Build
     static void RebuildHat(Transform root, Material mat, bool ridge)
     {
         var hat = FindDeep(root, "HardHat");
-        if (hat == null)
+        var headMesh = FindDeep(root, "head-mesh");
+        if (hat == null || headMesh == null || !headMesh.TryGetComponent(out SkinnedMeshRenderer skin))
         {
-            Log.AppendLine("!! no HardHat under " + root.name);
+            Log.AppendLine("!! no HardHat/head-mesh under " + root.name);
             return;
         }
 
-        var dome = hat.Find("Dome");
-        Vector3 size;
-        if (dome != null && dome.TryGetComponent(out MeshFilter mf) && mf.sharedMesh != null)
-        {
-            var b = mf.sharedMesh.bounds;
-            size = Vector3.Scale(b.size, dome.lossyScale);
-        }
-        else if (hat.Find("Shell") != null) return; // already rebuilt
-        else size = new Vector3(0.45f, 0.18f, 0.45f);
+        // Size from the head itself (not from the previous hat), so re-running always gives the same helmet.
+        var baked = new Mesh();
+        skin.BakeMesh(baked, true);
+        var verts = baked.vertices;
+        var hb = new Bounds(skin.transform.TransformPoint(verts[0]), Vector3.zero);
+        foreach (var v in verts) hb.Encapsulate(skin.transform.TransformPoint(v));
+        Object.DestroyImmediate(baked);
+        float w = hb.size.x, d = hb.size.z;
 
         foreach (Transform c in hat.Cast<Transform>().ToArray()) Object.DestroyImmediate(c.gameObject);
-        float w = size.x, d = size.z;
 
-        // Dome: a squashed sphere whose lower half sinks into the head.
+        // Dome: a squashed sphere whose lower half sinks into the head; sized close to the head so the character
+        // still reads from the top-down camera.
         var shell = ShapeGenerator.GenerateIcosahedron(PivotLocation.Center, 0.5f, 2, true, false);
         FinishPb(shell, "Shell", hat, Vector3.zero, mat);
-        shell.transform.position = hat.position + hat.up * 0.02f;
+        shell.transform.position = hat.position + hat.up * 0.04f;
         shell.transform.rotation = hat.rotation;
-        SetWorldScale(shell.transform, new Vector3(w * 1.08f, 0.42f * w, d * 1.08f));
-        var brim = ShapeGenerator.GenerateCylinder(PivotLocation.Center, 24, 0.5f, 0.04f, 0, 1);
+        SetWorldScale(shell.transform, new Vector3(w * 1.07f, 0.44f * w, d * 1.07f));
+        var brim = ShapeGenerator.GenerateCylinder(PivotLocation.Center, 24, 0.5f, 0.035f, 0, 1);
         FinishPb(brim, "Brim", hat, Vector3.zero, mat);
-        brim.transform.position = hat.position - hat.up * 0.0f + hat.forward * (d * 0.08f);
+        brim.transform.position = hat.position + hat.forward * (d * 0.07f);
         brim.transform.rotation = hat.rotation;
-        SetWorldScale(brim.transform, new Vector3(w * 1.2f, 1f, d * 1.34f));
+        SetWorldScale(brim.transform, new Vector3(w * 1.15f, 1f, d * 1.27f));
         if (ridge)
         {
-            var r = Box("Ridge", hat, Vector3.zero, new Vector3(0.09f, 0.08f, d * 0.9f), mat, 0.02f, true);
-            r.transform.position = hat.position + hat.up * (0.21f * w);
+            var r = Box("Ridge", hat, Vector3.zero, new Vector3(0.08f, 0.07f, d * 0.8f), mat, 0.02f, true);
+            r.transform.position = hat.position + hat.up * (0.04f + 0.21f * w);
             r.transform.rotation = hat.rotation;
         }
     }

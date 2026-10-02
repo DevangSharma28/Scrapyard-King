@@ -13,6 +13,9 @@ namespace ScrapYardKing.Feedback
         [SerializeField, Min(0)] float hitShakeAmplitude = 0.06f;
         [SerializeField, Min(0)] float hitPunchScale = 0.05f;
         [SerializeField, Range(0f, 1f)] float hitCameraShake = 0.04f;
+        [Tooltip("HDR tint multiplied onto the struck object for a single blink (reads as 'that hit landed').")]
+        [SerializeField, ColorUsage(false, true)] Color hitFlashColor = new(1.9f, 1.85f, 1.7f);
+        [SerializeField, Min(0f)] float hitFlashDuration = 0.06f;
 
         [Header("Break")]
         [SerializeField, Min(0)] float breakHitStopDuration = 0.07f;
@@ -27,6 +30,8 @@ namespace ScrapYardKing.Feedback
         [SerializeField, Min(0)] float pickupPitchStep = 0.04f;
         [SerializeField, Min(0)] int pickupPitchMaxSteps = 12;
         [SerializeField, Min(0)] float pickupComboWindow = 0.6f;
+        [Tooltip("Squash of an item as it lands on a carry stack.")]
+        [SerializeField, Min(0)] float stackLandPunch = 0.35f;
 
         [Header("Default Effects")]
         [SerializeField] ParticleSystem defaultHitVfx;
@@ -44,6 +49,9 @@ namespace ScrapYardKing.Feedback
         [SerializeField] Color warningPopupColor = new(1f, 0.35f, 0.25f);
 
         public float HitStopDuration => hitStopDuration;
+        public Color HitFlashColor => hitFlashColor;
+        public float HitFlashDuration => hitFlashDuration;
+        public float StackLandPunch => stackLandPunch;
         public float HitStopTimeScale => hitStopTimeScale;
         public float HitShakeDuration => hitShakeDuration;
         public float HitShakeAmplitude => hitShakeAmplitude;

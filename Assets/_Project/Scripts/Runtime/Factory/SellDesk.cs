@@ -34,6 +34,7 @@ namespace ScrapYardKing.Factory
 
         ItemPool pool;
         float nextSaleTime = -1f;
+        bool customersWaiting;
 
         public event Action<SellDesk, long> Sold;
         public event Action<IUpgradeable> UpgradeChanged;
@@ -61,6 +62,22 @@ namespace ScrapYardKing.Factory
         {
             var l = definition.GetLevel(atLevel);
             return 60f / l.saleInterval * (l.unitsPerSale.x + l.unitsPerSale.y) * 0.5f;
+        }
+
+        /// <summary>Set by the customer line while its front customer waits for stock that isn't on the counter.</summary>
+        /// <summary>The front customer is waiting at an empty counter (shows NEEDS STOCK).</summary>
+        public bool CustomersWaiting => customersWaiting;
+
+        /// <summary>What the front customer asked for (null = no order yet). The guide stocks this first.</summary>
+        public ItemDefinition WaitingFor { get; private set; }
+
+        /// <summary>Set by the customer line: the front order and whether the counter has none of it.</summary>
+        public void SetWaitingFor(ItemDefinition item, bool outOfStock)
+        {
+            WaitingFor = item;
+            if (customersWaiting == outOfStock) return;
+            customersWaiting = outOfStock;
+            RefreshLabel();
         }
 
         public bool WalkInDemand
@@ -226,7 +243,9 @@ namespace ScrapYardKing.Factory
 
         void RefreshLabel()
         {
-            if (label != null && definition != null) label.Set(definition.DisplayName, level, counter.Count, counter.Capacity);
+            if (label == null || definition == null) return;
+            label.Set(definition.DisplayName, level, counter.Count, counter.Capacity);
+            label.SetStatus(customersWaiting ? StationStatus.NeedsStock : StationStatus.None);
         }
     }
 }

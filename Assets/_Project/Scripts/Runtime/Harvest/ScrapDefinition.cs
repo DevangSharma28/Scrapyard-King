@@ -44,6 +44,8 @@ namespace ScrapYardKing.Harvest
         [SerializeField, Range(0f, 1f)] float partDropShare = 0.35f;
         [SerializeField, Min(0f)] float dropLaunchSpeed = 6f;
         [SerializeField, Min(0f)] float dropSpread = 1f;
+        [Tooltip("Seconds the break burst keeps erupting pieces (0 = all at once). Big objects read as a fountain of loot.")]
+        [SerializeField, Min(0f)] float dropBurstDuration;
 
         [Header("Rare Drop")]
         [SerializeField] ItemDefinition rareDropItem;
@@ -76,6 +78,7 @@ namespace ScrapYardKing.Harvest
         public float PartDropShare => partDropShare;
         public float DropLaunchSpeed => dropLaunchSpeed;
         public float DropSpread => dropSpread;
+        public float DropBurstDuration => dropBurstDuration;
         public ItemDefinition RareDropItem => rareDropItem;
         public float RareDropChance => rareDropChance;
         public int XpReward => xpReward;

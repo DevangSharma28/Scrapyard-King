@@ -14,7 +14,9 @@ namespace ScrapYardKing.Feedback
         Coin,
         Upgrade,
         Fanfare,
-        Denied
+        Denied,
+        /// <summary>Seamless 1 s two-stroke engine + chain whine loop (chainsaw motor).</summary>
+        EngineLoop
     }
 
     /// <summary>A playable sound: clip variations, volume, pitch jitter and a rate limit.</summary>

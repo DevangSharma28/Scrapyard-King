@@ -23,6 +23,8 @@ namespace ScrapYardKing.Progression
         [Tooltip("XP per customer served (one sale), regardless of how many units they bought.")]
         [FormerlySerializedAs("xpPerUnitSold")]
         [SerializeField, Min(0)] int xpPerSale = 2;
+        [Tooltip("XP per $ of each sale, on top of the flat XP per sale. Ties levelling to how big the business has grown.")]
+        [SerializeField, Min(0f)] float xpPerCashSold = 0.2f;
         [SerializeField, Min(0)] int xpPerUpgrade = 10;
         [SerializeField, Min(0)] int xpPerWorkerHired = 25;
 
@@ -33,6 +35,7 @@ namespace ScrapYardKing.Progression
         public int MaxLevel => maxLevel;
         public int XpPerItemProcessed => xpPerItemProcessed;
         public int XpPerSale => xpPerSale;
+        public float XpPerCashSold => xpPerCashSold;
         public int XpPerUpgrade => xpPerUpgrade;
         public int XpPerWorkerHired => xpPerWorkerHired;
         public SfxDefinition LevelUpSfx => levelUpSfx;

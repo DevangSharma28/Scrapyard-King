@@ -30,6 +30,9 @@ namespace ScrapYardKing.Progression
         [SerializeField, Min(0f)] float nextTaskDelay = 1.6f;
 
         readonly List<ActiveTask> sideTasks = new();
+        // The next main task already counts while the finished one is still on screen, so nothing the player does in
+        // that short gap is lost (e.g. a customer served right after "Stock the sell desk").
+        ActiveTask pendingMain;
         EconomyManager economy;
         ProgressionManager progression;
         UpgradeManager upgrades;
@@ -96,11 +99,18 @@ namespace ScrapYardKing.Progression
         {
             mainIndex = index;
             Main = null;
-            if (chain == null || chain.MainTasks == null || index >= chain.MainTasks.Length) return;
+            if (chain == null || chain.MainTasks == null || index >= chain.MainTasks.Length)
+            {
+                pendingMain = null;
+                return;
+            }
 
-            Main = new ActiveTask(chain.MainTasks[index]);
+            var definition = chain.MainTasks[index];
+            Main = pendingMain != null && pendingMain.Definition == definition ? pendingMain : new ActiveTask(definition);
+            pendingMain = null;
             TaskStarted?.Invoke(Main);
-            EvaluateState(Main);
+            if (!Main.Definition.IsStateTask && Main.Progress >= Main.Definition.Amount) Complete(Main);
+            else EvaluateState(Main);
             RefillSideTasks();
         }
 
@@ -139,6 +149,7 @@ namespace ScrapYardKing.Progression
 
         void Advance(TaskType type, string id, long amount)
         {
+            if (pendingMain != null) AdvanceSilently(pendingMain, type, id, amount);
             if (Main != null) Advance(Main, type, id, amount);
             for (int i = sideTasks.Count - 1; i >= 0; i--) Advance(sideTasks[i], type, id, amount);
         }
@@ -149,6 +160,13 @@ namespace ScrapYardKing.Progression
             task.Progress = Math.Min(task.Definition.Amount, task.Progress + amount);
             TaskProgressed?.Invoke(task);
             if (task.Progress >= task.Definition.Amount) Complete(task);
+        }
+
+        static void AdvanceSilently(ActiveTask task, TaskType type, string id, long amount)
+        {
+            var d = task.Definition;
+            if (d.Type != type || d.IsStateTask || !d.Targets(id)) return;
+            task.Progress = Math.Min(d.Amount, task.Progress + amount);
         }
 
         void EvaluateAllState()
@@ -190,7 +208,12 @@ namespace ScrapYardKing.Progression
             TaskCompleted?.Invoke(task);
             GameEvents.RaiseTaskCompleted(d.Id);
 
-            if (task == Main) nextMainAt = Time.time + nextTaskDelay;
+            if (task == Main)
+            {
+                nextMainAt = Time.time + nextTaskDelay;
+                int next = mainIndex + 1;
+                pendingMain = chain != null && chain.MainTasks != null && next < chain.MainTasks.Length ? new ActiveTask(chain.MainTasks[next]) : null;
+            }
             else
             {
                 sideTasks.Remove(task);

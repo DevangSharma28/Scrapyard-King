@@ -54,7 +54,9 @@ namespace ScrapYardKing.UI
         void Refresh()
         {
             UpdateXpText();
-            fillTween?.Kill();
+            // Complete (not just kill) a running level-up: its callback writes the new level number, and XP often arrives
+            // again within the fill time (the next sale), which used to leave the badge showing an old level.
+            fillTween?.Kill(true);
             if (progression.Level != shownLevel)
             {
                 shownLevel = progression.Level;

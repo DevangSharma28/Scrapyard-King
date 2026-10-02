@@ -20,4 +20,4 @@ MonoBehaviour:
   cutRate: 5
   cutRange: 1.8
   carryCapacity: 8
-  pickupRadius: 2.2
+  pickupRadius: 2.5

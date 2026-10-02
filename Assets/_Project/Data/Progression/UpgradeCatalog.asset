@@ -49,6 +49,14 @@ MonoBehaviour:
     unlockLevel: 6
     inPanel: 1
     group: RECYCLING PLANT
+  - upgradeId: furnace
+    unlockLevel: 8
+    inPanel: 1
+    group: FURNACE
+  - upgradeId: ingot_rack
+    unlockLevel: 8
+    inPanel: 1
+    group: FURNACE
   - upgradeId: porter
     unlockLevel: 3
     inPanel: 0
@@ -71,5 +79,17 @@ MonoBehaviour:
     group: 
   - upgradeId: runner
     unlockLevel: 7
+    inPanel: 0
+    group: 
+  - upgradeId: furnace_hall
+    unlockLevel: 8
+    inPanel: 0
+    group: 
+  - upgradeId: smelter
+    unlockLevel: 8
+    inPanel: 0
+    group: 
+  - upgradeId: heavy_yard
+    unlockLevel: 9
     inPanel: 0
     group: 

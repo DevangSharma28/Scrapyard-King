@@ -29,6 +29,7 @@ namespace ScrapYardKing.Progression
         const string RoleIn = "in", RoleOut = "out", RoleCash = "cash", RoleBoost = "boost";
         const string UpgradeTileAnchor = "tile/upgrades";
         const string ChainsawUpgrade = "chainsaw";
+        const int MinRoom = 4;
 
         [SerializeField] GuideMarker marker;
         [SerializeField, Min(0.05f)] float refreshInterval = 0.2f;
@@ -172,38 +173,64 @@ namespace ScrapYardKing.Progression
             return Sell(BestDesk());
         }
 
-        /// <summary>Stock <paramref name="desk"/>, optionally with one material only (e.g. a "sell copper" task).</summary>
+        /// <summary>
+        /// Stock <paramref name="desk"/>, optionally with one material only (e.g. a "sell copper" task). A customer stuck
+        /// at an empty counter blocks the whole line, so what they asked for comes first, even during a "sell copper" task.
+        /// </summary>
         Hint Sell(SellDesk desk, Func<ItemDefinition, bool> only = null)
         {
             if (desk == null) return Feed(StationRegistry.Find<Machine>());
+            if (desk.CustomersWaiting && desk.WaitingFor != null)
+            {
+                var asked = desk.WaitingFor;
+                only = i => i == asked;
+            }
+
             Func<ItemDefinition, bool> wanted = only == null ? desk.Sells : i => desk.Sells(i) && only(i);
             var stack = player.CarryStack;
             if (desk.CanTakeStock && stack.Contains(wanted)) return Anchor(desk.StationId, RoleIn);
-            if (stack.IsFull) return Unload();
+            if (stack.IsFull || NeedsRoom(wanted)) return Unload();
 
             var storage = NearestStorage(wanted);
             if (storage != null) return Anchor(storage.StationId, RoleOut);
             // Nothing in stock anywhere: make some.
-            return Feed(MachineMaking(wanted) ?? StationRegistry.Find<Machine>());
+            var maker = MachineMaking(wanted);
+            return maker != null ? Feed(maker, 0, InputsMaking(maker.Definition, wanted)) : Feed(StationRegistry.Find<Machine>());
         }
 
-        Hint Feed(Machine machine, int depth = 0)
+        /// <summary>
+        /// Bring <paramref name="machine"/> its input. <paramref name="inputs"/> narrows a multi-input machine to the inputs
+        /// that make what is wanted (a "sell copper ingots" task should not send the player for iron).
+        /// </summary>
+        Hint Feed(Machine machine, int depth = 0, Func<ItemDefinition, bool> inputs = null)
         {
             if (machine == null) return LooseOrScrap(null);
-            var input = machine.Definition.Input;
+            var d = machine.Definition;
+            Func<ItemDefinition, bool> input = inputs ?? d.Takes;
             var stack = player.CarryStack;
-            if (stack.CountOf(input) > 0 && (stack.IsFull || !NearbyLoose(input))) return Anchor(machine.StationId, RoleIn);
-            if (stack.IsFull) return Unload();
+            // A jammed machine (full output, full hopper) needs its goods moved on before it needs more input.
+            if (depth == 0 && Jammed(machine) && !stack.IsFull)
+            {
+                var drain = DrainOutputs(machine);
+                if (drain.Position.HasValue) return drain;
+            }
+
+            if (stack.Contains(input) && (stack.IsFull || !NearbyLoose(input))) return Anchor(machine.StationId, RoleIn);
+            if (stack.IsFull || NeedsRoom(input)) return Unload();
 
             // Get the input: loose on the ground, waiting in a storage, made by another machine, or cut from scrap.
-            if (harvest != null && harvest.TryFindNearestCollectable(player.transform.position, searchRadius, i => i == input, out var pos))
+            if (harvest != null && harvest.TryFindNearestCollectable(player.transform.position, searchRadius, input, out var pos))
                 return new Hint { Position = pos };
-            var storage = NearestStorage(i => i == input);
+            var storage = NearestStorage(input);
             if (storage != null) return Anchor(storage.StationId, RoleOut);
-            var maker = MachineMaking(i => i == input);
-            if (maker != null && maker != machine && depth < 3) return Feed(maker, depth + 1);
-            return ScrapHint(NearestScrap(s => s.Definition.DropItem == input));
+            var maker = MachineMaking(input);
+            if (maker != null && maker != machine && depth < 3) return Feed(maker, depth + 1, InputsMaking(maker.Definition, input));
+            return ScrapHint(NearestScrap(s => input(s.Definition.DropItem)));
         }
+
+        /// <summary>Inputs of <paramref name="d"/> whose product is wanted (all inputs for single-input machines).</summary>
+        static Func<ItemDefinition, bool> InputsMaking(MachineDefinition d, Func<ItemDefinition, bool> wanted) =>
+            d.HasRecipes ? i => d.Takes(i) && wanted(d.OutputFor(i)) : d.Takes;
 
         /// <summary>The player's stack is full: send it to the nearest machine or counter that takes what they carry.</summary>
         Hint Unload()
@@ -211,14 +238,17 @@ namespace ScrapYardKing.Progression
             var stack = player.CarryStack;
             Hint best = default;
             float bestSqr = float.MaxValue;
+            Hint jammed = default;
             foreach (var s in StationRegistry.All)
             {
                 bool takes = s switch
                 {
-                    Machine m => stack.CountOf(m.Definition.Input) > 0,
+                    Machine m => stack.Contains(m.CanAccept),
                     SellDesk desk => desk.CanTakeStock && stack.Contains(desk.Sells),
                     _ => false
                 };
+                // Remember a machine that would take our load if it weren't jammed: its pad spills a full stack.
+                if (!takes && !jammed.Position.HasValue && s is Machine jm && stack.Contains(jm.Definition.Takes)) jammed = Anchor(jm.StationId, RoleIn);
                 if (!takes) continue;
                 var hint = Anchor(s.StationId, RoleIn);
                 if (!hint.Position.HasValue) continue;
@@ -228,7 +258,38 @@ namespace ScrapYardKing.Progression
                 best = hint;
             }
 
-            return best.Position.HasValue ? best : Anchor(StationRegistry.Find<Machine>()?.StationId, RoleIn);
+            if (best.Position.HasValue) return best;
+            return jammed.Position.HasValue ? jammed : Anchor(StationRegistry.Find<Machine>()?.StationId, RoleIn);
+        }
+
+        /// <summary>
+        /// The stack is nearly full of things that are not <paramref name="wanted"/> (leftover scrap while fetching bales):
+        /// drop them where they belong first, or every trip carries one or two items.
+        /// </summary>
+        bool NeedsRoom(Func<ItemDefinition, bool> wanted)
+        {
+            var stack = player.CarryStack;
+            if (stack.Count == 0 || stack.FreeSpace >= Mathf.Min(MinRoom, stack.Capacity / 2)) return false;
+            if (stack.Contains(wanted)) return false;
+            foreach (var s in StationRegistry.All)
+                if ((s is Machine m && stack.Contains(m.CanAccept)) || (s is SellDesk desk && desk.CanTakeStock && stack.Contains(desk.Sells)))
+                    return true;
+            return false;
+        }
+
+        static bool Jammed(Machine m) => m.State == Machine.MachineState.Blocked || m.IsHopperFull;
+
+        /// <summary>Where to take a jammed machine's goods: the storage holding them, then the desk that sells them.</summary>
+        Hint DrainOutputs(Machine machine)
+        {
+            Func<ItemDefinition, bool> made = machine.Definition.Produces;
+            var storage = NearestStorage(made);
+            if (storage == null) return default;
+            var stack = player.CarryStack;
+            foreach (var s in StationRegistry.All)
+                if (s is SellDesk desk && desk.CanTakeStock && stack.Contains(i => made(i) && desk.Sells(i)))
+                    return Anchor(desk.StationId, RoleIn);
+            return Anchor(storage.StationId, RoleOut);
         }
 
         /// <summary>
@@ -290,12 +351,7 @@ namespace ScrapYardKing.Progression
         {
             foreach (var s in StationRegistry.All)
             {
-                if (s is not Machine m || m.Definition == null) continue;
-                var d = m.Definition;
-                if (!d.HasOutputMix && filter(d.Output)) return m;
-                if (d.HasOutputMix)
-                    foreach (var o in d.OutputMix)
-                        if (o.weight > 0f && filter(o.item)) return m;
+                if (s is Machine m && m.Definition != null && m.Definition.ProducesAny(filter)) return m;
             }
 
             return null;
@@ -308,8 +364,8 @@ namespace ScrapYardKing.Progression
             return ScrapHint(NearestScrap(scrapFilter));
         }
 
-        bool NearbyLoose(ItemDefinition item) =>
-            harvest != null && harvest.TryFindNearestCollectable(player.transform.position, 8f, i => i == item, out _);
+        bool NearbyLoose(Func<ItemDefinition, bool> item) =>
+            harvest != null && harvest.TryFindNearestCollectable(player.transform.position, 8f, item, out _);
 
         Hint ScrapHint(ScrapObject s) => s == null ? default : new Hint { Position = s.Center, Lift = s.TopHeight, Scrap = s };
 

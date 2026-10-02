@@ -1,0 +1,24 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9eb7aa00d47bf4d86bc94e0ebce05f2b, type: 3}
+  m_Name: Sfx_HeavyHit
+  m_EditorClassIdentifier: ScrapYardKing.Runtime::ScrapYardKing.Feedback.SfxDefinition
+  clips:
+  - {fileID: 8300000, guid: a46ff0850d1d4445bb10a4bd6864d20c, type: 3}
+  - {fileID: 8300000, guid: 0a82c20492c48494190d32802cec0b96, type: 3}
+  - {fileID: 8300000, guid: fd1acc3cee496494bbb2f878583fee22, type: 3}
+  - {fileID: 8300000, guid: 0101ed4b797574ee5b30fb94b2997e5a, type: 3}
+  - {fileID: 8300000, guid: 28a70121f97624cd09d7ac9acf3cc00e, type: 3}
+  volume: 0.48
+  pitchRange: {x: 0.78, y: 0.92}
+  minInterval: 0.03
+  fallback: 0

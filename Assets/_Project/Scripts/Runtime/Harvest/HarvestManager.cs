@@ -89,6 +89,38 @@ namespace ScrapYardKing.Harvest
             }
         }
 
+        /// <summary>
+        /// As <see cref="SpawnDrops(ItemDefinition,int,Vector3,Vector3,float,float)"/>, spread over
+        /// <paramref name="duration"/> seconds in waves so a big break erupts like a fountain instead of one puff.
+        /// </summary>
+        public void SpawnDrops(ItemDefinition item, int count, Vector3 origin, Vector3 bias, float launchSpeed, float spread, float duration)
+        {
+            if (duration <= 0f || count < 4)
+            {
+                SpawnDrops(item, count, origin, bias, launchSpeed, spread);
+                return;
+            }
+
+            StartCoroutine(SpawnInWaves(item, count, origin, bias, launchSpeed, spread, duration));
+        }
+
+        System.Collections.IEnumerator SpawnInWaves(ItemDefinition item, int count, Vector3 origin, Vector3 bias, float launchSpeed, float spread,
+            float duration)
+        {
+            int waves = Mathf.Clamp(Mathf.CeilToInt(duration / 0.06f), 2, 10);
+            var wait = new WaitForSeconds(duration / waves);
+            int left = count;
+            for (int w = 0; w < waves && left > 0; w++)
+            {
+                // Front-load the burst, then let it trail off; later waves fly a little higher.
+                int n = w == waves - 1 ? left : Mathf.Max(1, Mathf.RoundToInt(count * (waves - w) / (waves * (waves + 1) * 0.5f)));
+                n = Mathf.Min(n, left);
+                left -= n;
+                SpawnDrops(item, n, origin, bias, launchSpeed * (1f + 0.06f * w), spread);
+                yield return wait;
+            }
+        }
+
         /// <summary>Finds (without taking) the nearest collectable item within <paramref name="radius"/>. Used by AI to pick a destination.</summary>
         public bool TryFindNearestCollectable(Vector3 position, float radius, Func<ItemDefinition, bool> accept, out Vector3 itemPosition) =>
             TryFindNearestCollectable(position, radius, accept, null, out itemPosition);
@@ -162,6 +194,44 @@ namespace ScrapYardKing.Harvest
                 float travel = radius + 0.6f - distance;
                 item.Launch(item.transform.position, direction * (travel / flightTime) + Vector3.up * hopSpeed, 0.1f, groundHeight, dropBounds, blockedAreas);
             }
+        }
+
+        /// <summary>
+        /// Makes the nearest collectable item within <paramref name="radius"/> hop in place ("I'd take it, but I'm full").
+        /// Returns false when nothing is in range.
+        /// </summary>
+        public bool NudgeNearest(Vector3 position, float radius, Func<ItemDefinition, bool> accept)
+        {
+            WorldItem best = null;
+            float bestSqr = radius * radius;
+            foreach (var item in loose)
+            {
+                if (!item.IsCollectable || (accept != null && !accept(item.Definition))) continue;
+                Vector3 d = item.transform.position - position;
+                float sqr = d.x * d.x + d.z * d.z;
+                if (sqr > bestSqr) continue;
+                bestSqr = sqr;
+                best = item;
+            }
+
+            if (best == null) return false;
+            Vector3 away = best.transform.position - position;
+            away.y = 0f;
+            away = away.sqrMagnitude > 0.0001f ? away.normalized : Vector3.forward;
+            best.Launch(best.transform.position, away * 0.8f + Vector3.up * 3.2f, 0.3f, groundHeight, dropBounds, blockedAreas);
+            return true;
+        }
+
+        /// <summary>
+        /// Throws a carried item onto the ground as a loose collectable (spill from a jammed pad). It cannot be picked up
+        /// for <paramref name="collectDelay"/> seconds, so the carrier walks away with a lighter stack.
+        /// </summary>
+        public void Drop(WorldItem item, Vector3 velocity, float collectDelay)
+        {
+            if (item == null || loose.Contains(item)) return;
+            item.transform.SetParent(Root, true);
+            item.Launch(item.transform.position, velocity, collectDelay, groundHeight, dropBounds, blockedAreas);
+            loose.Add(item);
         }
 
         /// <summary>Puts an item taken by <see cref="TakeNearestCollectable"/> back if the taker could not use it.</summary>
