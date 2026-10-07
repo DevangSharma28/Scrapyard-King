@@ -1,5 +1,6 @@
 using ScrapYardKing.Core;
 using ScrapYardKing.Harvest;
+using ScrapYardKing.Items;
 using UnityEngine;
 
 namespace ScrapYardKing.Workers
@@ -63,7 +64,7 @@ namespace ScrapYardKing.Workers
             switch (Current)
             {
                 case State.Idle:
-                    if (stack.Count > 0) Enter(State.Deliver, route.Dropoff.transform.position);
+                    if (stack.Count > 0) Enter(State.Deliver, Drop().transform.position);
                     else if ((loadPad = route.FullestPad()) != null) Enter(State.Load, loadPad.transform.position);
                     else worker.MoveTo(route.IdlePosition);
                     break;
@@ -72,7 +73,7 @@ namespace ScrapYardKing.Workers
                     var pad = loadPad;
                     if (stack.IsFull)
                     {
-                        Enter(State.Deliver, route.Dropoff.transform.position);
+                        Enter(State.Deliver, Drop().transform.position);
                         break;
                     }
 
@@ -86,7 +87,7 @@ namespace ScrapYardKing.Workers
                     if (HorizontalDistance(pad.transform.position) > arriveDistance || PadHasStock(pad)) break;
                     worker.Stop();
                     if (Time.time - stateSince < partialLoadPatience) break;
-                    if (stack.Count > 0) Enter(State.Deliver, route.Dropoff.transform.position);
+                    if (stack.Count > 0) Enter(State.Deliver, Drop().transform.position);
                     else Enter(State.Idle, route.IdlePosition);
                     break;
 
@@ -103,14 +104,14 @@ namespace ScrapYardKing.Workers
             {
                 case State.Idle:
                     if (TryFindItem(out var item)) Enter(State.Collect, item);
-                    else if (stack.Count > 0) Enter(State.Deliver, route.Dropoff.transform.position);
+                    else if (stack.Count > 0) Enter(State.Deliver, Drop().transform.position);
                     else worker.MoveTo(route.IdlePosition);
                     break;
 
                 case State.Collect:
                     if (stack.IsFull)
                     {
-                        Enter(State.Deliver, route.Dropoff.transform.position);
+                        Enter(State.Deliver, Drop().transform.position);
                         break;
                     }
 
@@ -119,7 +120,7 @@ namespace ScrapYardKing.Workers
                         worker.MoveTo(next);
                         stateSince = Time.time;
                     }
-                    else if (stack.Count > 0 && Time.time - stateSince >= partialLoadPatience) Enter(State.Deliver, route.Dropoff.transform.position);
+                    else if (stack.Count > 0 && Time.time - stateSince >= partialLoadPatience) Enter(State.Deliver, Drop().transform.position);
                     else if (stack.Count == 0) Enter(State.Idle, route.IdlePosition);
                     break;
 
@@ -140,8 +141,8 @@ namespace ScrapYardKing.Workers
                         break;
                     }
 
-                    worker.MoveTo(route.Dropoff.transform.position);
-                    if (HorizontalDistance(route.Dropoff.transform.position) <= arriveDistance)
+                    worker.MoveTo(Drop().transform.position);
+                    if (HorizontalDistance(Drop().transform.position) <= arriveDistance)
                     {
                         worker.Stop();
                         Enter(State.Unload, null);
@@ -150,9 +151,14 @@ namespace ScrapYardKing.Workers
 
                 case State.Unload:
                     if (stack.Count == 0) Enter(State.Idle, route.IdlePosition);
+                    // What is left belongs at another drop-off (several machines on one route).
+                    else if (HorizontalDistance(Drop().transform.position) > arriveDistance) Enter(State.Deliver, Drop().transform.position);
                     break;
             }
         }
+
+        /// <summary>The drop-off for the current load (routes with one pad always answer that pad).</summary>
+        TransferPad Drop() => route.DropoffFor(worker.Stack);
 
         void Enter(State state, Vector3? destination)
         {

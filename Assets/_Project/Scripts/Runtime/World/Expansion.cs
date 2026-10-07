@@ -86,7 +86,33 @@ namespace ScrapYardKing.World
 
         void IUpgradeable.ApplyLevel(int level)
         {
-            if (level >= 1 && !open) Open();
+            if (level < 1 || open) return;
+            if (SaveRegistry.IsRestoring) OpenInstant();
+            else Open();
+        }
+
+        /// <summary>Opens the area as it stands after the reveal, with no camera pan, sound or animation (loading a save).</summary>
+        public void OpenInstant()
+        {
+            if (open) return;
+            open = true;
+            if (harvest != null || Services.TryGet(out harvest))
+            {
+                harvest.RemoveBlockedArea(area);
+                harvest.ExpandDropBounds(area);
+            }
+
+            if (lockedOnly != null) lockedOnly.SetActive(false);
+            if (barriers != null)
+                foreach (var b in barriers)
+                    if (b != null) b.gameObject.SetActive(false);
+            if (materialSwaps != null)
+                foreach (var swap in materialSwaps)
+                    if (swap.renderer != null && swap.material != null) swap.renderer.sharedMaterial = swap.material;
+            if (contentRoot != null)
+                foreach (Transform child in contentRoot)
+                    child.gameObject.SetActive(true);
+            UpgradeChanged?.Invoke(this);
         }
 
         /// <summary>Opens the area with the full reveal.</summary>

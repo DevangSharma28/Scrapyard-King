@@ -1,0 +1,31 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f2ca0950e597343f08500b3489afcd55, type: 3}
+  m_Name: IAP_FactoryPack
+  m_EditorClassIdentifier: ScrapYardKing.Runtime::ScrapYardKing.Shop.IAPProductConfig
+  productId: syk_factory_pack
+  type: 0
+  tier: 2
+  title: FACTORY BOOST PACK
+  icon: {fileID: -1951408543544540719, guid: 97de2faf2e1c349e18006a41135ab133, type: 3}
+  enabled: 1
+  diamonds: 300
+  bonusDiamonds: 0
+  cashAsDiamonds: 0
+  boost: {fileID: 11400000, guid: c7fc20ebff8c44dd7b037d0d7cb55ac0, type: 2}
+  boostMinutes: 30
+  secondBoost: {fileID: 11400000, guid: 09405ae7d54ac468ab5e1e7154f72dcb, type: 2}
+  secondBoostMinutes: 30
+  removesAds: 0
+  badge: POWER
+  fallbackPrice: $4.99
+  referencePriceUsd: 4.99

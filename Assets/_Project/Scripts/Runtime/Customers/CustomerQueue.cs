@@ -32,7 +32,7 @@ namespace ScrapYardKing.Customers
         readonly List<Customer> line = new();
         readonly Dictionary<Customer, Stack<Customer>> pools = new();
         readonly List<Vector3> scratch = new();
-        float nextArrival, nextServiceAt, nextHandOver;
+        float nextArrival, nextServiceAt, nextHandOver, waitingSince = -1f;
         bool serving;
         ItemDefinition orderSold;
         Customer lastPrefab;
@@ -106,12 +106,13 @@ namespace ScrapYardKing.Customers
                 GameFeedback.Sfx(config.ArriveSfx);
             }
 
+            if (SettleForStock(front)) return;
             var wants = front.OrderItem;
             Func<ItemDefinition, bool> matches = wants != null ? i => i == wants : null;
             desk.SetWaitingFor(wants, desk.StockOf(matches) == 0);
             if (!serving)
             {
-                float interval = desk.Stats.saleInterval;
+                float interval = desk.SaleInterval;
                 float remaining = nextServiceAt - Time.time;
                 front.Bubble.SetWait(remaining > 0f ? 1f - remaining / interval : -1f);
                 if (remaining > 0f || desk.StockOf(matches) == 0) return;
@@ -131,6 +132,42 @@ namespace ScrapYardKing.Customers
             front.Owed += value;
             front.Bubble.SetRemaining(front.Wanted - front.Received);
             if (front.Received >= front.Wanted) Finish(front);
+        }
+
+        /// <summary>
+        /// A customer whose material has run out does not wait forever. After a short wait (or at once when the counter
+        /// is full of other goods, so theirs could never be stocked) they pay for what they already got and leave, or,
+        /// if they got nothing yet, take something that is on the counter. Without this one unlucky order locks the line,
+        /// the counter and every machine behind it for good. An empty counter still stalls the line: that bottleneck stays.
+        /// Returns true when the front customer left.
+        /// </summary>
+        bool SettleForStock(Customer front)
+        {
+            var wants = front.OrderItem;
+            if (wants == null || desk.StockOf(i => i == wants) > 0)
+            {
+                waitingSince = -1f;
+                return false;
+            }
+
+            if (waitingSince < 0f) waitingSince = Time.time;
+            bool patienceOver = config.SettleAfter > 0f && Time.time - waitingSince >= config.SettleAfter;
+            if (desk.CanTakeStock && !patienceOver) return false;
+
+            if (front.Received > 0)
+            {
+                waitingSince = -1f;
+                Finish(front);
+                return true;
+            }
+
+            if (desk.Stock == 0) return false;
+            var settled = config.RollOrder(item => desk.StockOf(i => i == item), Obtainable, true);
+            if (settled == null || settled == wants) return false;
+            front.OrderItem = settled;
+            front.Bubble.ShowOrder(settled.Icon, front.Wanted);
+            waitingSince = -1f;
+            return false;
         }
 
         /// <summary>Something in the yard can make <paramref name="item"/> now, or a bin already holds some.</summary>

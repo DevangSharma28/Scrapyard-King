@@ -1,0 +1,33 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d6368bd9c6c254976aaca847016fd6fd, type: 3}
+  m_Name: ClawCrane_Heavy
+  m_EditorClassIdentifier: ScrapYardKing.Runtime::ScrapYardKing.Factory.ClawCraneDefinition
+  id: heavy_crane
+  displayName: Heavy Yard Crane
+  icon: {fileID: 21300000, guid: a7d9a8d0d88f84835b707d6ff42cdce3, type: 3}
+  levels:
+  - reach: 16
+    grabSize: 6
+    speed: 1
+    cost: 5000
+  - reach: 22
+    grabSize: 9
+    speed: 1.2
+    cost: 9000
+  - reach: 28
+    grabSize: 12
+    speed: 1.4
+    cost: 15000
+  grabRadius: 3.2
+  grabSfx: {fileID: 11400000, guid: 4c8c128464ef246f28c08c83f88d3d3b, type: 2}
+  dropSfx: {fileID: 11400000, guid: 8282ab267b6c644de9534457bbc2a55d, type: 2}

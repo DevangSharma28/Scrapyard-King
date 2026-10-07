@@ -18,4 +18,4 @@ MonoBehaviour:
   color: {r: 0.72, g: 0.78, b: 0.88, a: 1}
   prefab: {fileID: 7926204944600634213, guid: 75217424c5abc49daa58b0b39cd8f340, type: 3}
   stackHeight: 0.2
-  baseValue: 30
+  baseValue: 26

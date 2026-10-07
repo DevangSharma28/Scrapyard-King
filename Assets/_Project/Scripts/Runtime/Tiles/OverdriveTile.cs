@@ -24,6 +24,8 @@ namespace ScrapYardKing.Tiles
         }
 
         [SerializeField] Machine machine;
+        [Tooltip("More machines the same pad boosts (a furnace battery). Machines that are not built yet are skipped.")]
+        [SerializeField] Machine[] alsoBoosts;
         [SerializeField] OverdriveConfig config;
 
         [Header("Display")]
@@ -102,6 +104,13 @@ namespace ScrapYardKing.Tiles
             charge = 0f;
             machine.Speed.AddModifier(new StatModifier(this, StatModifierType.Multiply, config.SpeedMultiplier));
             if (machine.Visuals != null) machine.Visuals.SetOverdrive(true);
+            if (alsoBoosts != null)
+                foreach (var m in alsoBoosts)
+                {
+                    if (m == null || !m.isActiveAndEnabled) continue;
+                    m.Speed.AddModifier(new StatModifier(this, StatModifierType.Multiply, config.SpeedMultiplier));
+                    if (m.Visuals != null) m.Visuals.SetOverdrive(true);
+                }
             phaseEnds = Time.time + config.Duration;
             SetPhase(Phase.Active);
 
@@ -124,6 +133,13 @@ namespace ScrapYardKing.Tiles
         {
             machine.Speed.RemoveModifiersFrom(this);
             if (machine.Visuals != null) machine.Visuals.SetOverdrive(false);
+            if (alsoBoosts != null)
+                foreach (var m in alsoBoosts)
+                {
+                    if (m == null) continue;
+                    m.Speed.RemoveModifiersFrom(this);
+                    if (m.Visuals != null) m.Visuals.SetOverdrive(false);
+                }
             if (config != null) GameFeedback.Sfx(config.EndSfx);
             phaseEnds = Time.time + (config != null ? config.Cooldown : 0f);
             SetPhase(Phase.Cooldown);

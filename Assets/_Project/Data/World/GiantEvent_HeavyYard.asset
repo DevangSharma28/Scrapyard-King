@@ -1,0 +1,44 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e05e224ab6a8a43c298e828d6a3040bf, type: 3}
+  m_Name: GiantEvent_HeavyYard
+  m_EditorClassIdentifier: ScrapYardKing.Runtime::ScrapYardKing.World.GiantEventConfig
+  giant: {fileID: 11400000, guid: c872641ffc37d4657b7302fa560569aa, type: 2}
+  feederMinTier: 3
+  firstCharge: 3
+  repeatCharge: 8
+  cashBonus: 5000
+  dropHeight: 14
+  dropDuration: 0.7
+  clearRadius: 6.5
+  focusHold: 3.2
+  landVfx: {fileID: 8738849911124880239, guid: bef4823b03654446498cd0cf6b7a3382, type: 3}
+  landVfxScale: 5
+  landShake: 0.9
+  arriveSfx: {fileID: 11400000, guid: df43e4ade67624ba69b6d0f70eb51929, type: 2}
+  landSfx: {fileID: 11400000, guid: f2e1d09ecbefd458391207323a928af0, type: 2}
+  cameraPullBack: 7
+  fightRadius: 9
+  defeatSfx: {fileID: 11400000, guid: 280eb92324eb94856a7e9ea75f3db67d, type: 2}
+  defeatPunch: 0.8
+  arriveTitle: GIANT SCRAP!
+  arriveLine: CUT IT UP FOR A BIG BONUS
+  defeatTitle: DEMOLISHED!
+  signCharging: 'GIANT SCRAP
+
+    <size=62%>CUT HEAVY SCRAP</size>  {0}/{1}'
+  signIncoming: 'INCOMING!
+
+    <size=62%>STAND CLEAR</size>'
+  signActive: '{0}
+
+    <size=62%>CUT IT UP!</size>'

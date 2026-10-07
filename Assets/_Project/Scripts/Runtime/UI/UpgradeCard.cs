@@ -108,7 +108,8 @@ namespace ScrapYardKing.UI
             }
 
             wasLocked = !unlocked;
-            level.text = upgrade.LevelLabel;
+            // "LV 7 → 8" says what the button buys; a first level keeps its own word (BUILD, HIRE)
+            level.text = upgrade.IsMaxed ? "MAX" : upgrade.Level <= 0 ? upgrade.LevelLabel : $"LV {upgrade.Level} → {upgrade.Level + 1}";
             RefreshPips();
             if (effect != null) effect.text = upgrade.NextEffect;
 
@@ -135,13 +136,14 @@ namespace ScrapYardKing.UI
                 return;
             }
 
-            cost.text = CurrencyFormat.Short(upgrade.NextCost);
-            coinIcon.SetActive(true);
             bool canBuy = unlocked && manager.CanAfford(upgrade);
+            long have = economy != null ? economy.Cash : 0;
+            // short of cash: "8.4K / 12.5K" with the button filling up, so "you're close" reads at a glance
+            cost.text = canBuy ? CurrencyFormat.Short(upgrade.NextCost) : $"{CurrencyFormat.Short(have)} / {CurrencyFormat.Short(upgrade.NextCost)}";
+            coinIcon.SetActive(true);
             buyButton.interactable = unlocked;
             buttonImage.color = canBuy ? affordableColor : unaffordableColor;
-            long cash = economy != null ? economy.Cash : 0;
-            ShowSavings(!canBuy, upgrade.NextCost > 0 ? Mathf.Clamp01(cash / (float)upgrade.NextCost) : 1f);
+            ShowSavings(!canBuy, upgrade.NextCost > 0 ? Mathf.Clamp01(have / (float)upgrade.NextCost) : 1f);
             SetPulse(canBuy);
         }
 

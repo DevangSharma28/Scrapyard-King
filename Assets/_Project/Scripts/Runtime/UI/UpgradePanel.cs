@@ -187,7 +187,7 @@ namespace ScrapYardKing.UI
         }
 
         void OnPurchased(IUpgradeable _) => RefreshAll();
-        void OnCashChanged(long balance, long delta, Vector3? source) => RefreshAll();
+        void OnCashChanged(long balance, long delta, CurrencyOrigin source) => RefreshAll();
         void OnLevelChanged(int level) => RefreshAll();
 
         void RefreshAll()

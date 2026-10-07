@@ -19,9 +19,11 @@ MonoBehaviour:
   role: 0
   prefab: {fileID: 5005287366614547506, guid: f171e0f631edc4ab187502f2130a0e21, type: 3}
   siteId: delivery
-  moveSpeed: 3.4
-  carryCapacity: 8
+  moveSpeed: 5
+  carryCapacity: 10
   efficiency: 1
   pickupRadius: 1
   collectLooseItems: 0
-  hireCosts: 2003000000000000d007000000000000
+  workBoost: 1.5
+  spawnAtSite: 1
+  hireCosts: c2010000000000007805000000000000

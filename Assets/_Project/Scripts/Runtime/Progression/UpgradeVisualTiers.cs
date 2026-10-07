@@ -6,8 +6,9 @@ using UnityEngine;
 namespace ScrapYardKing.Progression
 {
     /// <summary>
-    /// Swaps materials on a set of renderers as an upgrade levels up (e.g. the chainsaw goes orange → red → gold),
-    /// so upgrades the player carries are visible on the character too.
+    /// Swaps materials on a set of renderers and/or shows a different model per tier as an upgrade levels up (e.g. the
+    /// cutter grows from a small orange saw to a heavy red hydraulic cutter), so upgrades the player carries are
+    /// visible on the character too.
     /// </summary>
     public sealed class UpgradeVisualTiers : MonoBehaviour
     {
@@ -15,7 +16,10 @@ namespace ScrapYardKing.Progression
         struct Tier
         {
             [Min(1)] public int minLevel;
+            [Tooltip("Optional: material for the shared renderers.")]
             public Material material;
+            [Tooltip("Optional: objects shown only at this tier (a different model per tier).")]
+            public GameObject[] objects;
         }
 
         [SerializeField] string upgradeId;
@@ -61,8 +65,13 @@ namespace ScrapYardKing.Progression
             if (tier < 0 || tier == appliedTier) return;
 
             appliedTier = tier;
-            foreach (var r in renderers)
-                if (r != null) r.sharedMaterial = tiers[tier].material;
+            if (tiers[tier].material != null && renderers != null)
+                foreach (var r in renderers)
+                    if (r != null) r.sharedMaterial = tiers[tier].material;
+            for (int i = 0; i < tiers.Length; i++)
+                if (tiers[i].objects != null)
+                    foreach (var go in tiers[i].objects)
+                        if (go != null) go.SetActive(i == tier);
 
             if (!animate || punchTarget == null) return;
             punchTarget.DOKill(true);

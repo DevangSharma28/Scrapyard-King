@@ -18,11 +18,12 @@ MonoBehaviour:
   - {fileID: 5594446275219783494, guid: 9995e94e1f58e4d17a3e7303364fea92, type: 3}
   - {fileID: 3278780331258654020, guid: 2e847638178844655a89ccb945d04207, type: 3}
   - {fileID: 6386448838519402476, guid: a9f03df64c93c41efbad55411dab382c, type: 3}
-  walkSpeed: 2.8
-  arrivalInterval: {x: 1.2, y: 3}
-  handOverInterval: 0.16
+  walkSpeed: 5.2
+  arrivalInterval: {x: 0.35, y: 0.9}
+  handOverInterval: 0.05
   orderItem: {fileID: 11400000, guid: 83055ce854d5646d3beb2a2d62c9174a, type: 2}
   orderOptions: []
   preferInStock: 0.8
+  settleAfter: 6
   arriveSfx: {fileID: 11400000, guid: de0f4a1c9f1f64ba6a7bcc7f5f897277, type: 2}
   happySfx: {fileID: 11400000, guid: 1e10d6a13c536401999118d8103c7ae3, type: 2}

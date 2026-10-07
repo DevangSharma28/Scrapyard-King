@@ -34,10 +34,16 @@ namespace ScrapYardKing.Items
         [SerializeField] MeshFilter meshFilter;
         [SerializeField] Mesh[] meshVariants;
 
+        State state;
         Vector3 velocity, angularVelocity, baseScale;
+        const int MaxRestHops = 6;
+        const float RestHopSpeed = 3.2f, RestHopLift = 5f;
+
         float groundY, collectableAt;
         Bounds bounds;
-        IReadOnlyList<Bounds> blocked;
+        IReadOnlyList<Bounds> blocked, noRest;
+        Vector3 launchOrigin;
+        int restHops;
 
         Transform moveParent;
         Vector3 moveFrom, moveTo;
@@ -46,7 +52,20 @@ namespace ScrapYardKing.Items
         Action<WorldItem> onArrived;
 
         public ItemDefinition Definition { get; private set; }
-        public State CurrentState { get; private set; }
+        /// <summary>
+        /// Only a flying or moving item needs <c>Update</c>. Hundreds of pieces rest on the ground, in bins and on backs, so
+        /// the component switches itself off whenever it has nothing to simulate.
+        /// </summary>
+        public State CurrentState
+        {
+            get => state;
+            private set
+            {
+                state = value;
+                bool simulated = value == State.Flying || value == State.Moving;
+                if (enabled != simulated) enabled = simulated;
+            }
+        }
         public float Gravity => gravity;
 
         /// <summary>Loose (flying or grounded) and past its post-drop delay.</summary>
@@ -67,10 +86,17 @@ namespace ScrapYardKing.Items
         }
 
         /// <summary>Throws the item from <paramref name="position"/>. It bounces inside <paramref name="area"/> and settles on the ground.</summary>
+        /// <param name="noRestAreas">
+        /// Footprints the item may fly over but not come to rest in (scrap mounds, container stacks): it hops back toward
+        /// where it was thrown from, so nothing ends up where a collector cannot reach it.
+        /// </param>
         public void Launch(Vector3 position, Vector3 launchVelocity, float collectDelay, float groundHeight, Bounds area,
-            IReadOnlyList<Bounds> blockedAreas = null)
+            IReadOnlyList<Bounds> blockedAreas = null, IReadOnlyList<Bounds> noRestAreas = null)
         {
             blocked = blockedAreas;
+            noRest = noRestAreas;
+            launchOrigin = position;
+            restHops = 0;
             transform.SetPositionAndRotation(position, UnityEngine.Random.rotation);
             transform.localScale = baseScale;
             velocity = launchVelocity;
@@ -180,6 +206,16 @@ namespace ScrapYardKing.Items
                     velocity.z *= groundFriction;
                     angularVelocity *= 0.5f;
                 }
+                else if (restHops < MaxRestHops && InNoRestArea(p))
+                {
+                    // Landed on a pile or a stack: one more hop, back toward the open ground it came from.
+                    restHops++;
+                    Vector3 home = launchOrigin - p;
+                    home.y = 0f;
+                    if (home.sqrMagnitude < 0.25f) home = Quaternion.Euler(0f, UnityEngine.Random.Range(0f, 360f), 0f) * Vector3.forward;
+                    velocity = home.normalized * RestHopSpeed + Vector3.up * RestHopLift;
+                    angularVelocity = UnityEngine.Random.insideUnitSphere * 600f;
+                }
                 else
                 {
                     velocity = Vector3.zero;
@@ -190,6 +226,18 @@ namespace ScrapYardKing.Items
 
             transform.position = p;
             transform.Rotate(angularVelocity * dt, Space.World);
+        }
+
+        bool InNoRestArea(Vector3 p)
+        {
+            if (noRest == null) return false;
+            for (int i = 0; i < noRest.Count; i++)
+            {
+                var a = noRest[i];
+                if (p.x > a.min.x && p.x < a.max.x && p.z > a.min.z && p.z < a.max.z) return true;
+            }
+
+            return false;
         }
 
         /// <summary>Moves <paramref name="p"/> out of <paramref name="area"/> (horizontally) along the shallowest side and bounces.</summary>

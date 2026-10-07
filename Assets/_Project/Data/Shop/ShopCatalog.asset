@@ -1,0 +1,53 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fdd25ea30a63841afbbc40f6752a34bd, type: 3}
+  m_Name: ShopCatalog
+  m_EditorClassIdentifier: ScrapYardKing.Runtime::ScrapYardKing.Shop.ShopCatalog
+  hero: {fileID: 11400000, guid: 9bba07a3e760c404ea57aefcbbfbca13, type: 2}
+  bundles:
+  - {fileID: 11400000, guid: 5841234f92d4c4aff9fef623329c3494, type: 2}
+  - {fileID: 11400000, guid: d889c226475204a3aa2573631cc081b2, type: 2}
+  - {fileID: 11400000, guid: 5e65f410874a54f0e9e4a3c624757ed4, type: 2}
+  - {fileID: 11400000, guid: 0edff714b1ae5443185bc25f77a304fd, type: 2}
+  - {fileID: 11400000, guid: a321afcc37fb44d0aaec001feec9ecf3, type: 2}
+  - {fileID: 11400000, guid: 1445b83585f564e8a8e0b4309943e85e, type: 2}
+  specials:
+  - {fileID: 11400000, guid: 1033160e014d54000988667750aed51d, type: 2}
+  - {fileID: 11400000, guid: ad630cf904890475a9d4c573d6a3460d, type: 2}
+  boosts:
+  - boost: {fileID: 11400000, guid: 09405ae7d54ac468ab5e1e7154f72dcb, type: 2}
+    minutes: 10
+  - boost: {fileID: 11400000, guid: c7fc20ebff8c44dd7b037d0d7cb55ac0, type: 2}
+    minutes: 10
+  - boost: {fileID: 11400000, guid: fe9b04eb2928f4a4e8a35621a8896c25, type: 2}
+    minutes: 5
+  - boost: {fileID: 11400000, guid: ab65b3bab03fc43f8b6a0153657d992e, type: 2}
+    minutes: 10
+  - boost: {fileID: 11400000, guid: b78ab834a69f54be3a054d8eafb5b2d5, type: 2}
+    minutes: 10
+  crates:
+  - title: STACK OF CASH
+    diamonds: 20
+    bonus: 1
+    icon: {fileID: 8991453293202524206, guid: f8e6658850c4d4b238187e2c8824bf85, type: 3}
+  - title: CASH CRATE
+    diamonds: 60
+    bonus: 1.1
+    icon: {fileID: 8154092793322718361, guid: f8e6658850c4d4b238187e2c8824bf85, type: 3}
+  - title: CASH VAULT
+    diamonds: 150
+    bonus: 1.25
+    icon: {fileID: 6001195387084725870, guid: 97de2faf2e1c349e18006a41135ab133, type: 3}
+  freeDiamonds: 5
+  freeCooldownHours: 4
+  freeDailyCap: 3
+  unlockWithFirstDiamond: 1

@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Task_t25_boost_sorter
   m_EditorClassIdentifier: ScrapYardKing.Runtime::ScrapYardKing.Progression.TaskDefinition
   id: t25_boost_sorter
-  title: Boost the sorter
+  title: Boost the splitter
   category: 0
   type: 11
   targetId: sorter

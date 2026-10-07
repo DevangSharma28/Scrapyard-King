@@ -9,6 +9,8 @@ namespace ScrapYardKing.Items
     public sealed class ItemPool : ServiceBehaviour<ItemPool>
     {
         [SerializeField] Transform root;
+        [Tooltip("Every item in the game, so saved stock can be turned back into items by id.")]
+        [SerializeField] ItemDefinition[] catalog;
 
         readonly Dictionary<ItemDefinition, Stack<WorldItem>> pools = new();
 
@@ -34,6 +36,15 @@ namespace ScrapYardKing.Items
             item.Initialize(definition);
             item.gameObject.SetActive(true);
             return item;
+        }
+
+        /// <summary>Item with <paramref name="id"/> from the catalog, or null.</summary>
+        public ItemDefinition Find(string id)
+        {
+            if (catalog == null || string.IsNullOrEmpty(id)) return null;
+            foreach (var d in catalog)
+                if (d != null && d.Id == id) return d;
+            return null;
         }
 
         public void Release(WorldItem item)

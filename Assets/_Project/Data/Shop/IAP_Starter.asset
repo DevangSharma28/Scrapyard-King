@@ -1,0 +1,31 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f2ca0950e597343f08500b3489afcd55, type: 3}
+  m_Name: IAP_Starter
+  m_EditorClassIdentifier: ScrapYardKing.Runtime::ScrapYardKing.Shop.IAPProductConfig
+  productId: syk_starter_pack
+  type: 1
+  tier: 0
+  title: INDUSTRIAL STARTER PACK
+  icon: {fileID: -3332647269335072481, guid: 97de2faf2e1c349e18006a41135ab133, type: 3}
+  enabled: 1
+  diamonds: 500
+  bonusDiamonds: 0
+  cashAsDiamonds: 150
+  boost: {fileID: 11400000, guid: c7fc20ebff8c44dd7b037d0d7cb55ac0, type: 2}
+  boostMinutes: 30
+  secondBoost: {fileID: 0}
+  secondBoostMinutes: 0
+  removesAds: 0
+  badge: BEST VALUE
+  fallbackPrice: $1.99
+  referencePriceUsd: 1.99

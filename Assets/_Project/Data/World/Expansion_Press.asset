@@ -1,0 +1,20 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5a0f6e0a485cc4002b929ade72d05e94, type: 3}
+  m_Name: Expansion_Press
+  m_EditorClassIdentifier: ScrapYardKing.Runtime::ScrapYardKing.World.ExpansionDefinition
+  id: build_press
+  displayName: Industrial Press
+  icon: {fileID: 21300000, guid: e160293ab41c94805bdc8d5a927a2ac4, type: 3}
+  cost: 9000
+  teaser: METAL BARS
+  openSfx: {fileID: 11400000, guid: 04263bae9f7524a0fb55a331dcbe4d2c, type: 2}

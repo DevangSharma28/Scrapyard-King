@@ -19,9 +19,11 @@ MonoBehaviour:
   role: 0
   prefab: {fileID: 6087343292362594534, guid: 3074f75d8acfc46b7abd96413bf643e8, type: 3}
   siteId: smelter
-  moveSpeed: 3.8
-  carryCapacity: 8
+  moveSpeed: 5.2
+  carryCapacity: 10
   efficiency: 1
   pickupRadius: 1
   collectLooseItems: 0
-  hireCosts: b80b0000000000007017000000000000
+  workBoost: 1.5
+  spawnAtSite: 1
+  hireCosts: dc05000000000000a00f000000000000

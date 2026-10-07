@@ -36,6 +36,10 @@ namespace ScrapYardKing.Workers
         [SerializeField, Min(0.1f)] float pickupRadius = 1.6f;
         [Tooltip("Vacuums loose items off the ground (Scrap Porter). Off for workers that only use pads (Delivery Helper).")]
         [SerializeField] bool collectLooseItems = true;
+        [Tooltip("Specialists at a post. Operator: machine speed multiplier while at the console. Seller: service speed multiplier at the counter.")]
+        [SerializeField, Min(1f)] float workBoost = 1.5f;
+        [Tooltip("Appears at the post instead of walking in from the yard entrance (posts outside the yard floor, e.g. the street side of a counter).")]
+        [SerializeField] bool spawnAtSite;
 
         [Header("Hiring")]
         [Tooltip("Cost of the 1st, 2nd, ... hire. Its length is the maximum headcount.")]
@@ -53,6 +57,8 @@ namespace ScrapYardKing.Workers
         public float Efficiency => efficiency;
         public float PickupRadius => pickupRadius;
         public bool CollectLooseItems => collectLooseItems;
+        public float WorkBoost => workBoost;
+        public bool SpawnAtSite => spawnAtSite;
         public int MaxCount => hireCosts.Length;
 
         public long HireCost(int alreadyHired) => hireCosts[Mathf.Clamp(alreadyHired, 0, hireCosts.Length - 1)];

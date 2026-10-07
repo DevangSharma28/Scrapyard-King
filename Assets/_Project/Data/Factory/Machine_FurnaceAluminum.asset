@@ -1,0 +1,49 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 181722953d16648d1b998a69a350150d, type: 3}
+  m_Name: Machine_FurnaceAluminum
+  m_EditorClassIdentifier: ScrapYardKing.Runtime::ScrapYardKing.Factory.MachineDefinition
+  id: furnace_aluminum
+  displayName: Aluminum Furnace
+  icon: {fileID: 21300000, guid: 81bc22e6efef2496a82c41c1e047e14e, type: 3}
+  input: {fileID: 11400000, guid: 9e337d04ef8494cf1bf143f177129031, type: 2}
+  output: {fileID: 11400000, guid: 3f8f4f13291884c3faa112a3a1fd50a6, type: 2}
+  outputMix: []
+  recipes: []
+  levels:
+  - inputCapacity: 14
+    cycleTime: 1
+    inputsPerCycle: 1
+    outputsPerCycle: 1
+    upgradeCost: 0
+  - inputCapacity: 18
+    cycleTime: 0.85
+    inputsPerCycle: 1
+    outputsPerCycle: 1
+    upgradeCost: 2200
+  - inputCapacity: 24
+    cycleTime: 0.71
+    inputsPerCycle: 1
+    outputsPerCycle: 1
+    upgradeCost: 4600
+  - inputCapacity: 30
+    cycleTime: 0.59
+    inputsPerCycle: 1
+    outputsPerCycle: 1
+    upgradeCost: 8600
+  - inputCapacity: 38
+    cycleTime: 0.49
+    inputsPerCycle: 1
+    outputsPerCycle: 1
+    upgradeCost: 15000
+  cycleSfx: {fileID: 11400000, guid: 9d2d528f55696456b8c4e5728f14ebc9, type: 2}
+  outputSfx: {fileID: 11400000, guid: 79150274306f644a48e96fec6fe05749, type: 2}

@@ -176,4 +176,93 @@ namespace ScrapYardKing.Tests
         }
     }
 #endif
+    public sealed class GiantEventTests
+    {
+        [Test]
+        public void ChargeNeeded_FirstGiantComesSoonerThanRepeats()
+        {
+            Assert.AreEqual(3, GiantEventMath.ChargeNeeded(0, 3, 8));
+            Assert.AreEqual(8, GiantEventMath.ChargeNeeded(1, 3, 8));
+            Assert.AreEqual(8, GiantEventMath.ChargeNeeded(5, 3, 8));
+            Assert.AreEqual(1, GiantEventMath.ChargeNeeded(0, 0, 8), "never free");
+        }
+
+        [Test]
+        public void AddCharge_StopsAtWhatIsNeeded()
+        {
+            Assert.AreEqual(1, GiantEventMath.AddCharge(0, 3));
+            Assert.AreEqual(3, GiantEventMath.AddCharge(2, 3));
+            Assert.AreEqual(3, GiantEventMath.AddCharge(3, 3));
+            Assert.AreEqual(1, GiantEventMath.AddCharge(-5, 3));
+        }
+
+        [Test]
+        public void IsFeeder_HeavyTiersOnlyAndNeverTheGiantItself()
+        {
+            var config = ScriptableObject.CreateInstance<GiantEventConfig>();
+            var giant = ScriptableObject.CreateInstance<ScrapDefinition>();
+            var heavy = ScriptableObject.CreateInstance<ScrapDefinition>();
+            var car = ScriptableObject.CreateInstance<ScrapDefinition>();
+            try
+            {
+                Reflect.Set(giant, "tier", 5);
+                Reflect.Set(heavy, "tier", 3);
+                Reflect.Set(car, "tier", 1);
+                Reflect.Set(config, "giant", giant);
+                Reflect.Set(config, "feederMinTier", 3);
+
+                Assert.IsTrue(config.IsFeeder(heavy));
+                Assert.IsFalse(config.IsFeeder(car));
+                Assert.IsFalse(config.IsFeeder(giant));
+                Assert.IsFalse(config.IsFeeder(null));
+            }
+            finally
+            {
+                Object.DestroyImmediate(config);
+                Object.DestroyImmediate(giant);
+                Object.DestroyImmediate(heavy);
+                Object.DestroyImmediate(car);
+            }
+        }
+    }
+
+    public sealed class SpecialistSiteTests
+    {
+        [Test]
+        public void PorterRoute_RoleIsDataSoTheLoaderReusesTheCarrierLoop()
+        {
+            var go = new GameObject("Route");
+            try
+            {
+                var route = go.AddComponent<PorterRoute>();
+                Assert.AreEqual(WorkerRole.Porter, route.Role);
+                Reflect.Set(route, "role", WorkerRole.Loader);
+                Assert.AreEqual(WorkerRole.Loader, route.Role);
+            }
+            finally
+            {
+                Object.DestroyImmediate(go);
+            }
+        }
+
+        [Test]
+        public void WorkPost_LooksAheadWhenNoLookTargetIsSet()
+        {
+            var go = new GameObject("Post");
+            try
+            {
+                go.transform.SetPositionAndRotation(new Vector3(3f, 0f, 4f), Quaternion.Euler(0f, 90f, 0f));
+                var post = go.AddComponent<WorkPost>();
+                Reflect.Set(post, "role", WorkerRole.Seller);
+
+                Assert.AreEqual(WorkerRole.Seller, post.Role);
+                Assert.AreEqual(4f, post.LookPoint.x, 1e-4f);
+                Assert.AreEqual(4f, post.LookPoint.z, 1e-4f);
+            }
+            finally
+            {
+                Object.DestroyImmediate(go);
+            }
+        }
+    }
 }

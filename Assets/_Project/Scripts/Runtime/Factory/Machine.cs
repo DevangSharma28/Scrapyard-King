@@ -16,7 +16,7 @@ namespace ScrapYardKing.Factory
     /// When the next receiver is full the machine blocks, so the bottleneck is visible in the world.
     /// </summary>
     [DisallowMultipleComponent]
-    public sealed class Machine : MonoBehaviour, IItemReceiver, IStation, IUpgradeable
+    public sealed class Machine : MonoBehaviour, ISaveable, IItemReceiver, IStation, IUpgradeable
     {
         public enum MachineState
         {
@@ -48,6 +48,8 @@ namespace ScrapYardKing.Factory
         [SerializeField] OutputPort[] outputPorts;
         [SerializeField] MachineVisuals visuals;
         [SerializeField] StationLabel label;
+        [Tooltip("Label text when the full name is too long for the space (a furnace in the battery). Empty = the definition's name.")]
+        [SerializeField] string labelTitle;
         [SerializeField] LevelVisuals levelVisuals;
 
         readonly List<WorldItem> pendingOutputs = new();
@@ -125,10 +127,22 @@ namespace ScrapYardKing.Factory
             RefreshLabel();
             StationRegistry.Register(this);
             if (Services.TryGet(out UpgradeManager upgrades)) upgrades.Register(this);
+            SaveRegistry.Register(this);
+        }
+
+        string ISaveable.SaveKey => "stock/" + StationId;
+
+        // Only the hopper: a batch inside the machine or on the belt at the moment of saving is lost.
+        string ISaveable.CaptureState() => hopper != null ? JsonUtility.ToJson(hopper.CaptureStock()) : null;
+
+        void ISaveable.RestoreState(string state)
+        {
+            if (hopper != null && (pool != null || Services.TryGet(out pool))) hopper.RestoreStock(JsonUtility.FromJson<StockState>(state), pool);
         }
 
         void OnDestroy()
         {
+            SaveRegistry.Unregister(this);
             StationRegistry.Unregister(this);
             if (Services.TryGet(out UpgradeManager upgrades)) upgrades.Unregister(this);
         }
@@ -137,7 +151,7 @@ namespace ScrapYardKing.Factory
         {
             level = Mathf.Clamp(newLevel, 1, definition.MaxLevel);
             ApplyLevel(true);
-            if (visuals != null) visuals.PlayUpgrade();
+            if (visuals != null && !SaveRegistry.IsRestoring) visuals.PlayUpgrade();
             Changed?.Invoke(this);
             UpgradeChanged?.Invoke(this);
         }
@@ -328,7 +342,7 @@ namespace ScrapYardKing.Factory
         void RefreshLabel()
         {
             if (label == null || definition == null || hopper == null) return;
-            label.Set(definition.DisplayName, level, hopper.Count, hopper.Capacity);
+            label.Set(string.IsNullOrEmpty(labelTitle) ? definition.DisplayName : labelTitle, level, hopper.Count, hopper.Capacity);
         }
     }
 }

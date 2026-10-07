@@ -1,0 +1,53 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f0fbfedcb3f7c4a279c2742228de5158, type: 3}
+  m_Name: TruckBay_Plant
+  m_EditorClassIdentifier: ScrapYardKing.Runtime::ScrapYardKing.Factory.TruckBayDefinition
+  id: truck_bay
+  displayName: Truck Dock
+  icon: {fileID: 21300000, guid: db3508bf2cc43488c8f679680eb3fc41, type: 3}
+  accepts:
+  - {fileID: 11400000, guid: 4c5a4b2ef9bc44b9dbbf663d8db5144f, type: 2}
+  - {fileID: 11400000, guid: 07430945ed10745e8934835e5f867da3, type: 2}
+  - {fileID: 11400000, guid: 4334327d79916455399e60d827615656, type: 2}
+  - {fileID: 11400000, guid: 313598262ff9d435398d7eabe73d1196, type: 2}
+  contracts:
+  - {fileID: 11400000, guid: abccdeb3a0ac74a5f85b0fba2cbb38ca, type: 2}
+  - {fileID: 11400000, guid: b568ef7ca9afc477f997f0608cce76ce, type: 2}
+  - {fileID: 11400000, guid: 93f06c7f8c34f4e4685c5a9143fe1c33, type: 2}
+  - {fileID: 11400000, guid: 8a392437b2f474adfba5c661387b47a2, type: 2}
+  - {fileID: 11400000, guid: 554dcea2c504e44d2ba8d8c379447ac9, type: 2}
+  - {fileID: 11400000, guid: 87487c798bb8245e68f47aacad29cdbb, type: 2}
+  contractFill: 0.75
+  levels:
+  - capacity: 16
+    payoutMultiplier: 1.4
+    returnDelay: 8
+    upgradeCost: 0
+  - capacity: 24
+    payoutMultiplier: 1.55
+    returnDelay: 7
+    upgradeCost: 5000
+  - capacity: 32
+    payoutMultiplier: 1.7
+    returnDelay: 6
+    upgradeCost: 10000
+  - capacity: 48
+    payoutMultiplier: 1.85
+    returnDelay: 5
+    upgradeCost: 18000
+  truckSpeed: 10
+  firstArrivalDelay: 1.5
+  arriveSfx: {fileID: 11400000, guid: f0219acb812ff47c8bb7f68af4b7e08a, type: 2}
+  departSfx: {fileID: 11400000, guid: 3261ebc0df44e4b6e99d1a9a3e7786cb, type: 2}
+  payoutSfx: {fileID: 11400000, guid: a5c8619afa5a649b4823599a81627e2f, type: 2}
+  contractSfx: {fileID: 11400000, guid: 8e65ed43ce6834dbbba483555640351e, type: 2}

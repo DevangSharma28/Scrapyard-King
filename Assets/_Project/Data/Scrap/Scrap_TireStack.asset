@@ -17,8 +17,9 @@ MonoBehaviour:
   tier: 1
   sizeClass: 0
   prefab: {fileID: 2988855301064982980, guid: 0e65ba901dbfa43c9be0435287b5be1b, type: 3}
-  prefabVariants: []
-  maxHealth: 40
+  prefabVariants:
+  - {fileID: 2988855301064982980, guid: 0e65ba901dbfa43c9be0435287b5be1b, type: 3}
+  maxHealth: 36
   minCutPower: 0
   dropItem: {fileID: 11400000, guid: f6593dbddf0854968bd6f7b3be117504, type: 2}
   dropAmount: {x: 4, y: 5}
@@ -30,10 +31,17 @@ MonoBehaviour:
   rareDropChance: 0
   rareDropAmount: {x: 1, y: 1}
   xpReward: 1
-  respawnDelay: 6
+  respawnDelay: 4
   hitSfx: {fileID: 11400000, guid: 4cdd1f6dca697427e975ecd1ce4b9017, type: 2}
   breakSfx: {fileID: 11400000, guid: 29a65842f405d446ba7874fdf7aca745, type: 2}
   hitVfx: {fileID: 0}
   breakVfx: {fileID: 0}
   breakVfxScale: 0.8
   breakShake: 0.2
+  hitVfxScale: 1
+  breakDelay: 0
+  breakDelayBursts: 0
+  breakDelayVfx: {fileID: 0}
+  breakDelayVfxScale: 1
+  breakDelaySfx: {fileID: 0}
+  breakDelayShake: 0.25

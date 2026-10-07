@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Task_t29_smelt
   m_EditorClassIdentifier: ScrapYardKing.Runtime::ScrapYardKing.Progression.TaskDefinition
   id: t29_smelt
-  title: Smelt {0} ingots
+  title: Smelt {0} iron ingots
   category: 0
   type: 2
   targetId: furnace

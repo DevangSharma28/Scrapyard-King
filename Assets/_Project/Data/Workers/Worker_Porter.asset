@@ -19,9 +19,11 @@ MonoBehaviour:
   role: 0
   prefab: {fileID: 2678992471162667569, guid: 41e102c46293b4a97a2907bbc679515b, type: 3}
   siteId: scrap
-  moveSpeed: 3.6
-  carryCapacity: 6
+  moveSpeed: 5.2
+  carryCapacity: 8
   efficiency: 0.8
   pickupRadius: 1.6
   collectLooseItems: 1
-  hireCosts: f401000000000000dc05000000000000
+  workBoost: 1.5
+  spawnAtSite: 1
+  hireCosts: 2c01000000000000e803000000000000

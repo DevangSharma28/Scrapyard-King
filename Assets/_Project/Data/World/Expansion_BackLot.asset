@@ -15,6 +15,6 @@ MonoBehaviour:
   id: back_lot
   displayName: Back Lot
   icon: {fileID: 21300000, guid: a5f5021e8c3e14b678c1a9d97b407e8f, type: 3}
-  cost: 1500
+  cost: 700
   teaser: FRIDGES & KARTS
   openSfx: {fileID: 11400000, guid: 04263bae9f7524a0fb55a331dcbe4d2c, type: 2}

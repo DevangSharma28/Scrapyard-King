@@ -1,0 +1,49 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 181722953d16648d1b998a69a350150d, type: 3}
+  m_Name: Machine_FurnaceSteel
+  m_EditorClassIdentifier: ScrapYardKing.Runtime::ScrapYardKing.Factory.MachineDefinition
+  id: furnace_steel
+  displayName: Steel Furnace
+  icon: {fileID: 21300000, guid: 064be2c6e1ef7449aa31d03f178c574d, type: 3}
+  input: {fileID: 11400000, guid: 538a319a5c47d4827ae2ef20d710a407, type: 2}
+  output: {fileID: 11400000, guid: af8229cb7635d49e3a58cd2aa5433ba4, type: 2}
+  outputMix: []
+  recipes: []
+  levels:
+  - inputCapacity: 12
+    cycleTime: 1.5
+    inputsPerCycle: 1
+    outputsPerCycle: 1
+    upgradeCost: 0
+  - inputCapacity: 16
+    cycleTime: 1.27
+    inputsPerCycle: 1
+    outputsPerCycle: 1
+    upgradeCost: 3200
+  - inputCapacity: 22
+    cycleTime: 1.06
+    inputsPerCycle: 1
+    outputsPerCycle: 1
+    upgradeCost: 6800
+  - inputCapacity: 28
+    cycleTime: 0.88
+    inputsPerCycle: 1
+    outputsPerCycle: 1
+    upgradeCost: 12500
+  - inputCapacity: 36
+    cycleTime: 0.73
+    inputsPerCycle: 1
+    outputsPerCycle: 1
+    upgradeCost: 22000
+  cycleSfx: {fileID: 11400000, guid: 44a340b727984460baa35865db086a8c, type: 2}
+  outputSfx: {fileID: 11400000, guid: 79150274306f644a48e96fec6fe05749, type: 2}

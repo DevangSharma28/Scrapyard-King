@@ -17,7 +17,7 @@ MonoBehaviour:
   category: 0
   type: 10
   targetId: 
-  amount: 20
+  amount: 12
   rewardCash: 120
   rewardXp: 50
   rewardPremium: 0

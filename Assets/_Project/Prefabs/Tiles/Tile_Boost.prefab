@@ -561,7 +561,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: b351ce1d1c50844d088a4050b745b0d0, type: 3}
+  m_Sprite: {fileID: -959463724661337283, guid: f8e6658850c4d4b238187e2c8824bf85, type: 3}
   m_Type: 0
   m_PreserveAspect: 1
   m_FillCenter: 1
@@ -621,6 +621,7 @@ MonoBehaviour:
   visual: {fileID: 5374960552603370770}
   engageSfx: {fileID: 11400000, guid: dc95b236d78e84d77aaaf6d728198dfc, type: 2}
   machine: {fileID: 0}
+  alsoBoosts: []
   config: {fileID: 11400000, guid: 9df120be070534777a93697740dec23d, type: 2}
   displayRoot: {fileID: 314262393322628655}
   gauge: {fileID: 8954687488373135870}

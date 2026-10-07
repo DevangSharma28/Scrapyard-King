@@ -22,7 +22,7 @@ MonoBehaviour:
     inPanel: 1
     group: YOU
   - upgradeId: boots
-    unlockLevel: 4
+    unlockLevel: 3
     inPanel: 1
     group: YOU
   - upgradeId: crusher
@@ -34,62 +34,146 @@ MonoBehaviour:
     inPanel: 1
     group: OLD YARD
   - upgradeId: storage_yard
-    unlockLevel: 3
+    unlockLevel: 2
     inPanel: 1
     group: OLD YARD
   - upgradeId: sorter
-    unlockLevel: 6
+    unlockLevel: 5
     inPanel: 1
     group: RECYCLING PLANT
   - upgradeId: metal_bins
-    unlockLevel: 6
+    unlockLevel: 5
     inPanel: 1
     group: RECYCLING PLANT
   - upgradeId: market
-    unlockLevel: 6
+    unlockLevel: 5
     inPanel: 1
     group: RECYCLING PLANT
   - upgradeId: furnace
-    unlockLevel: 8
+    unlockLevel: 6
     inPanel: 1
-    group: FURNACE
+    group: FURNACES
   - upgradeId: ingot_rack
-    unlockLevel: 8
+    unlockLevel: 6
     inPanel: 1
-    group: FURNACE
+    group: FURNACES
   - upgradeId: porter
-    unlockLevel: 3
+    unlockLevel: 2
     inPanel: 0
     group: 
   - upgradeId: helper
-    unlockLevel: 4
+    unlockLevel: 3
     inPanel: 0
     group: 
   - upgradeId: back_lot
-    unlockLevel: 5
+    unlockLevel: 4
     inPanel: 0
     group: 
   - upgradeId: recycling_plant
-    unlockLevel: 6
+    unlockLevel: 5
     inPanel: 0
     group: 
   - upgradeId: hauler
-    unlockLevel: 6
+    unlockLevel: 5
     inPanel: 0
     group: 
   - upgradeId: runner
-    unlockLevel: 7
+    unlockLevel: 6
     inPanel: 0
     group: 
   - upgradeId: furnace_hall
-    unlockLevel: 8
+    unlockLevel: 6
     inPanel: 0
     group: 
   - upgradeId: smelter
-    unlockLevel: 8
+    unlockLevel: 6
     inPanel: 0
     group: 
   - upgradeId: heavy_yard
     unlockLevel: 9
     inPanel: 0
     group: 
+  - upgradeId: operator_crusher
+    unlockLevel: 9
+    inPanel: 0
+    group: 
+  - upgradeId: operator_sorter
+    unlockLevel: 9
+    inPanel: 0
+    group: 
+  - upgradeId: operator_furnace
+    unlockLevel: 10
+    inPanel: 0
+    group: 
+  - upgradeId: seller_yard
+    unlockLevel: 9
+    inPanel: 0
+    group: 
+  - upgradeId: seller_market
+    unlockLevel: 10
+    inPanel: 0
+    group: 
+  - upgradeId: truck_dock
+    unlockLevel: 10
+    inPanel: 0
+    group: 
+  - upgradeId: truck_bay
+    unlockLevel: 10
+    inPanel: 1
+    group: TRUCK DOCK
+  - upgradeId: loader
+    unlockLevel: 9
+    inPanel: 0
+    group: 
+  - upgradeId: dockyard
+    unlockLevel: 11
+    inPanel: 0
+    group: 
+  - upgradeId: claw_crane
+    unlockLevel: 4
+    inPanel: 0
+    group: 
+  - upgradeId: build_furnace_copper
+    unlockLevel: 7
+    inPanel: 0
+    group: 
+  - upgradeId: furnace_copper
+    unlockLevel: 7
+    inPanel: 1
+    group: FURNACES
+  - upgradeId: build_furnace_aluminum
+    unlockLevel: 8
+    inPanel: 0
+    group: 
+  - upgradeId: furnace_aluminum
+    unlockLevel: 8
+    inPanel: 1
+    group: FURNACES
+  - upgradeId: build_furnace_steel
+    unlockLevel: 9
+    inPanel: 0
+    group: 
+  - upgradeId: furnace_steel
+    unlockLevel: 9
+    inPanel: 1
+    group: FURNACES
+  - upgradeId: build_press
+    unlockLevel: 9
+    inPanel: 0
+    group: 
+  - upgradeId: press
+    unlockLevel: 9
+    inPanel: 1
+    group: PRESS
+  - upgradeId: bar_storage
+    unlockLevel: 9
+    inPanel: 1
+    group: PRESS
+  - upgradeId: heavy_crane
+    unlockLevel: 9
+    inPanel: 0
+    group: 
+  - upgradeId: ship_dock
+    unlockLevel: 11
+    inPanel: 1
+    group: PORT

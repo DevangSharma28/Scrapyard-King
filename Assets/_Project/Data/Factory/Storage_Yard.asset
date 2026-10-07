@@ -16,12 +16,12 @@ MonoBehaviour:
   displayName: Storage
   icon: {fileID: 21300000, guid: b5d3947f1286044f2a15c38a0ca0a086, type: 3}
   levels:
-  - capacity: 40
+  - capacity: 60
     pickupInterval: 0.07
     upgradeCost: 0
-  - capacity: 60
+  - capacity: 90
     pickupInterval: 0.06
     upgradeCost: 300
-  - capacity: 90
+  - capacity: 130
     pickupInterval: 0.05
     upgradeCost: 800

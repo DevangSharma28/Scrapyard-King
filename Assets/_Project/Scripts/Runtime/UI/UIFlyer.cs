@@ -27,7 +27,18 @@ namespace ScrapYardKing.UI
                 return;
             }
 
-            Vector2 screen = worldCamera.WorldToScreenPoint(worldPosition);
+            FlyFromScreen(worldCamera.WorldToScreenPoint(worldPosition), target, sprite, count, onFirstArrive);
+        }
+
+        /// <summary>Same flight from a screen point (a popup's icon) instead of a world position.</summary>
+        public void FlyFromScreen(Vector2 screen, RectTransform target, Sprite sprite, int count, Action onFirstArrive)
+        {
+            if (target == null || layer == null)
+            {
+                onFirstArrive?.Invoke();
+                return;
+            }
+
             RectTransformUtility.ScreenPointToLocalPointInRectangle(layer, screen, null, out var start);
             Vector2 end = layer.InverseTransformPoint(target.position);
             bool fired = false;
@@ -57,7 +68,8 @@ namespace ScrapYardKing.UI
                         fired = true;
                         onFirstArrive?.Invoke();
                     })
-                    .SetTarget(rt);
+                    .SetTarget(rt)
+                    .SetUpdate(true);
             }
         }
     }

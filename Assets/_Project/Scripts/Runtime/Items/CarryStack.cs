@@ -162,6 +162,33 @@ namespace ScrapYardKing.Items
             }
         }
 
+        const float MaxSwayStep = 1f / 60f;
+        const int MaxSwaySteps = 8;
+
+        /// <summary>
+        /// Advances the sway spring by <paramref name="dt"/>. A long frame (a hitch, a slow device, a sped-up test run) is
+        /// cut into small steps: one big explicit step makes a stiff spring overshoot further every frame until the stack's
+        /// positions are NaN. Whatever happens, the result is finite.
+        /// </summary>
+        public static void StepSway(ref Vector3 sway, ref Vector3 velocity, Vector3 target, float stiffness, float damping, float dt)
+        {
+            if (dt <= 0f) return;
+            int steps = Mathf.Clamp(Mathf.CeilToInt(dt / MaxSwayStep), 1, MaxSwaySteps);
+            // Beyond MaxSwaySteps the spring simply runs a little slow for that frame instead of taking bigger steps.
+            float h = Mathf.Min(dt / steps, MaxSwayStep * 2f);
+            for (int i = 0; i < steps; i++)
+            {
+                velocity += ((target - sway) * stiffness - velocity * damping) * h;
+                sway += velocity * h;
+            }
+
+            if (IsFinite(sway) && IsFinite(velocity)) return;
+            sway = Vector3.zero;
+            velocity = Vector3.zero;
+        }
+
+        static bool IsFinite(Vector3 v) => float.IsFinite(v.x) && float.IsFinite(v.y) && float.IsFinite(v.z);
+
         void LateUpdate()
         {
             float dt = Time.deltaTime;
@@ -178,8 +205,7 @@ namespace ScrapYardKing.Items
             localVelocity.y = 0f;
 
             Vector3 targetSway = Vector3.ClampMagnitude(-localVelocity * swayPerSpeed, maxSway);
-            swayVelocity += ((targetSway - sway) * swayStiffness - swayVelocity * swayDamping) * dt;
-            sway += swayVelocity * dt;
+            StepSway(ref sway, ref swayVelocity, targetSway, swayStiffness, swayDamping, dt);
 
             float top = Mathf.Max(TopHeight, 0.001f);
             float blend = Easing.Damp(settleSharpness, dt);

@@ -1,0 +1,22 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9eb7aa00d47bf4d86bc94e0ebce05f2b, type: 3}
+  m_Name: Sfx_TruckArrive
+  m_EditorClassIdentifier: ScrapYardKing.Runtime::ScrapYardKing.Feedback.SfxDefinition
+  clips:
+  - {fileID: 8300000, guid: e8a212d419dd84889bb20bbf12e32c76, type: 3}
+  - {fileID: 8300000, guid: 01602f54b731f4bb0b89b62460d51075, type: 3}
+  - {fileID: 8300000, guid: 6853617d14c6749ec91b6da820d802d6, type: 3}
+  volume: 0.55
+  pitchRange: {x: 0.55, y: 0.65}
+  minInterval: 0.03
+  fallback: 0

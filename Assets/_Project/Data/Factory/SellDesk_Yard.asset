@@ -18,35 +18,35 @@ MonoBehaviour:
   sells:
   - {fileID: 11400000, guid: 83055ce854d5646d3beb2a2d62c9174a, type: 2}
   levels:
-  - saleInterval: 8
-    unitsPerSale: {x: 2, y: 4}
+  - saleInterval: 0.3
+    unitsPerSale: {x: 3, y: 5}
     priceMultiplier: 1
-    counterCapacity: 12
+    counterCapacity: 16
     queueCapacity: 3
     upgradeCost: 0
-  - saleInterval: 6.5
-    unitsPerSale: {x: 2, y: 5}
+  - saleInterval: 0.27
+    unitsPerSale: {x: 3, y: 6}
     priceMultiplier: 1.1
-    counterCapacity: 16
+    counterCapacity: 20
     queueCapacity: 4
     upgradeCost: 250
-  - saleInterval: 5
-    unitsPerSale: {x: 3, y: 6}
+  - saleInterval: 0.24
+    unitsPerSale: {x: 4, y: 7}
     priceMultiplier: 1.25
-    counterCapacity: 20
+    counterCapacity: 26
     queueCapacity: 5
-    upgradeCost: 700
-  - saleInterval: 4
-    unitsPerSale: {x: 3, y: 7}
+    upgradeCost: 500
+  - saleInterval: 0.21
+    unitsPerSale: {x: 4, y: 8}
     priceMultiplier: 1.4
-    counterCapacity: 24
+    counterCapacity: 32
     queueCapacity: 6
     upgradeCost: 1500
-  - saleInterval: 3.2
-    unitsPerSale: {x: 4, y: 8}
+  - saleInterval: 0.18
+    unitsPerSale: {x: 5, y: 9}
     priceMultiplier: 1.6
-    counterCapacity: 30
+    counterCapacity: 40
     queueCapacity: 7
     upgradeCost: 3000
-  firstSaleDelay: 1.2
+  firstSaleDelay: 0.2
   saleSfx: {fileID: 11400000, guid: e790a3ca4e07449d3a10d9d3b1d8a3c4, type: 2}

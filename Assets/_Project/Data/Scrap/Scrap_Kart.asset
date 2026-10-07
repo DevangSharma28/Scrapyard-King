@@ -22,7 +22,7 @@ MonoBehaviour:
   - {fileID: 1881047089350219387, guid: 62b6470cac5eb40d9ab45a55f0f4fd84, type: 3}
   - {fileID: 4409286547933316593, guid: 86cfdb988daa74b8d8e38e60d4a2be80, type: 3}
   - {fileID: 8971335628591286536, guid: 62d95a6a688274d11b10c638ccd12897, type: 3}
-  maxHealth: 260
+  maxHealth: 240
   minCutPower: 15
   dropItem: {fileID: 11400000, guid: f6593dbddf0854968bd6f7b3be117504, type: 2}
   dropAmount: {x: 15, y: 20}
@@ -34,10 +34,17 @@ MonoBehaviour:
   rareDropChance: 0
   rareDropAmount: {x: 1, y: 1}
   xpReward: 4
-  respawnDelay: 11
+  respawnDelay: 7
   hitSfx: {fileID: 0}
   breakSfx: {fileID: 0}
   hitVfx: {fileID: 0}
   breakVfx: {fileID: 0}
   breakVfxScale: 1.3
   breakShake: 0.4
+  hitVfxScale: 1
+  breakDelay: 0
+  breakDelayBursts: 0
+  breakDelayVfx: {fileID: 0}
+  breakDelayVfxScale: 1
+  breakDelaySfx: {fileID: 0}
+  breakDelayShake: 0.25

@@ -12,12 +12,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8b313570adad049a38d2bb5e754b2769, type: 3}
   m_Name: PlayerConfig
   m_EditorClassIdentifier: ScrapYardKing.Runtime::ScrapYardKing.Player.PlayerConfig
-  moveSpeed: 5.5
+  moveSpeed: 6.8
   acceleration: 45
   deceleration: 60
   turnSpeed: 900
   cutPower: 10
-  cutRate: 5
+  cutRate: 7
   cutRange: 1.8
-  carryCapacity: 8
-  pickupRadius: 2.5
+  carryCapacity: 14
+  pickupRadius: 3

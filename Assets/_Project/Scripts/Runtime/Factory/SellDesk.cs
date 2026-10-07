@@ -17,7 +17,7 @@ namespace ScrapYardKing.Factory
     /// uses <see cref="TryHandOver"/> + <see cref="CompleteSale"/>).
     /// </summary>
     [DisallowMultipleComponent]
-    public sealed class SellDesk : MonoBehaviour, IItemReceiver, IStation, IUpgradeable
+    public sealed class SellDesk : MonoBehaviour, IItemReceiver, IStation, IUpgradeable, ISaveable
     {
         [SerializeField] SellDeskDefinition definition;
         [SerializeField, Min(1)] int level = 1;
@@ -36,12 +36,17 @@ namespace ScrapYardKing.Factory
         float nextSaleTime = -1f;
         bool customersWaiting;
 
+        /// <summary>Service speed multiplier. A Seller at the counter adds a modifier here (shorter time per customer).</summary>
+        public ModifiableStat ServiceSpeed { get; } = new(1f);
+
         public event Action<SellDesk, long> Sold;
         public event Action<IUpgradeable> UpgradeChanged;
 
         public SellDeskDefinition Definition => definition;
         public int Level => level;
         public SellDeskLevel Stats => definition.GetLevel(level);
+        /// <summary>Seconds per customer at the current level and service speed.</summary>
+        public float SaleInterval => Stats.saleInterval / Mathf.Max(0.1f, ServiceSpeed.Value);
         public int Stock => counter.Count;
         public bool CanTakeStock => counter.FreeSpace > 0;
         public CashPile CashPile => cashPile;
@@ -86,7 +91,11 @@ namespace ScrapYardKing.Factory
             set => walkInDemand = value;
         }
 
-        void Awake() => ApplyLevel();
+        void Awake()
+        {
+            ServiceSpeed.Changed += _ => RefreshLabel();
+            ApplyLevel();
+        }
 
         void OnEnable() => counter.Changed += OnCounterChanged;
 
@@ -98,10 +107,29 @@ namespace ScrapYardKing.Factory
             RefreshLabel();
             StationRegistry.Register(this);
             if (Services.TryGet(out UpgradeManager upgrades)) upgrades.Register(this);
+            SaveRegistry.Register(this);
+        }
+
+        string ISaveable.SaveKey => "stock/" + StationId;
+
+        string ISaveable.CaptureState()
+        {
+            var state = counter.CaptureStock();
+            state.cash = cashPile != null ? cashPile.StoredCash : 0;
+            return JsonUtility.ToJson(state);
+        }
+
+        void ISaveable.RestoreState(string json)
+        {
+            var state = JsonUtility.FromJson<StockState>(json);
+            if (pool != null || Services.TryGet(out pool)) counter.RestoreStock(state, pool);
+            // Cash that was waiting on the pallet is still there.
+            if (cashPile != null && state.cash > 0) cashPile.Add(state.cash, cashPile.transform.position + Vector3.up * 0.5f);
         }
 
         void OnDestroy()
         {
+            SaveRegistry.Unregister(this);
             StationRegistry.Unregister(this);
             if (Services.TryGet(out UpgradeManager upgrades)) upgrades.Unregister(this);
         }
@@ -143,7 +171,7 @@ namespace ScrapYardKing.Factory
             if (Time.time < nextSaleTime) return;
 
             ServeCustomer(RollUnitsWanted(), buyerPoint);
-            nextSaleTime = Time.time + Stats.saleInterval;
+            nextSaleTime = Time.time + SaleInterval;
         }
 
         /// <summary>Units one customer wants at the current level (random in the level's range).</summary>
@@ -245,7 +273,9 @@ namespace ScrapYardKing.Factory
         {
             if (label == null || definition == null) return;
             label.Set(definition.DisplayName, level, counter.Count, counter.Capacity);
-            label.SetStatus(customersWaiting ? StationStatus.NeedsStock : StationStatus.None);
+            if (customersWaiting) label.SetStatus(StationStatus.NeedsStock);
+            else if (ServiceSpeed.Value > 1.01f) label.SetStatus(StationStatus.Boosted, $"x{ServiceSpeed.Value:0.#} SERVICE");
+            else label.SetStatus(StationStatus.None);
         }
     }
 }

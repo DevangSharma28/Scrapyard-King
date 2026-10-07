@@ -1,0 +1,21 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fb70fd218a2cc4b6eaabd5460880a3cf, type: 3}
+  m_Name: Item_Aluminum
+  m_EditorClassIdentifier: ScrapYardKing.Runtime::ScrapYardKing.Items.ItemDefinition
+  id: aluminum
+  displayName: Aluminum
+  icon: {fileID: 21300000, guid: a90b5010238a8407fa017d4d2011cc43, type: 3}
+  color: {r: 0.72, g: 0.84, b: 0.95, a: 1}
+  prefab: {fileID: 2329903352669382960, guid: 08a84cbc2531f44259da563e2b831eaf, type: 3}
+  stackHeight: 0.24
+  baseValue: 16

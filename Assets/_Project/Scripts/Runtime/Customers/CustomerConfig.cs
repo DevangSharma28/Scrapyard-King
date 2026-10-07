@@ -33,12 +33,16 @@ namespace ScrapYardKing.Customers
         [SerializeField] OrderOption[] orderOptions;
         [Tooltip("Chance an order picks a material that is already on the counter, so the line rarely stalls on luck.")]
         [SerializeField, Range(0f, 1f)] float preferInStock = 0.8f;
+        [Tooltip("A customer whose material is not on the counter settles for something that is after this many seconds " +
+                 "(at once when the counter is full of other goods and could never take theirs). 0 = they wait forever.")]
+        [SerializeField, Min(0f)] float settleAfter = 6f;
         [SerializeField] SfxDefinition arriveSfx;
         [SerializeField] SfxDefinition happySfx;
 
         public int PrefabCount => prefabs != null ? prefabs.Length : 0;
         public float WalkSpeed => walkSpeed;
         public float HandOverInterval => handOverInterval;
+        public float SettleAfter => settleAfter;
         public ItemDefinition OrderItem => orderItem;
         public SfxDefinition ArriveSfx => arriveSfx;
         public SfxDefinition HappySfx => happySfx;
@@ -50,12 +54,13 @@ namespace ScrapYardKing.Customers
         /// <paramref name="obtainable"/> rules out goods the yard cannot make yet (ingots before the Furnace is built),
         /// so nobody waits at the counter for something that will never come.
         /// </summary>
-        public ItemDefinition RollOrder(Func<ItemDefinition, int> stockOf, Func<ItemDefinition, bool> obtainable = null)
+        /// <param name="mustBeInStock">Only materials on the counter count; null when there are none (a customer changing their mind).</param>
+        public ItemDefinition RollOrder(Func<ItemDefinition, int> stockOf, Func<ItemDefinition, bool> obtainable = null, bool mustBeInStock = false)
         {
             if (orderOptions == null || orderOptions.Length == 0) return orderItem;
 
-            bool inStockOnly = false;
-            if (stockOf != null && Random.value < preferInStock)
+            bool inStockOnly = mustBeInStock;
+            if (!inStockOnly && stockOf != null && Random.value < preferInStock)
                 foreach (var o in orderOptions)
                     if (o.item != null && o.weight > 0f && stockOf(o.item) > 0)
                     {
@@ -66,7 +71,7 @@ namespace ScrapYardKing.Customers
             float total = 0f;
             foreach (var o in orderOptions)
                 if (Eligible(o, inStockOnly, stockOf, obtainable)) total += o.weight;
-            if (total <= 0f) return orderItem;
+            if (total <= 0f) return mustBeInStock ? null : orderItem;
 
             float roll = Random.value * total;
             foreach (var o in orderOptions)

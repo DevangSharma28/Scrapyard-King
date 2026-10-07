@@ -13,11 +13,11 @@ MonoBehaviour:
   m_Name: Task_t27_sort100
   m_EditorClassIdentifier: ScrapYardKing.Runtime::ScrapYardKing.Progression.TaskDefinition
   id: t27_sort100
-  title: Sort {0} metal bales
+  title: Split {0} raw metal
   category: 0
   type: 2
   targetId: sorter
-  amount: 100
+  amount: 80
   rewardCash: 500
   rewardXp: 120
   rewardPremium: 0

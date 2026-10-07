@@ -13,41 +13,37 @@ MonoBehaviour:
   m_Name: Machine_Furnace
   m_EditorClassIdentifier: ScrapYardKing.Runtime::ScrapYardKing.Factory.MachineDefinition
   id: furnace
-  displayName: Furnace
+  displayName: Iron Furnace
   icon: {fileID: 21300000, guid: 998ac783dbffa4ad3b4015015204485d, type: 3}
   input: {fileID: 11400000, guid: 9034d1f71988b47d688b1b511574392e, type: 2}
   output: {fileID: 11400000, guid: f1dd9678f6c7d4e3193e7acc20b19bcb, type: 2}
   outputMix: []
-  recipes:
-  - input: {fileID: 11400000, guid: 9034d1f71988b47d688b1b511574392e, type: 2}
-    output: {fileID: 11400000, guid: f1dd9678f6c7d4e3193e7acc20b19bcb, type: 2}
-  - input: {fileID: 11400000, guid: 7dde6c26b10ee4483bb025f35cfe3de9, type: 2}
-    output: {fileID: 11400000, guid: d668d38012c8b426c951c31ecb263a7f, type: 2}
+  recipes: []
   levels:
-  - inputCapacity: 12
-    cycleTime: 1.8
-    inputsPerCycle: 1
-    outputsPerCycle: 1
-    upgradeCost: 0
   - inputCapacity: 16
-    cycleTime: 1.45
-    inputsPerCycle: 1
-    outputsPerCycle: 1
-    upgradeCost: 2200
-  - inputCapacity: 22
-    cycleTime: 1.15
-    inputsPerCycle: 1
-    outputsPerCycle: 1
-    upgradeCost: 4500
-  - inputCapacity: 30
     cycleTime: 0.9
     inputsPerCycle: 1
     outputsPerCycle: 1
-    upgradeCost: 8000
-  - inputCapacity: 40
-    cycleTime: 0.7
+    upgradeCost: 0
+  - inputCapacity: 20
+    cycleTime: 0.76
     inputsPerCycle: 1
     outputsPerCycle: 1
-    upgradeCost: 14000
+    upgradeCost: 1000
+  - inputCapacity: 26
+    cycleTime: 0.63
+    inputsPerCycle: 1
+    outputsPerCycle: 1
+    upgradeCost: 2200
+  - inputCapacity: 32
+    cycleTime: 0.52
+    inputsPerCycle: 1
+    outputsPerCycle: 1
+    upgradeCost: 4200
+  - inputCapacity: 40
+    cycleTime: 0.43
+    inputsPerCycle: 1
+    outputsPerCycle: 1
+    upgradeCost: 7500
   cycleSfx: {fileID: 11400000, guid: dc0da313edf7748f4bac800d77904e0b, type: 2}
   outputSfx: {fileID: 11400000, guid: 79150274306f644a48e96fec6fe05749, type: 2}

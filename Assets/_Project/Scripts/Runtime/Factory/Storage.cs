@@ -12,7 +12,7 @@ namespace ScrapYardKing.Factory
     /// share one upgrade: followers take their level from <see cref="levelSource"/> and keep their own station id.
     /// </summary>
     [DisallowMultipleComponent]
-    public sealed class Storage : MonoBehaviour, IItemReceiver, IItemSource, IStation, IUpgradeable
+    public sealed class Storage : MonoBehaviour, IItemReceiver, IItemSource, IStation, IUpgradeable, ISaveable
     {
         [SerializeField] StorageDefinition definition;
         [SerializeField, Min(1)] int level = 1;
@@ -60,14 +60,24 @@ namespace ScrapYardKing.Factory
             {
                 levelSource.UpgradeChanged += OnSourceChanged;
                 if (levelSource.Level != level) SetLevel(levelSource.Level);
-                return;
             }
+            else if (Services.TryGet(out UpgradeManager upgrades)) upgrades.Register(this);
 
-            if (Services.TryGet(out UpgradeManager upgrades)) upgrades.Register(this);
+            SaveRegistry.Register(this);
+        }
+
+        string ISaveable.SaveKey => "stock/" + StationId;
+
+        string ISaveable.CaptureState() => JsonUtility.ToJson(pile.CaptureStock());
+
+        void ISaveable.RestoreState(string state)
+        {
+            if (Services.TryGet(out ItemPool pool)) pile.RestoreStock(JsonUtility.FromJson<StockState>(state), pool);
         }
 
         void OnDestroy()
         {
+            SaveRegistry.Unregister(this);
             StationRegistry.Unregister(this);
             if (levelSource != null) levelSource.UpgradeChanged -= OnSourceChanged;
             else if (Services.TryGet(out UpgradeManager upgrades)) upgrades.Unregister(this);

@@ -1,0 +1,29 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f277c0476a2104eb8aef3ce2788738b2, type: 3}
+  m_Name: Worker_SellerMarket
+  m_EditorClassIdentifier: ScrapYardKing.Runtime::ScrapYardKing.Workers.WorkerDefinition
+  id: seller_market
+  displayName: Market Seller
+  icon: {fileID: 21300000, guid: e7e690443ec744e5f818cceed3fdc4cd, type: 3}
+  tagline: MARKET LINE MOVES FASTER
+  role: 3
+  prefab: {fileID: 5542075838526654977, guid: d48d8aab34100445696296fadd2d3cd7, type: 3}
+  siteId: seller_market
+  moveSpeed: 3.6
+  carryCapacity: 0
+  efficiency: 1
+  pickupRadius: 1
+  collectLooseItems: 0
+  workBoost: 1.6
+  spawnAtSite: 1
+  hireCosts: 4c1d000000000000

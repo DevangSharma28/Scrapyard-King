@@ -3,6 +3,7 @@
     "rootNamespace": "ScrapYardKing.Tests",
     "references": [
         "ScrapYardKing.Runtime",
+        "ScrapYardKing.Editor",
         "UnityEngine.TestRunner",
         "UnityEditor.TestRunner"
     ],

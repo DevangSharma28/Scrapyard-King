@@ -30,17 +30,17 @@ namespace ScrapYardKing.Feedback
 
         public static void CameraShake(float trauma)
         {
-            if (trauma > 0f && Services.TryGet(out CameraController cam)) cam.Shake(trauma);
+            if (trauma > 0f && Settings.GameSettings.CameraShake && Services.TryGet(out CameraController cam)) cam.Shake(trauma);
         }
 
         public static void CameraPunch(float strength)
         {
-            if (strength > 0f && Services.TryGet(out CameraController cam)) cam.Punch(strength);
+            if (strength > 0f && Settings.GameSettings.CameraShake && Services.TryGet(out CameraController cam)) cam.Punch(strength);
         }
 
         public static void Popup(string text, Vector3 position, Color color, float scale = 1f)
         {
-            if (Services.TryGet(out FloatingTextManager popups)) popups.Show(text, position, color, scale);
+            if (Settings.GameSettings.PopupNumbers && Services.TryGet(out FloatingTextManager popups)) popups.Show(text, position, color, scale);
         }
 
         /// <summary>Returns <paramref name="preferred"/> unless it is null/destroyed, then <paramref name="fallback"/>.</summary>

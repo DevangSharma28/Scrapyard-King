@@ -1,0 +1,31 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f2ca0950e597343f08500b3489afcd55, type: 3}
+  m_Name: IAP_Gems2500
+  m_EditorClassIdentifier: ScrapYardKing.Runtime::ScrapYardKing.Shop.IAPProductConfig
+  productId: syk_gems_2500
+  type: 0
+  tier: 2
+  title: SACK OF DIAMONDS
+  icon: {fileID: 2645788863589133557, guid: 97de2faf2e1c349e18006a41135ab133, type: 3}
+  enabled: 1
+  diamonds: 2500
+  bonusDiamonds: 750
+  cashAsDiamonds: 0
+  boost: {fileID: 0}
+  boostMinutes: 0
+  secondBoost: {fileID: 0}
+  secondBoostMinutes: 0
+  removesAds: 0
+  badge: 
+  fallbackPrice: $19.99
+  referencePriceUsd: 19.99

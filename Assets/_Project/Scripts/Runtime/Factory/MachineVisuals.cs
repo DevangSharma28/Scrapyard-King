@@ -18,6 +18,8 @@ namespace ScrapYardKing.Factory
         [SerializeField] Transform[] spinners;
         [SerializeField] Vector3 spinAxis = Vector3.forward;
         [SerializeField] float spinSpeed = 420f;
+        [Tooltip("Share of spin speed while idle (motor ticking over). A blocked machine stops dead, so a jam reads at a glance.")]
+        [SerializeField, Range(0f, 1f)] float idleSpin = 0.06f;
         [SerializeField] Transform[] pistons;
         [SerializeField] float pistonTravel = 0.25f;
         [SerializeField] ParticleSystem workParticles;
@@ -161,7 +163,12 @@ namespace ScrapYardKing.Factory
         {
             if (overdrive) PulseLight();
             UpdateGlow();
-            float target = state == Machine.MachineState.Working ? spinSpeed * (overdrive ? overdriveSpin : 1f) : 0f;
+            float target = state switch
+            {
+                Machine.MachineState.Working => spinSpeed * (overdrive ? overdriveSpin : 1f),
+                Machine.MachineState.Idle => spinSpeed * idleSpin,
+                _ => 0f
+            };
             spinRate = Mathf.Lerp(spinRate, target, 1f - Mathf.Exp(-6f * Time.deltaTime));
             if (spinners == null || Mathf.Abs(spinRate) < 0.5f) return;
             foreach (var s in spinners)

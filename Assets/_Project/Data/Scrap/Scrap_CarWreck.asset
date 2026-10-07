@@ -16,12 +16,13 @@ MonoBehaviour:
   displayName: Car Wreck
   tier: 1
   sizeClass: 1
-  prefab: {fileID: 6918816356941317455, guid: e7aafca69585a4652bb5327452b3476c, type: 3}
+  prefab: {fileID: 4200057682930864871, guid: c132f8402312e4b26b751dac75c0ce6f, type: 3}
   prefabVariants:
+  - {fileID: 4200057682930864871, guid: c132f8402312e4b26b751dac75c0ce6f, type: 3}
   - {fileID: 6918816356941317455, guid: e7aafca69585a4652bb5327452b3476c, type: 3}
-  - {fileID: 6680063320073546140, guid: 867f442d1dcab4ab7b1144e5e65a9918, type: 3}
   - {fileID: 5798016074544158275, guid: da8b5fecded6a4fb1a8a0dc36bc59087, type: 3}
-  maxHealth: 220
+  - {fileID: 6680063320073546140, guid: 867f442d1dcab4ab7b1144e5e65a9918, type: 3}
+  maxHealth: 180
   minCutPower: 0
   dropItem: {fileID: 11400000, guid: f6593dbddf0854968bd6f7b3be117504, type: 2}
   dropAmount: {x: 18, y: 22}
@@ -33,10 +34,17 @@ MonoBehaviour:
   rareDropChance: 0
   rareDropAmount: {x: 1, y: 1}
   xpReward: 6
-  respawnDelay: 12
+  respawnDelay: 7
   hitSfx: {fileID: 0}
   breakSfx: {fileID: 0}
   hitVfx: {fileID: 0}
   breakVfx: {fileID: 0}
   breakVfxScale: 1.5
   breakShake: 0.45
+  hitVfxScale: 1
+  breakDelay: 0
+  breakDelayBursts: 0
+  breakDelayVfx: {fileID: 0}
+  breakDelayVfxScale: 1
+  breakDelaySfx: {fileID: 0}
+  breakDelayShake: 0.25

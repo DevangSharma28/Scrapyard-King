@@ -177,4 +177,43 @@ namespace ScrapYardKing.Tests
             }
         }
     }
+    public sealed class TruckBayMathTests
+    {
+        [Test]
+        public void Payout_AppliesThePremiumAndRounds()
+        {
+            // 10 iron ingots ($30) + 6 copper ingots ($64) at the Lv.1 premium.
+            Assert.AreEqual(958, TruckBayMath.Payout(684, 1.4f));
+            Assert.AreEqual(0, TruckBayMath.Payout(0, 1.4f));
+            Assert.AreEqual(1, TruckBayMath.Payout(1, 0.1f), "a loaded truck always pays something");
+        }
+
+        [Test]
+        public void Share_SplitsByValueAndNeverPaysMoreThanTheTotal()
+        {
+            long total = TruckBayMath.Payout(684, 1.4f);
+            long iron = TruckBayMath.Share(total, 300, 684);
+            long copper = TruckBayMath.Share(total, 384, 684);
+
+            Assert.LessOrEqual(iron + copper, total);
+            Assert.GreaterOrEqual(iron + copper, total - 1, "rounding may lose at most one unit per line");
+            Assert.Greater(copper, iron);
+            Assert.AreEqual(0, TruckBayMath.Share(total, 0, 684));
+            Assert.AreEqual(0, TruckBayMath.Share(total, 10, 0));
+            Assert.AreEqual(total, TruckBayMath.Share(total, 900, 684), "a line can never be worth more than the cargo");
+        }
+
+        [Test]
+        public void SpeedAt_CrawlsAtTheDockAndReachesRoadSpeed()
+        {
+            Assert.AreEqual(1.4f, TruckBayMath.SpeedAt(0f, 10f, 1.4f, 7f), 1e-4f);
+            Assert.AreEqual(10f, TruckBayMath.SpeedAt(7f, 10f, 1.4f, 7f), 1e-4f);
+            Assert.AreEqual(10f, TruckBayMath.SpeedAt(40f, 10f, 1.4f, 7f), 1e-4f);
+            float half = TruckBayMath.SpeedAt(3.5f, 10f, 1.4f, 7f);
+            Assert.Greater(half, 1.4f);
+            Assert.Less(half, 10f);
+            Assert.AreEqual(10f, TruckBayMath.SpeedAt(0f, 10f, 1.4f, 0f), 1e-4f, "no easing distance = road speed everywhere");
+            Assert.AreEqual(2f, TruckBayMath.SpeedAt(0f, 2f, 5f, 7f), 1e-4f, "the crawl is never faster than the road speed");
+        }
+    }
 }

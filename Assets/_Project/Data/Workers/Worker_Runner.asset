@@ -19,9 +19,11 @@ MonoBehaviour:
   role: 0
   prefab: {fileID: 5542075838526654977, guid: 7bbc2fdde9eb24e9c962dd303c077674, type: 3}
   siteId: market
-  moveSpeed: 3.6
-  carryCapacity: 8
+  moveSpeed: 5.2
+  carryCapacity: 10
   efficiency: 1
   pickupRadius: 1
   collectLooseItems: 0
-  hireCosts: dc05000000000000b80b000000000000
+  workBoost: 1.5
+  spawnAtSite: 1
+  hireCosts: 4c04000000000000280a000000000000

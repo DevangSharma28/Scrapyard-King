@@ -1,0 +1,64 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 86d92aa42324d4a71abfb537796b4070, type: 3}
+  m_Name: DailyRewardConfig
+  m_EditorClassIdentifier: ScrapYardKing.Runtime::ScrapYardKing.Progression.DailyRewardConfig
+  days:
+  - title: DAY 1
+    icon: {fileID: 8991453293202524206, guid: f8e6658850c4d4b238187e2c8824bf85, type: 3}
+    reward:
+      cashPerLevel: 200
+      diamonds: 0
+      boost: {fileID: 0}
+      boostMinutes: 0
+  - title: DAY 2
+    icon: {fileID: 1840065863300296980, guid: f8e6658850c4d4b238187e2c8824bf85, type: 3}
+    reward:
+      cashPerLevel: 0
+      diamonds: 10
+      boost: {fileID: 0}
+      boostMinutes: 0
+  - title: DAY 3
+    icon: {fileID: 7168540097607507331, guid: f8e6658850c4d4b238187e2c8824bf85, type: 3}
+    reward:
+      cashPerLevel: 0
+      diamonds: 0
+      boost: {fileID: 11400000, guid: 09405ae7d54ac468ab5e1e7154f72dcb, type: 2}
+      boostMinutes: 10
+  - title: DAY 4
+    icon: {fileID: 8154092793322718361, guid: f8e6658850c4d4b238187e2c8824bf85, type: 3}
+    reward:
+      cashPerLevel: 400
+      diamonds: 0
+      boost: {fileID: 0}
+      boostMinutes: 0
+  - title: DAY 5
+    icon: {fileID: -4894621427450289223, guid: 97de2faf2e1c349e18006a41135ab133, type: 3}
+    reward:
+      cashPerLevel: 0
+      diamonds: 15
+      boost: {fileID: 0}
+      boostMinutes: 0
+  - title: DAY 6
+    icon: {fileID: -959463724661337283, guid: f8e6658850c4d4b238187e2c8824bf85, type: 3}
+    reward:
+      cashPerLevel: 0
+      diamonds: 0
+      boost: {fileID: 11400000, guid: c7fc20ebff8c44dd7b037d0d7cb55ac0, type: 2}
+      boostMinutes: 15
+  - title: DAY 7
+    icon: {fileID: -3332647269335072481, guid: 97de2faf2e1c349e18006a41135ab133, type: 3}
+    reward:
+      cashPerLevel: 600
+      diamonds: 50
+      boost: {fileID: 0}
+      boostMinutes: 0

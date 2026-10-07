@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: ScrapYardKing.Runtime::ScrapYardKing.Items.ItemDefinition
   id: scrap
   displayName: Scrap
-  icon: {fileID: 0}
+  icon: {fileID: 21300000, guid: 46b45384619ec4d4c822691f492a3189, type: 3}
   color: {r: 1, g: 0.78, b: 0.3, a: 1}
   prefab: {fileID: 8083285173801262300, guid: 73035e5d3c7df414fb7adc0354a7d983, type: 3}
   stackHeight: 0.26

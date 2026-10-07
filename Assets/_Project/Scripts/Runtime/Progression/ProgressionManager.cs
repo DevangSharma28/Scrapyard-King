@@ -8,8 +8,15 @@ namespace ScrapYardKing.Progression
 {
     /// <summary>Yard XP and level. Listens to gameplay events; nothing calls it except tasks granting rewards.</summary>
     [DefaultExecutionOrder(-450)]
-    public sealed class ProgressionManager : ServiceBehaviour<ProgressionManager>
+    public sealed class ProgressionManager : ServiceBehaviour<ProgressionManager>, ISaveable
     {
+        [Serializable]
+        sealed class State
+        {
+            public int level = 1, xp;
+            public float xpFromCash;
+        }
+
         [SerializeField] ProgressionConfig config;
 
         float xpFromCash;
@@ -39,6 +46,29 @@ namespace ScrapYardKing.Progression
             GameEvents.ItemsSold -= OnItemsSold;
             GameEvents.UpgradePurchased -= OnUpgradePurchased;
             GameEvents.WorkerHired -= OnWorkerHired;
+        }
+
+        void Start() => SaveRegistry.Register(this);
+
+        protected override void OnDestroy()
+        {
+            base.OnDestroy();
+            SaveRegistry.Unregister(this);
+        }
+
+        string ISaveable.SaveKey => "progression";
+
+        string ISaveable.CaptureState() => JsonUtility.ToJson(new State { level = Level, xp = Xp, xpFromCash = xpFromCash });
+
+        void ISaveable.RestoreState(string state)
+        {
+            var s = JsonUtility.FromJson<State>(state);
+            int max = config != null ? config.MaxLevel : s.level;
+            Level = Mathf.Clamp(s.level, 1, Mathf.Max(1, max));
+            Xp = Mathf.Clamp(s.xp, 0, Mathf.Max(0, XpToNext - 1));
+            xpFromCash = Mathf.Clamp01(s.xpFromCash);
+            // No level-up reward or jingle: the level was earned in an earlier session.
+            LevelChanged?.Invoke(Level);
         }
 
         public void AddXp(int amount, Vector3? source = null)

@@ -28,14 +28,21 @@ MonoBehaviour:
   dropLaunchSpeed: 6.5
   dropSpread: 1.6
   dropBurstDuration: 0.6
-  rareDropItem: {fileID: 11400000, guid: 9034d1f71988b47d688b1b511574392e, type: 2}
-  rareDropChance: 1
-  rareDropAmount: {x: 4, y: 8}
+  rareDropItem: {fileID: 11400000, guid: 538a319a5c47d4827ae2ef20d710a407, type: 2}
+  rareDropChance: 0.6
+  rareDropAmount: {x: 3, y: 6}
   xpReward: 45
-  respawnDelay: 30
+  respawnDelay: 18
   hitSfx: {fileID: 11400000, guid: 6e9e93e37e229422a9456a5073e48d46, type: 2}
   breakSfx: {fileID: 11400000, guid: 4b4153410c94f41319b2a2fe92f84312, type: 2}
   hitVfx: {fileID: 0}
-  breakVfx: {fileID: 0}
-  breakVfxScale: 2.1
+  breakVfx: {fileID: 3004875897852335127, guid: 89028ebcfe9b84c06b91f4f9a39f1438, type: 3}
+  breakVfxScale: 1.15
   breakShake: 0.8
+  hitVfxScale: 1
+  breakDelay: 0
+  breakDelayBursts: 0
+  breakDelayVfx: {fileID: 0}
+  breakDelayVfxScale: 1
+  breakDelaySfx: {fileID: 0}
+  breakDelayShake: 0.25

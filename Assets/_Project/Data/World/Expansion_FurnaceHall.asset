@@ -13,8 +13,8 @@ MonoBehaviour:
   m_Name: Expansion_FurnaceHall
   m_EditorClassIdentifier: ScrapYardKing.Runtime::ScrapYardKing.World.ExpansionDefinition
   id: furnace_hall
-  displayName: Furnace
+  displayName: Iron Furnace
   icon: {fileID: 21300000, guid: 998ac783dbffa4ad3b4015015204485d, type: 3}
-  cost: 5000
-  teaser: IRON + COPPER INGOTS
+  cost: 2000
+  teaser: IRON INGOTS
   openSfx: {fileID: 11400000, guid: 04263bae9f7524a0fb55a331dcbe4d2c, type: 2}

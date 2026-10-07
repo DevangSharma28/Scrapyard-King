@@ -198,7 +198,8 @@ public static class GuideBot
     static Vector3 NextCorner(Vector3 from, Vector3 to)
     {
         if (!NavMesh.SamplePosition(from, out var a, 2f, NavMesh.AllAreas)) return to;
-        if (!NavMesh.SamplePosition(to, out var b, 3f, NavMesh.AllAreas)) return to;
+        // Wide search: the target may be the middle of a big carved obstacle (the Giant Truck is 10 m long).
+        if (!NavMesh.SamplePosition(to, out var b, 8f, NavMesh.AllAreas)) return to;
         if (!NavMesh.CalculatePath(a.position, b.position, NavMesh.AllAreas, path) || path.corners.Length < 2) return to;
         foreach (var c in path.corners)
         {

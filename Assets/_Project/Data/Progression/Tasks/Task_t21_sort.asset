@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Task_t21_sort
   m_EditorClassIdentifier: ScrapYardKing.Runtime::ScrapYardKing.Progression.TaskDefinition
   id: t21_sort
-  title: Sort {0} metal bales
+  title: Split {0} raw metal
   category: 0
   type: 2
   targetId: sorter

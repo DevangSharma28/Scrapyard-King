@@ -1,0 +1,21 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9eb7aa00d47bf4d86bc94e0ebce05f2b, type: 3}
+  m_Name: Sfx_GiantBreak
+  m_EditorClassIdentifier: ScrapYardKing.Runtime::ScrapYardKing.Feedback.SfxDefinition
+  clips:
+  - {fileID: 8300000, guid: 62f4af36bc2034158878d31d89b575dc, type: 3}
+  - {fileID: 8300000, guid: 78e812f7c953c47249fd962d350fe4b4, type: 3}
+  volume: 1
+  pitchRange: {x: 0.5, y: 0.58}
+  minInterval: 0.03
+  fallback: 0

@@ -1,0 +1,56 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a79643e083dcd4cc6908de7eb0396198, type: 3}
+  m_Name: PremiumEconomy
+  m_EditorClassIdentifier: ScrapYardKing.Runtime::ScrapYardKing.Economy.PremiumEconomyConfig
+  minSkipCost: 2
+  diamondsPerMinute: 3
+  bulkExponent: 0.85
+  maxSkipCost: 400
+  cashPerDiamond: 60
+  cashPerDiamondGrowth: 1.3
+  cashGrowthUntilLevel: 12
+  lateCashGrowth: 1.08
+  confirmAbove: 20
+  finishMinMissing: 0.25
+  finishMinDocked: 20
+  finishMinLoaded: 0.25
+  callMinSeconds: 15
+  milestones:
+  - expansionId: recycling_plant
+    diamonds: 25
+    title: NEW AREA BONUS
+    line: RECYCLING PLANT OPEN
+  - expansionId: furnace_hall
+    diamonds: 15
+    title: FURNACE BONUS
+    line: FURNACE HALL OPEN
+  - expansionId: build_press
+    diamonds: 15
+    title: PRESS BONUS
+    line: INDUSTRIAL PRESS BUILT
+  - expansionId: truck_dock
+    diamonds: 20
+    title: DOCK BONUS
+    line: TRUCK ORDERS START
+  - expansionId: heavy_yard
+    diamonds: 25
+    title: NEW AREA BONUS
+    line: HEAVY SCRAP YARD OPEN
+  - expansionId: dockyard
+    diamonds: 50
+    title: PORT BONUS
+    line: THE DOCKYARD IS OPEN
+  levelUpDiamonds: 5
+  levelUpFrom: 6
+  levelUpEvery: 2
+  firstDiamondLesson: DIAMONDS SPEED THINGS UP

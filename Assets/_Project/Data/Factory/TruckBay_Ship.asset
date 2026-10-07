@@ -1,0 +1,51 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f0fbfedcb3f7c4a279c2742228de5158, type: 3}
+  m_Name: TruckBay_Ship
+  m_EditorClassIdentifier: ScrapYardKing.Runtime::ScrapYardKing.Factory.TruckBayDefinition
+  id: ship_dock
+  displayName: Cargo Ship
+  icon: {fileID: 21300000, guid: db3508bf2cc43488c8f679680eb3fc41, type: 3}
+  accepts:
+  - {fileID: 11400000, guid: 4c5a4b2ef9bc44b9dbbf663d8db5144f, type: 2}
+  - {fileID: 11400000, guid: 07430945ed10745e8934835e5f867da3, type: 2}
+  - {fileID: 11400000, guid: 4334327d79916455399e60d827615656, type: 2}
+  - {fileID: 11400000, guid: 313598262ff9d435398d7eabe73d1196, type: 2}
+  contracts:
+  - {fileID: 11400000, guid: abccdeb3a0ac74a5f85b0fba2cbb38ca, type: 2}
+  - {fileID: 11400000, guid: b568ef7ca9afc477f997f0608cce76ce, type: 2}
+  - {fileID: 11400000, guid: 93f06c7f8c34f4e4685c5a9143fe1c33, type: 2}
+  - {fileID: 11400000, guid: 8a392437b2f474adfba5c661387b47a2, type: 2}
+  - {fileID: 11400000, guid: 554dcea2c504e44d2ba8d8c379447ac9, type: 2}
+  - {fileID: 11400000, guid: 87487c798bb8245e68f47aacad29cdbb, type: 2}
+  contractFill: 0.8
+  levels:
+  - capacity: 60
+    payoutMultiplier: 1.9
+    returnDelay: 14
+    upgradeCost: 0
+  - capacity: 90
+    payoutMultiplier: 2.1
+    returnDelay: 12
+    upgradeCost: 25000
+  - capacity: 130
+    payoutMultiplier: 2.3
+    returnDelay: 10
+    upgradeCost: 60000
+  truckSpeed: 7
+  firstArrivalDelay: 2
+  arriveSfx: {fileID: 11400000, guid: 20e69b8c1e69241fa8b7925e9eb0a67a, type: 2}
+  departSfx: {fileID: 11400000, guid: 20e69b8c1e69241fa8b7925e9eb0a67a, type: 2}
+  payoutSfx: {fileID: 11400000, guid: a5c8619afa5a649b4823599a81627e2f, type: 2}
+  arrivingText: SHIP COMING
+  awayText: AT SEA
+  contractSfx: {fileID: 11400000, guid: 20e69b8c1e69241fa8b7925e9eb0a67a, type: 2}

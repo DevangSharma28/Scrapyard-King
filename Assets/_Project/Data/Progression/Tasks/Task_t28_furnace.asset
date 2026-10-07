@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Task_t28_furnace
   m_EditorClassIdentifier: ScrapYardKing.Runtime::ScrapYardKing.Progression.TaskDefinition
   id: t28_furnace
-  title: Build the Furnace
+  title: Build the Iron Furnace
   category: 0
   type: 7
   targetId: furnace_hall

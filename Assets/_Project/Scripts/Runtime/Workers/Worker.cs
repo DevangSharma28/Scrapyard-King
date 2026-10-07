@@ -14,6 +14,7 @@ namespace ScrapYardKing.Workers
     public sealed class Worker : MonoBehaviour
     {
         static readonly int SpeedId = Animator.StringToHash("Speed");
+        static readonly int WorkingId = Animator.StringToHash("Working");
 
         [SerializeField] CarryStack stack;
         [SerializeField] ItemCollector collector;
@@ -22,6 +23,7 @@ namespace ScrapYardKing.Workers
         [SerializeField, Min(0.005f)] float basePickupInterval = 0.05f;
 
         NavMeshAgent agent;
+        bool working;
 
         public WorkerDefinition Definition { get; private set; }
         public WorkerSite Site { get; private set; }
@@ -69,6 +71,23 @@ namespace ScrapYardKing.Workers
         public void Stop()
         {
             if (agent.isOnNavMesh) agent.ResetPath();
+        }
+
+        /// <summary>Plays the "at work" gesture (operators at a console, sellers at a counter).</summary>
+        public void SetWorking(bool on)
+        {
+            if (working == on) return;
+            working = on;
+            if (animator != null) animator.SetBool(WorkingId, on);
+        }
+
+        /// <summary>Turns on the spot toward <paramref name="point"/> (used while standing at a post).</summary>
+        public void FaceTowards(Vector3 point, float degreesPerSecond = 540f)
+        {
+            Vector3 d = point - transform.position;
+            d.y = 0f;
+            if (d.sqrMagnitude < 0.0001f) return;
+            transform.rotation = Quaternion.RotateTowards(transform.rotation, Quaternion.LookRotation(d), degreesPerSecond * Time.deltaTime);
         }
 
         /// <summary>True when the agent has (nearly) reached its destination.</summary>

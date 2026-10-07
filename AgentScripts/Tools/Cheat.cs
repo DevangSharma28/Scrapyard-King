@@ -10,7 +10,8 @@ using UnityEngine;
 
 // Play-mode cheats for scripted tests. One call, several commands separated by ';':
 //   unity command run_script --file AgentScripts/Tools/Cheat.cs --entry Cheat.Run --args '["level 9; cash 50000; buy recycling_plant"]'
-// Commands: level N | cash N | buy ID [times] | give ITEM_ID N | tp X Z | timescale S
+// Commands: level N | cash N | buy ID [times] | give ITEM_ID N | tp X Z | timescale S | save | wipe | saveinfo
+// "save" writes the save file now; "wipe" deletes it and stops saving for this session; "saveinfo" prints its path and state.
 // "buy" goes through UpgradeManager.TryPurchase, so it pays like the player would (give cash first).
 public static class Cheat
 {
@@ -83,6 +84,25 @@ public static class Cheat
                     Services.TryGet(out PlayerCharacter pc);
                     pc.Controller.Teleport(new Vector3(float.Parse(p[1]), 0f, float.Parse(p[2])), Quaternion.identity);
                     log.Append("tp ");
+                    break;
+                }
+                case "save":
+                {
+                    Services.TryGet(out ScrapYardKing.Persistence.SaveManager sm);
+                    log.Append(sm != null && sm.Save() ? "saved " : "not saved ");
+                    break;
+                }
+                case "wipe":
+                {
+                    Services.TryGet(out ScrapYardKing.Persistence.SaveManager sm);
+                    if (sm != null) sm.Wipe();
+                    log.Append("wiped ");
+                    break;
+                }
+                case "saveinfo":
+                {
+                    Services.TryGet(out ScrapYardKing.Persistence.SaveManager sm);
+                    log.Append(sm == null ? "no SaveManager " : $"path={sm.FilePath} load={sm.LoadResult} exists={System.IO.File.Exists(sm.FilePath)} play={sm.PlaySeconds:0}s ");
                     break;
                 }
                 case "timescale":

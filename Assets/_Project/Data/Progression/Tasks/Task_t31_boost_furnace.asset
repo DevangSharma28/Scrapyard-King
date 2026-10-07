@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Task_t31_boost_furnace
   m_EditorClassIdentifier: ScrapYardKing.Runtime::ScrapYardKing.Progression.TaskDefinition
   id: t31_boost_furnace
-  title: Boost the furnace
+  title: Boost the furnaces
   category: 0
   type: 11
   targetId: furnace

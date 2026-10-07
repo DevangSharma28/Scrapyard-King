@@ -19,7 +19,6 @@ MonoBehaviour:
   prefab: {fileID: 6640772283548731788, guid: 7b89cba437fce4f68a9c39f5e4215413, type: 3}
   prefabVariants:
   - {fileID: 6640772283548731788, guid: 7b89cba437fce4f68a9c39f5e4215413, type: 3}
-  - {fileID: 1729542355107834177, guid: 37638f61f9fd841aea264b01f2562da1, type: 3}
   maxHealth: 700
   minCutPower: 30
   dropItem: {fileID: 11400000, guid: f6593dbddf0854968bd6f7b3be117504, type: 2}
@@ -28,14 +27,21 @@ MonoBehaviour:
   dropLaunchSpeed: 6.5
   dropSpread: 1.6
   dropBurstDuration: 0.4
-  rareDropItem: {fileID: 11400000, guid: 7dde6c26b10ee4483bb025f35cfe3de9, type: 2}
-  rareDropChance: 0.5
-  rareDropAmount: {x: 2, y: 4}
+  rareDropItem: {fileID: 11400000, guid: 9034d1f71988b47d688b1b511574392e, type: 2}
+  rareDropChance: 0.6
+  rareDropAmount: {x: 3, y: 5}
   xpReward: 25
-  respawnDelay: 20
+  respawnDelay: 14
   hitSfx: {fileID: 11400000, guid: 6e9e93e37e229422a9456a5073e48d46, type: 2}
   breakSfx: {fileID: 11400000, guid: 4b4153410c94f41319b2a2fe92f84312, type: 2}
   hitVfx: {fileID: 0}
-  breakVfx: {fileID: 0}
-  breakVfxScale: 2.1
+  breakVfx: {fileID: 3004875897852335127, guid: 89028ebcfe9b84c06b91f4f9a39f1438, type: 3}
+  breakVfxScale: 1.15
   breakShake: 0.8
+  hitVfxScale: 1
+  breakDelay: 0
+  breakDelayBursts: 0
+  breakDelayVfx: {fileID: 0}
+  breakDelayVfxScale: 1
+  breakDelaySfx: {fileID: 0}
+  breakDelayShake: 0.25

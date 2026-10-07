@@ -19,9 +19,11 @@ MonoBehaviour:
   role: 0
   prefab: {fileID: 502239469744010167, guid: 5149c7a4e8ed447ce94adf414898ab36, type: 3}
   siteId: hauler
-  moveSpeed: 3.8
-  carryCapacity: 8
+  moveSpeed: 5.2
+  carryCapacity: 10
   efficiency: 1
   pickupRadius: 1
   collectLooseItems: 0
-  hireCosts: b004000000000000280a000000000000
+  workBoost: 1.5
+  spawnAtSite: 1
+  hireCosts: 5802000000000000d007000000000000

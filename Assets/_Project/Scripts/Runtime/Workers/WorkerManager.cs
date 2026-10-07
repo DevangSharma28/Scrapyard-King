@@ -86,6 +86,17 @@ namespace ScrapYardKing.Workers
             return false;
         }
 
+        /// <summary>True when a hired carrier's route drops off into <paramref name="receiver"/> (that link of the chain is staffed).</summary>
+        public bool Serves(Items.IItemReceiver receiver)
+        {
+            if (receiver == null) return false;
+            foreach (var list in hired.Values)
+                foreach (var worker in list)
+                    if (worker != null && worker.Site is PorterRoute route && route.DropsAt(receiver))
+                        return true;
+            return false;
+        }
+
         public int CountOf(WorkerDefinition definition) => hired.TryGetValue(definition, out var list) ? list.Count : 0;
 
         public IReadOnlyList<Worker> WorkersOf(WorkerDefinition definition) =>
@@ -95,8 +106,11 @@ namespace ScrapYardKing.Workers
         {
             var site = FindSite(definition);
             var origin = spawnPoint != null ? spawnPoint : transform;
-            var worker = Instantiate(definition.Prefab, origin.position, origin.rotation, workersRoot != null ? workersRoot : transform);
-            if (!worker.Agent.isOnNavMesh) worker.Agent.Warp(origin.position);
+            // Workers from a save are already on the job: they appear at their site, without the hiring fanfare.
+            bool restoring = SaveRegistry.IsRestoring;
+            Vector3 position = (definition.SpawnAtSite || restoring) && site != null ? site.IdlePosition : origin.position;
+            var worker = Instantiate(definition.Prefab, position, origin.rotation, workersRoot != null ? workersRoot : transform);
+            if (!worker.Agent.isOnNavMesh) worker.Agent.Warp(position);
             worker.Initialize(definition, site);
 
             if (!hired.TryGetValue(definition, out var list))
@@ -106,13 +120,15 @@ namespace ScrapYardKing.Workers
             }
 
             list.Add(worker);
-            GameFeedback.Vfx(hireVfx, origin.position, Quaternion.identity);
+            WorkerSpawned?.Invoke(worker);
+            if (restoring) return worker;
+
+            GameFeedback.Vfx(hireVfx, position, Quaternion.identity);
             GameFeedback.Sfx(hireSfx);
             var config = GameFeedback.Config;
-            GameFeedback.Popup($"{definition.DisplayName.ToUpperInvariant()} HIRED!", origin.position + Vector3.up * 2.6f,
+            GameFeedback.Popup($"{definition.DisplayName.ToUpperInvariant()} HIRED!", position + Vector3.up * 2.6f,
                 config != null ? config.PositivePopupColor : Color.yellow, 1.2f);
 
-            WorkerSpawned?.Invoke(worker);
             GameEvents.RaiseWorkerHired(definition.Id, list.Count);
             return worker;
         }

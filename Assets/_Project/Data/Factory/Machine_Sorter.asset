@@ -13,38 +13,43 @@ MonoBehaviour:
   m_Name: Machine_Sorter
   m_EditorClassIdentifier: ScrapYardKing.Runtime::ScrapYardKing.Factory.MachineDefinition
   id: sorter
-  displayName: Sorter
+  displayName: Metal Splitter
   icon: {fileID: 21300000, guid: b363417e37c3d43adb27a20080c94d71, type: 3}
   input: {fileID: 11400000, guid: 83055ce854d5646d3beb2a2d62c9174a, type: 2}
   output: {fileID: 11400000, guid: 9034d1f71988b47d688b1b511574392e, type: 2}
   outputMix:
   - item: {fileID: 11400000, guid: 9034d1f71988b47d688b1b511574392e, type: 2}
-    weight: 0.7
+    weight: 0.4
+  - item: {fileID: 11400000, guid: 9e337d04ef8494cf1bf143f177129031, type: 2}
+    weight: 0.25
   - item: {fileID: 11400000, guid: 7dde6c26b10ee4483bb025f35cfe3de9, type: 2}
-    weight: 0.3
+    weight: 0.2
+  - item: {fileID: 11400000, guid: 538a319a5c47d4827ae2ef20d710a407, type: 2}
+    weight: 0.15
+  recipes: []
   levels:
-  - inputCapacity: 12
-    cycleTime: 1
+  - inputCapacity: 16
+    cycleTime: 0.6
     inputsPerCycle: 1
     outputsPerCycle: 1
     upgradeCost: 0
-  - inputCapacity: 16
-    cycleTime: 0.85
-    inputsPerCycle: 1
-    outputsPerCycle: 1
-    upgradeCost: 600
   - inputCapacity: 20
-    cycleTime: 0.7
+    cycleTime: 0.5
     inputsPerCycle: 1
     outputsPerCycle: 1
-    upgradeCost: 1300
+    upgradeCost: 500
   - inputCapacity: 26
-    cycleTime: 0.58
+    cycleTime: 0.42
+    inputsPerCycle: 1
+    outputsPerCycle: 1
+    upgradeCost: 1200
+  - inputCapacity: 32
+    cycleTime: 0.35
     inputsPerCycle: 1
     outputsPerCycle: 1
     upgradeCost: 2600
-  - inputCapacity: 32
-    cycleTime: 0.48
+  - inputCapacity: 40
+    cycleTime: 0.29
     inputsPerCycle: 1
     outputsPerCycle: 1
     upgradeCost: 4800

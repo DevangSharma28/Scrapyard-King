@@ -17,7 +17,7 @@ MonoBehaviour:
   category: 0
   type: 2
   targetId: crusher
-  amount: 150
+  amount: 60
   rewardCash: 200
   rewardXp: 80
   rewardPremium: 0

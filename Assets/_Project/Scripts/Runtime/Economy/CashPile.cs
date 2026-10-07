@@ -49,6 +49,9 @@ namespace ScrapYardKing.Economy
         public void Add(long amount, Vector3 from)
         {
             if (amount <= 0) return;
+            // A cash boost multiplies what sales bring in (not cash put back by a loaded save).
+            if (!SaveRegistry.IsRestoring && Services.TryGet(out ScrapYardKing.Boosts.BoostManager boosts))
+                amount = (long)System.Math.Round(amount * (double)boosts.Multiplier(ScrapYardKing.Boosts.BoostKind.Cash));
             StoredCash += amount;
 
             int bundleValue = economy != null && economy.Config != null ? economy.Config.CashBundleValue : 5;

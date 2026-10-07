@@ -5,6 +5,21 @@ using UnityEngine;
 
 namespace ScrapYardKing.Items
 {
+    [Serializable]
+    public sealed class StockLine
+    {
+        public string itemId;
+        public int count;
+    }
+
+    /// <summary>Saved contents of a pile or station (plus cash waiting on its pallet, where it has one).</summary>
+    [Serializable]
+    public sealed class StockState
+    {
+        public List<StockLine> lines = new();
+        public long cash;
+    }
+
     /// <summary>
     /// A neat grid of <see cref="WorldItem"/>s: machine hoppers, storage bins, sell counters, output trays.
     /// Fills column → row → layer so stock level is readable at a glance.
@@ -81,6 +96,42 @@ namespace ScrapYardKing.Items
             }
 
             return null;
+        }
+
+        /// <summary>What the pile holds, as item id + count lines (for saving).</summary>
+        public StockState CaptureStock()
+        {
+            var state = new StockState();
+            foreach (var item in items)
+            {
+                if (item == null || item.Definition == null) continue;
+                var line = state.lines.Find(l => l.itemId == item.Definition.Id);
+                if (line == null) state.lines.Add(line = new StockLine { itemId = item.Definition.Id });
+                line.count++;
+            }
+
+            return state;
+        }
+
+        /// <summary>
+        /// Puts saved stock back, instantly and regardless of the current capacity (a station's level may be restored
+        /// after its stock). Items the pool does not know are skipped.
+        /// </summary>
+        public void RestoreStock(StockState state, ItemPool pool, Action<WorldItem> onPlaced = null)
+        {
+            if (state == null || state.lines == null || pool == null) return;
+            foreach (var line in state.lines)
+            {
+                var definition = pool.Find(line.itemId);
+                if (definition == null) continue;
+                for (int i = 0; i < line.count; i++)
+                {
+                    var item = pool.Get(definition, transform.position, Quaternion.identity);
+                    if (item == null) break;
+                    Place(item);
+                    onPlaced?.Invoke(item);
+                }
+            }
         }
 
         /// <summary>Items matching <paramref name="filter"/> (null = all).</summary>

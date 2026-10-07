@@ -13,11 +13,11 @@ MonoBehaviour:
   m_Name: Task_t22_copper
   m_EditorClassIdentifier: ScrapYardKing.Runtime::ScrapYardKing.Progression.TaskDefinition
   id: t22_copper
-  title: Sell {0} copper
+  title: Stock the Metal Market
   category: 0
-  type: 4
-  targetId: copper
-  amount: 6
+  type: 3
+  targetId: market
+  amount: 12
   rewardCash: 200
   rewardXp: 50
   rewardPremium: 0

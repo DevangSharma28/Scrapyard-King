@@ -17,29 +17,31 @@ MonoBehaviour:
   icon: {fileID: 21300000, guid: cbc298f09e8ad4a3b862516014d6b626, type: 3}
   input: {fileID: 11400000, guid: f6593dbddf0854968bd6f7b3be117504, type: 2}
   output: {fileID: 11400000, guid: 83055ce854d5646d3beb2a2d62c9174a, type: 2}
+  outputMix: []
+  recipes: []
   levels:
-  - inputCapacity: 10
-    cycleTime: 0.8
+  - inputCapacity: 20
+    cycleTime: 0.35
     inputsPerCycle: 1
     outputsPerCycle: 1
     upgradeCost: 0
-  - inputCapacity: 14
-    cycleTime: 0.65
+  - inputCapacity: 26
+    cycleTime: 0.3
     inputsPerCycle: 1
     outputsPerCycle: 1
     upgradeCost: 150
-  - inputCapacity: 20
-    cycleTime: 0.5
+  - inputCapacity: 32
+    cycleTime: 0.25
     inputsPerCycle: 1
     outputsPerCycle: 1
-    upgradeCost: 400
-  - inputCapacity: 26
-    cycleTime: 0.4
+    upgradeCost: 300
+  - inputCapacity: 40
+    cycleTime: 0.2
     inputsPerCycle: 1
     outputsPerCycle: 1
     upgradeCost: 900
-  - inputCapacity: 32
-    cycleTime: 0.32
+  - inputCapacity: 50
+    cycleTime: 0.16
     inputsPerCycle: 1
     outputsPerCycle: 1
     upgradeCost: 1800

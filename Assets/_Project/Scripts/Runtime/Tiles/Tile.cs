@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using DG.Tweening;
 using ScrapYardKing.Core;
 using ScrapYardKing.Feedback;
@@ -20,6 +21,15 @@ namespace ScrapYardKing.Tiles
         [SerializeField] Transform visual;
         [SerializeField] SfxDefinition engageSfx;
 
+        static readonly List<Tile> visible = new();
+        static readonly Vector3[] Corners = new Vector3[4];
+
+        /// <summary>Tiles in the world right now (enabled): station labels fade while they cover one on screen.</summary>
+        public static IReadOnlyList<Tile> Visible => visible;
+
+        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
+        static void ResetStatics() => visible.Clear();
+
         PlayerCharacter player;
         Vector3 visualScale = Vector3.one;
         float occupiedSince = -1f;
@@ -40,10 +50,37 @@ namespace ScrapYardKing.Tiles
 
         protected virtual void Start() => Services.TryGet(out player);
 
+        protected virtual void OnEnable() => visible.Add(this);
+
         protected virtual void OnDisable()
         {
+            visible.Remove(this);
             if (IsEngaged) Disengage();
             occupiedSince = -1f;
+        }
+
+        /// <summary>Screen rect of the footprint; false when it is behind the camera or popped out (scale 0).</summary>
+        public bool ScreenRect(Camera cam, out Rect rect)
+        {
+            rect = default;
+            var t = visual != null ? visual : transform;
+            if (t.lossyScale.x < 0.05f) return false;
+            var c = transform.position;
+            float hx = size.x * 0.5f, hz = size.y * 0.5f;
+            Corners[0] = c + new Vector3(-hx, 0f, -hz);
+            Corners[1] = c + new Vector3(-hx, 0f, hz);
+            Corners[2] = c + new Vector3(hx, 0f, hz);
+            Corners[3] = c + new Vector3(hx, 0f, -hz);
+            float x0 = float.MaxValue, y0 = float.MaxValue, x1 = float.MinValue, y1 = float.MinValue;
+            foreach (var w in Corners)
+            {
+                var p = cam.WorldToScreenPoint(w);
+                if (p.z <= 0f) return false;
+                x0 = Mathf.Min(x0, p.x); y0 = Mathf.Min(y0, p.y); x1 = Mathf.Max(x1, p.x); y1 = Mathf.Max(y1, p.y);
+            }
+
+            rect = Rect.MinMaxRect(x0, y0, x1, y1);
+            return true;
         }
 
         protected virtual void Update()

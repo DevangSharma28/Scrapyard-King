@@ -28,7 +28,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 1.15, y: 1.15, z: 1.15}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 570634320225671715}
@@ -40,7 +40,7 @@ MeshFilter:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 561515122995758687}
-  m_Mesh: {fileID: 4300000, guid: 3a2c8e85d3ef641e6923f3d51bd37cd6, type: 2}
+  m_Mesh: {fileID: -5951665494918689572, guid: da10967cdad354befa605ad4259dffd0, type: 2}
 --- !u!23 &1801584418756942611
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -66,7 +66,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: d67a0744f50944bddabacefaf2c18aba, type: 2}
+  - {fileID: 2100000, guid: 04b908dda3da44a6ebed75a805c40a94, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -141,12 +141,14 @@ MonoBehaviour:
   groundFriction: 0.55
   settleSpeed: 2.5
   visual: {fileID: 1801584418756942611}
-  materialVariants: []
+  materialVariants:
+  - {fileID: 2100000, guid: 04b908dda3da44a6ebed75a805c40a94, type: 2}
+  - {fileID: 2100000, guid: 5b4eb7d22c22f4928a94159659a9b50d, type: 2}
   meshFilter: {fileID: 5478785580646299477}
   meshVariants:
-  - {fileID: 4300000, guid: 3a2c8e85d3ef641e6923f3d51bd37cd6, type: 2}
-  - {fileID: 4300000, guid: f5c75a92369f446149d9ced95116382f, type: 2}
-  - {fileID: 4300000, guid: 333d5f11577f44b9898ba0c2a6de5a20, type: 2}
-  - {fileID: 4300000, guid: dbe32929212d640de9428be2e65ae84a, type: 2}
-  - {fileID: 4300000, guid: a23246c93fd8143edb43e82842f7aaae, type: 2}
-  - {fileID: 4300000, guid: faf3c1c2220e54baea44deee25cc67e0, type: 2}
+  - {fileID: -5951665494918689572, guid: da10967cdad354befa605ad4259dffd0, type: 2}
+  - {fileID: 6549891101385692502, guid: da10967cdad354befa605ad4259dffd0, type: 2}
+  - {fileID: 9220443940331491106, guid: da10967cdad354befa605ad4259dffd0, type: 2}
+  - {fileID: 6752673378546292913, guid: da10967cdad354befa605ad4259dffd0, type: 2}
+  - {fileID: -5757929000921673996, guid: da10967cdad354befa605ad4259dffd0, type: 2}
+  - {fileID: -5498428648636667986, guid: da10967cdad354befa605ad4259dffd0, type: 2}

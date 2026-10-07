@@ -1,0 +1,24 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d1ea57f827389476f881e50ee0327fa4, type: 3}
+  m_Name: Boost_TruckRush
+  m_EditorClassIdentifier: ScrapYardKing.Runtime::ScrapYardKing.Boosts.BoostDefinition
+  id: boost_truck
+  displayName: TRUCK RUSH
+  icon: {fileID: -1277820907950690963, guid: f8e6658850c4d4b238187e2c8824bf85, type: 3}
+  kind: 4
+  multiplier: 3
+  duration: 120
+  maxStack: 3
+  color: {r: 0.95, g: 0.8, b: 0.2, a: 1}
+  startSfx: {fileID: 11400000, guid: c18771734b29441738cd13cd231509de, type: 2}
+  endSfx: {fileID: 11400000, guid: 21d5d6a9784204c3a868a41b3adc736a, type: 2}

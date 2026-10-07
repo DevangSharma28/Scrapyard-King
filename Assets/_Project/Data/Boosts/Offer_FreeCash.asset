@@ -1,0 +1,26 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 57b1fa9e61f4f45d2aa89aa9a30456a5, type: 3}
+  m_Name: Offer_FreeCash
+  m_EditorClassIdentifier: ScrapYardKing.Runtime::ScrapYardKing.Boosts.AdOfferDefinition
+  id: offer_free_cash
+  title: FREE CASH
+  icon: {fileID: 6802692078746652645, guid: f8e6658850c4d4b238187e2c8824bf85, type: 3}
+  kind: 1
+  boost: {fileID: 0}
+  cashPerLevel: 250
+  showSeconds: 20
+  cooldown: 600
+  minLevel: 2
+  weight: 0.8
+  dailyCap: 8
+  priority: 0

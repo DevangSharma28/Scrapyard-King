@@ -1,0 +1,29 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f277c0476a2104eb8aef3ce2788738b2, type: 3}
+  m_Name: Worker_Loader
+  m_EditorClassIdentifier: ScrapYardKing.Runtime::ScrapYardKing.Workers.WorkerDefinition
+  id: loader
+  displayName: Loader
+  icon: {fileID: 21300000, guid: cf7989795bf0b4d428ab1aa69390d034, type: 3}
+  tagline: LOADS THE TRUCK
+  role: 2
+  prefab: {fileID: 5542075838526654977, guid: b7e0aaf9be666466b95f6a5ec9417aeb, type: 3}
+  siteId: loader
+  moveSpeed: 5.2
+  carryCapacity: 12
+  efficiency: 1
+  pickupRadius: 1
+  collectLooseItems: 0
+  workBoost: 1
+  spawnAtSite: 1
+  hireCosts: b80b000000000000401f000000000000

@@ -65,6 +65,19 @@ namespace ScrapYardKing.Harvest
         [SerializeField] ParticleSystem breakVfx;
         [SerializeField, Min(0f)] float breakVfxScale = 1f;
         [SerializeField, Range(0f, 1f)] float breakShake = 0.35f;
+        [Tooltip("Size of the spark burst on every hit (big objects take big hits).")]
+        [SerializeField, Min(0.1f)] float hitVfxScale = 1f;
+
+        [Header("Final destruction (boss scrap)")]
+        [Tooltip("Seconds between the killing hit and the burst: the hull rattles and pops first. 0 = break at once.")]
+        [SerializeField, Min(0f)] float breakDelay;
+        [Tooltip("Explosions fired at random points on the hull during the break delay.")]
+        [SerializeField, Min(0)] int breakDelayBursts;
+        [SerializeField] ParticleSystem breakDelayVfx;
+        [SerializeField, Min(0.1f)] float breakDelayVfxScale = 1f;
+        [SerializeField] SfxDefinition breakDelaySfx;
+        [Tooltip("Camera shake per explosion. Keep it low: there are several in a row.")]
+        [SerializeField, Range(0f, 1f)] float breakDelayShake = 0.25f;
 
         public string Id => id;
         public string DisplayName => displayName;
@@ -89,6 +102,13 @@ namespace ScrapYardKing.Harvest
         public ParticleSystem BreakVfx => breakVfx;
         public float BreakVfxScale => breakVfxScale;
         public float BreakShake => breakShake;
+        public float HitVfxScale => hitVfxScale;
+        public float BreakDelay => breakDelay;
+        public int BreakDelayBursts => breakDelayBursts;
+        public ParticleSystem BreakDelayVfx => breakDelayVfx;
+        public float BreakDelayVfxScale => breakDelayVfxScale;
+        public SfxDefinition BreakDelaySfx => breakDelaySfx;
+        public float BreakDelayShake => breakDelayShake;
 
         /// <summary>Random look variant for the next spawn.</summary>
         public ScrapObject PickPrefab() =>

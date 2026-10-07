@@ -1,7 +1,8 @@
 ﻿<Solution>
   <Project Path="ScrapYardKing.Runtime.csproj" />
+  <Project Path="ScrapYardKing.Tests.EditMode.csproj" />
+  <Project Path="ScrapYardKing.Editor.csproj" />
   <Project Path="DOTween.Modules.csproj" />
   <Project Path="Assembly-CSharp-Editor.csproj" />
-  <Project Path="ScrapYardKing.Tests.EditMode.csproj" />
   <Project Path="Assembly-CSharp.csproj" />
 </Solution>

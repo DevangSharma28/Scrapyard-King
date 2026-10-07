@@ -1,0 +1,31 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f2ca0950e597343f08500b3489afcd55, type: 3}
+  m_Name: IAP_Gems6500
+  m_EditorClassIdentifier: ScrapYardKing.Runtime::ScrapYardKing.Shop.IAPProductConfig
+  productId: syk_gems_6500
+  type: 0
+  tier: 2
+  title: CHEST OF DIAMONDS
+  icon: {fileID: 7633334893040173444, guid: 97de2faf2e1c349e18006a41135ab133, type: 3}
+  enabled: 1
+  diamonds: 6500
+  bonusDiamonds: 2500
+  cashAsDiamonds: 0
+  boost: {fileID: 0}
+  boostMinutes: 0
+  secondBoost: {fileID: 0}
+  secondBoostMinutes: 0
+  removesAds: 0
+  badge: 
+  fallbackPrice: $49.99
+  referencePriceUsd: 49.99

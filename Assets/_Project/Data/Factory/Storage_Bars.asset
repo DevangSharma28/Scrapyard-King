@@ -1,0 +1,30 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dd8afe285e1f04eba80d15666d614781, type: 3}
+  m_Name: Storage_Bars
+  m_EditorClassIdentifier: ScrapYardKing.Runtime::ScrapYardKing.Factory.StorageDefinition
+  id: bar_storage
+  displayName: Bar Storage
+  icon: {fileID: 21300000, guid: 672534be52e3c488482fd759bbf34d44, type: 3}
+  levels:
+  - capacity: 48
+    pickupInterval: 0.06
+    upgradeCost: 0
+  - capacity: 72
+    pickupInterval: 0.05
+    upgradeCost: 2000
+  - capacity: 110
+    pickupInterval: 0.05
+    upgradeCost: 4500
+  - capacity: 160
+    pickupInterval: 0.04
+    upgradeCost: 9000

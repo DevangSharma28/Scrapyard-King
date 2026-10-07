@@ -30,6 +30,10 @@ namespace ScrapYardKing.Core
         public static event Action<string> ExpansionOpened;
         /// <summary>(machine id) when the player starts Active Overdrive on a machine.</summary>
         public static event Action<string> MachineOverdrive;
+        /// <summary>A giant scrap event object arrived (scrap definition id).</summary>
+        public static event Action<string> GiantScrapArrived;
+        /// <summary>The giant was dismantled (scrap definition id, cash bonus paid).</summary>
+        public static event Action<string, long> GiantScrapDefeated;
 
         public static void RaiseScrapBroken(ScrapBrokenEvent e) => ScrapBroken?.Invoke(e);
         public static void RaiseItemsCollected(ItemDefinition item, int amount) => ItemsCollected?.Invoke(item, amount);
@@ -44,6 +48,12 @@ namespace ScrapYardKing.Core
         public static void RaiseCustomerServed(string stationId, int units) => CustomerServed?.Invoke(stationId, units);
         public static void RaiseExpansionOpened(string expansionId) => ExpansionOpened?.Invoke(expansionId);
         public static void RaiseMachineOverdrive(string machineId) => MachineOverdrive?.Invoke(machineId);
+        public static void RaiseGiantScrapArrived(string scrapId) => GiantScrapArrived?.Invoke(scrapId);
+        public static void RaiseGiantScrapDefeated(string scrapId, long bonus) => GiantScrapDefeated?.Invoke(scrapId, bonus);
+
+        /// <summary>A truck's order changed: offered, loaded further, completed or gone. The HUD's contract card listens.</summary>
+        public static event Action<ContractStatus> ContractChanged;
+        public static void RaiseContractChanged(ContractStatus status) => ContractChanged?.Invoke(status);
 
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
         static void ResetStatics()
@@ -76,6 +86,22 @@ namespace ScrapYardKing.Core
             Position = position;
             PiecesDropped = piecesDropped;
         }
+    }
+
+    /// <summary>Snapshot of a truck's order for listeners (HUD). <see cref="Active"/> is false when no truck is waiting.</summary>
+    public struct ContractStatus
+    {
+        public string StationId;
+        public string Title;
+        public Sprite Icon;
+        /// <summary>Units loaded that the order asked for.</summary>
+        public int Loaded;
+        public int Required;
+        /// <summary>What the complete order pays.</summary>
+        public long Reward;
+        public bool Active;
+        /// <summary>Raised once, when the last asked-for unit lands.</summary>
+        public bool Completed;
     }
 
     public readonly struct ItemsProcessedEvent

@@ -48,6 +48,7 @@ namespace ScrapYardKing.CameraSystem
         Vector3 shift, shiftTarget, shiftVelocity;
         Vector3? panPoint;
         float trauma, punchOffset, punchVelocity, panUntil, returnUntil;
+        float pullBack, pullBackTarget, pullBackVelocity;
 
         public Transform Target => target;
         public Camera Camera => cam;
@@ -66,6 +67,9 @@ namespace ScrapYardKing.CameraSystem
 
         /// <summary>Offsets the follow focus (e.g. so the player stays above a bottom sheet). Zero restores it.</summary>
         public void SetFocusShift(Vector3 worldShift) => shiftTarget = worldShift;
+
+        /// <summary>Extra camera distance, eased in and out (frames something big, e.g. a giant scrap fight). Zero restores it.</summary>
+        public void SetPullBack(float extraDistance) => pullBackTarget = Mathf.Max(0f, extraDistance);
 
         /// <summary>Pans to <paramref name="point"/> for <paramref name="hold"/> seconds (unscaled), then returns to the target.</summary>
         public void Focus(Vector3 point, float hold)
@@ -108,6 +112,7 @@ namespace ScrapYardKing.CameraSystem
             Vector3 desiredLookAhead = velocity.sqrMagnitude > 0.01f ? velocity.normalized * (lookAhead * speed01) : Vector3.zero;
             lookAheadOffset = Vector3.SmoothDamp(lookAheadOffset, desiredLookAhead, ref lookAheadVelocity, lookAheadSmoothTime, Mathf.Infinity, dt);
             shift = Vector3.SmoothDamp(shift, shiftTarget, ref shiftVelocity, shiftSmoothTime, Mathf.Infinity, dt);
+            pullBack = Mathf.SmoothDamp(pullBack, pullBackTarget, ref pullBackVelocity, panSmoothTime, Mathf.Infinity, dt);
             if (panPoint.HasValue && Time.unscaledTime >= panUntil)
             {
                 panPoint = null;
@@ -118,8 +123,17 @@ namespace ScrapYardKing.CameraSystem
             float smooth = panPoint.HasValue || Time.unscaledTime < returnUntil ? panSmoothTime : followSmoothTime;
             focus = Vector3.SmoothDamp(focus, desired, ref focusVelocity, smooth, Mathf.Infinity, dt);
 
-            punchVelocity += (-punchStiffness * punchOffset - punchDamping * punchVelocity) * dt;
-            punchOffset += punchVelocity * dt;
+            // Small steps: one long frame through this stiff spring would overshoot and never settle (same failure as the
+            // carry-stack sway, which reached NaN at 5 fps).
+            int punchSteps = Mathf.Clamp(Mathf.CeilToInt(dt * 120f), 1, 12);
+            float punchStep = Mathf.Min(dt / punchSteps, 1f / 60f);
+            for (int i = 0; i < punchSteps; i++)
+            {
+                punchVelocity += (-punchStiffness * punchOffset - punchDamping * punchVelocity) * punchStep;
+                punchOffset += punchVelocity * punchStep;
+            }
+
+            if (!float.IsFinite(punchOffset) || !float.IsFinite(punchVelocity)) punchOffset = punchVelocity = 0f;
 
             float shake = trauma * trauma;
             trauma = Mathf.Max(0f, trauma - traumaDecay * dt);
@@ -135,7 +149,7 @@ namespace ScrapYardKing.CameraSystem
             if (cam != null) cam.fieldOfView = verticalFov;
 
             Quaternion rotation = Quaternion.Euler(pitch, yaw, 0f);
-            float distance = Mathf.Max(baseDistance, DistanceForWidth()) - punchOffset;
+            float distance = Mathf.Max(baseDistance, DistanceForWidth()) + pullBack - punchOffset;
             Vector3 position = focus - rotation * Vector3.forward * distance + rotation * localShake;
             transform.SetPositionAndRotation(position, rotation * Quaternion.Euler(0f, 0f, roll));
         }

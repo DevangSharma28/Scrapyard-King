@@ -90,7 +90,8 @@ namespace ScrapYardKing.Harvest
             scrap.Broken -= OnBroken;
             if (scrap != current) return;
             current = null;
-            respawnAt = Time.time + scrap.Definition.RespawnDelay * respawnDelayMultiplier;
+            float rush = Services.TryGet(out ScrapYardKing.Boosts.BoostManager boosts) ? boosts.Multiplier(ScrapYardKing.Boosts.BoostKind.ScrapSpawn) : 1f;
+            respawnAt = Time.time + scrap.Definition.RespawnDelay * respawnDelayMultiplier / rush;
             PrepareNext();
         }
 

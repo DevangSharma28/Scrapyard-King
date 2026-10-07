@@ -16,8 +16,14 @@ namespace ScrapYardKing.Tiles
     /// covered the upgrade completes through <see cref="UpgradeManager.CompletePrepaid"/>. Partial payments are kept
     /// when the player walks off. Shows a lock with the required yard level until it unlocks.
     /// </summary>
-    public sealed class PurchaseTile : Tile
+    public sealed class PurchaseTile : Tile, ISaveable
     {
+        [System.Serializable]
+        sealed class State
+        {
+            public long paid;
+        }
+
         static readonly Dictionary<string, PurchaseTile> Tiles = new();
 
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
@@ -79,8 +85,9 @@ namespace ScrapYardKing.Tiles
         /// <summary>Unlocked, not maxed and the wallet covers what is left.</summary>
         public bool IsReady => IsUnlocked && !upgrade.IsMaxed && economy != null && economy.Cash >= Remaining;
 
-        void OnEnable()
+        protected override void OnEnable()
         {
+            base.OnEnable();
             if (!string.IsNullOrEmpty(upgradeId)) Tiles[upgradeId] = this;
         }
 
@@ -105,10 +112,22 @@ namespace ScrapYardKing.Tiles
             if (progression != null) progression.LevelChanged += OnLevelChanged;
             if (fill != null) fill.fillAmount = 0f;
             Refresh();
+            SaveRegistry.Register(this);
+        }
+
+        string ISaveable.SaveKey => string.IsNullOrEmpty(upgradeId) ? null : "tile/" + upgradeId;
+
+        string ISaveable.CaptureState() => JsonUtility.ToJson(new State { paid = paid });
+
+        void ISaveable.RestoreState(string state)
+        {
+            paid = System.Math.Max(0, JsonUtility.FromJson<State>(state).paid);
+            Refresh();
         }
 
         void OnDestroy()
         {
+            SaveRegistry.Unregister(this);
             if (upgrades != null) upgrades.Registered -= OnRegistered;
             if (economy != null) economy.CashChanged -= OnCashChanged;
             if (progression != null) progression.LevelChanged -= OnLevelChanged;
@@ -138,7 +157,7 @@ namespace ScrapYardKing.Tiles
         }
 
         void OnUpgradeChanged(IUpgradeable _) => Refresh();
-        void OnCashChanged(long balance, long delta, Vector3? source) => RefreshColors();
+        void OnCashChanged(long balance, long delta, CurrencyOrigin source) => RefreshColors();
         void OnLevelChanged(int level) => Refresh();
 
         protected override void OnEngage()

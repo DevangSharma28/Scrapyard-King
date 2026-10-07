@@ -18,19 +18,28 @@ MonoBehaviour:
   - {fileID: 5594446275219783494, guid: 9995e94e1f58e4d17a3e7303364fea92, type: 3}
   - {fileID: 3278780331258654020, guid: 2e847638178844655a89ccb945d04207, type: 3}
   - {fileID: 6386448838519402476, guid: a9f03df64c93c41efbad55411dab382c, type: 3}
-  walkSpeed: 2.8
-  arrivalInterval: {x: 1.2, y: 3}
-  handOverInterval: 0.16
+  walkSpeed: 5.2
+  arrivalInterval: {x: 0.35, y: 0.9}
+  handOverInterval: 0.05
   orderItem: {fileID: 11400000, guid: 9034d1f71988b47d688b1b511574392e, type: 2}
   orderOptions:
   - item: {fileID: 11400000, guid: 9034d1f71988b47d688b1b511574392e, type: 2}
-    weight: 0.42
-  - item: {fileID: 11400000, guid: 7dde6c26b10ee4483bb025f35cfe3de9, type: 2}
-    weight: 0.24
-  - item: {fileID: 11400000, guid: f1dd9678f6c7d4e3193e7acc20b19bcb, type: 2}
-    weight: 0.22
-  - item: {fileID: 11400000, guid: d668d38012c8b426c951c31ecb263a7f, type: 2}
     weight: 0.12
+  - item: {fileID: 11400000, guid: 9e337d04ef8494cf1bf143f177129031, type: 2}
+    weight: 0.1
+  - item: {fileID: 11400000, guid: 7dde6c26b10ee4483bb025f35cfe3de9, type: 2}
+    weight: 0.1
+  - item: {fileID: 11400000, guid: 538a319a5c47d4827ae2ef20d710a407, type: 2}
+    weight: 0.08
+  - item: {fileID: 11400000, guid: f1dd9678f6c7d4e3193e7acc20b19bcb, type: 2}
+    weight: 0.2
+  - item: {fileID: 11400000, guid: 3f8f4f13291884c3faa112a3a1fd50a6, type: 2}
+    weight: 0.15
+  - item: {fileID: 11400000, guid: d668d38012c8b426c951c31ecb263a7f, type: 2}
+    weight: 0.15
+  - item: {fileID: 11400000, guid: af8229cb7635d49e3a58cd2aa5433ba4, type: 2}
+    weight: 0.1
   preferInStock: 0.8
+  settleAfter: 6
   arriveSfx: {fileID: 11400000, guid: de0f4a1c9f1f64ba6a7bcc7f5f897277, type: 2}
   happySfx: {fileID: 11400000, guid: 1e10d6a13c536401999118d8103c7ae3, type: 2}

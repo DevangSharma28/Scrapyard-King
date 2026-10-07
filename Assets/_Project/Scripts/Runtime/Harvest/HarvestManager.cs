@@ -23,6 +23,7 @@ namespace ScrapYardKing.Harvest
 
         readonly List<WorldItem> loose = new();
         readonly List<Bounds> blockedAreas = new();
+        readonly List<Bounds> noRestAreas = new();
         ItemPool pool;
         bool warnedCap;
 
@@ -44,6 +45,17 @@ namespace ScrapYardKing.Harvest
         }
 
         public void RemoveBlockedArea(Bounds area) => blockedAreas.Remove(area);
+
+        /// <summary>
+        /// Footprints (scrap mounds, container stacks) that loose items fly over but never settle in: an item landing there
+        /// hops back toward where it was thrown from. See <see cref="DropBlocker"/>.
+        /// </summary>
+        public void AddNoRestArea(Bounds area)
+        {
+            if (!noRestAreas.Contains(area)) noRestAreas.Add(area);
+        }
+
+        public void RemoveNoRestArea(Bounds area) => noRestAreas.Remove(area);
 
         /// <summary>Grows the drop area to include <paramref name="area"/> (expansions).</summary>
         public void ExpandDropBounds(Bounds area)
@@ -84,7 +96,7 @@ namespace ScrapYardKing.Harvest
                 float vertical = launchSpeed * UnityEngine.Random.Range(0.9f, 1.5f);
                 Vector3 start = origin + new Vector3(random.x, 0f, random.y) * (spread * 0.3f);
 
-                worldItem.Launch(start, direction * horizontal + Vector3.up * vertical, collectDelay, groundHeight, dropBounds, blockedAreas);
+                worldItem.Launch(start, direction * horizontal + Vector3.up * vertical, collectDelay, groundHeight, dropBounds, blockedAreas, noRestAreas);
                 loose.Add(worldItem);
             }
         }
@@ -192,7 +204,7 @@ namespace ScrapYardKing.Harvest
                 Vector3 direction = distance > 0.01f ? offset / distance : Quaternion.Euler(0f, UnityEngine.Random.Range(0f, 360f), 0f) * Vector3.forward;
                 float flightTime = 2f * hopSpeed / Mathf.Max(1f, item.Gravity);
                 float travel = radius + 0.6f - distance;
-                item.Launch(item.transform.position, direction * (travel / flightTime) + Vector3.up * hopSpeed, 0.1f, groundHeight, dropBounds, blockedAreas);
+                item.Launch(item.transform.position, direction * (travel / flightTime) + Vector3.up * hopSpeed, 0.1f, groundHeight, dropBounds, blockedAreas, noRestAreas);
             }
         }
 
@@ -218,7 +230,7 @@ namespace ScrapYardKing.Harvest
             Vector3 away = best.transform.position - position;
             away.y = 0f;
             away = away.sqrMagnitude > 0.0001f ? away.normalized : Vector3.forward;
-            best.Launch(best.transform.position, away * 0.8f + Vector3.up * 3.2f, 0.3f, groundHeight, dropBounds, blockedAreas);
+            best.Launch(best.transform.position, away * 0.8f + Vector3.up * 3.2f, 0.3f, groundHeight, dropBounds, blockedAreas, noRestAreas);
             return true;
         }
 
@@ -230,7 +242,7 @@ namespace ScrapYardKing.Harvest
         {
             if (item == null || loose.Contains(item)) return;
             item.transform.SetParent(Root, true);
-            item.Launch(item.transform.position, velocity, collectDelay, groundHeight, dropBounds, blockedAreas);
+            item.Launch(item.transform.position, velocity, collectDelay, groundHeight, dropBounds, blockedAreas, noRestAreas);
             loose.Add(item);
         }
 
@@ -239,7 +251,7 @@ namespace ScrapYardKing.Harvest
         {
             if (item == null || loose.Contains(item)) return;
             item.transform.SetParent(Root, true);
-            item.Launch(item.transform.position, Vector3.up * 2f, collectDelay, groundHeight, dropBounds, blockedAreas);
+            item.Launch(item.transform.position, Vector3.up * 2f, collectDelay, groundHeight, dropBounds, blockedAreas, noRestAreas);
             loose.Add(item);
         }
 

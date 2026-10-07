@@ -25,9 +25,17 @@ namespace ScrapYardKing.Player
         [SerializeField, Min(0f)] float speedDampTime = 0.08f;
         [SerializeField, Min(0f)] float revJitter = 0.012f;
         [SerializeField] float hitRecoilDegrees = 18f;
+        [Header("Cutting stance (the whole body works the saw, not only the arms)")]
+        [Tooltip("Forward lean while cutting, degrees.")]
+        [SerializeField] float cutLean = 9f;
+        [Tooltip("Rocking on top of the lean, degrees.")]
+        [SerializeField] float cutRock = 5f;
+        [SerializeField, Min(0f)] float cutRockRate = 24f;
+        [SerializeField, Min(0.1f)] float cutLeanSharpness = 14f;
 
         Vector3 toolPosition, bodyScale;
-        Quaternion toolRotation;
+        Quaternion toolRotation, bodyRotation;
+        float lean, rockPhase;
 
         void Awake()
         {
@@ -37,7 +45,11 @@ namespace ScrapYardKing.Player
                 toolRotation = tool.localRotation;
             }
 
-            if (body != null) bodyScale = body.localScale;
+            if (body != null)
+            {
+                bodyScale = body.localScale;
+                bodyRotation = body.localRotation;
+            }
         }
 
         void OnEnable()
@@ -80,6 +92,14 @@ namespace ScrapYardKing.Player
             {
                 if (cutting && !toolSmoke.isEmitting) toolSmoke.Play();
                 else if (!cutting && toolSmoke.isEmitting) toolSmoke.Stop();
+            }
+
+            if (body != null)
+            {
+                // Lean into the cut and rock with the stroke; ease back upright when it ends.
+                lean = Mathf.Lerp(lean, cutting ? 1f : 0f, 1f - Mathf.Exp(-cutLeanSharpness * Time.deltaTime));
+                rockPhase = cutting ? rockPhase + cutRockRate * Time.deltaTime : 0f;
+                body.localRotation = bodyRotation * Quaternion.Euler(lean * (cutLean + cutRock * Mathf.Sin(rockPhase)), 0f, 0f);
             }
 
             if (tool == null || DOTween.IsTweening(tool)) return;

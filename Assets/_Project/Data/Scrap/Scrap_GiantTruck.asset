@@ -1,0 +1,46 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 33e589ad94f7c401c80c2db9e8f33ea3, type: 3}
+  m_Name: Scrap_GiantTruck
+  m_EditorClassIdentifier: ScrapYardKing.Runtime::ScrapYardKing.Harvest.ScrapDefinition
+  id: giant_truck
+  displayName: Giant Truck
+  tier: 5
+  sizeClass: 3
+  prefab: {fileID: 1255090142106090064, guid: 521cafcda188e44ccbc40e3eeca237d3, type: 3}
+  prefabVariants: []
+  maxHealth: 6000
+  minCutPower: 40
+  dropItem: {fileID: 11400000, guid: f6593dbddf0854968bd6f7b3be117504, type: 2}
+  dropAmount: {x: 140, y: 160}
+  partDropShare: 0.45
+  dropLaunchSpeed: 8
+  dropSpread: 3.2
+  dropBurstDuration: 1.6
+  rareDropItem: {fileID: 11400000, guid: 7dde6c26b10ee4483bb025f35cfe3de9, type: 2}
+  rareDropChance: 1
+  rareDropAmount: {x: 12, y: 18}
+  xpReward: 300
+  respawnDelay: 0
+  hitSfx: {fileID: 11400000, guid: 8388651c3aee6415fae05d84c712ba9b, type: 2}
+  breakSfx: {fileID: 11400000, guid: 5821b97d3775f4ff886a452b4c633b71, type: 2}
+  hitVfx: {fileID: 0}
+  breakVfx: {fileID: 3004875897852335127, guid: 89028ebcfe9b84c06b91f4f9a39f1438, type: 3}
+  breakVfxScale: 4
+  breakShake: 1
+  hitVfxScale: 1.8
+  breakDelay: 1.5
+  breakDelayBursts: 6
+  breakDelayVfx: {fileID: 3167760599584323564, guid: 76e9a013430e24e1392200bfd10f57f7, type: 3}
+  breakDelayVfxScale: 2.2
+  breakDelaySfx: {fileID: 11400000, guid: 641a180fa102a4739a71eea7517fd1c2, type: 2}
+  breakDelayShake: 0.28

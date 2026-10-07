@@ -14,17 +14,17 @@ MonoBehaviour:
   m_EditorClassIdentifier: ScrapYardKing.Runtime::ScrapYardKing.Factory.StorageDefinition
   id: ingot_rack
   displayName: Ingot Rack
-  icon: {fileID: 0}
+  icon: {fileID: 21300000, guid: 672534be52e3c488482fd759bbf34d44, type: 3}
   levels:
-  - capacity: 24
+  - capacity: 60
     pickupInterval: 0.07
     upgradeCost: 0
-  - capacity: 40
+  - capacity: 100
     pickupInterval: 0.06
     upgradeCost: 1200
-  - capacity: 60
+  - capacity: 150
     pickupInterval: 0.05
     upgradeCost: 2800
-  - capacity: 90
+  - capacity: 220
     pickupInterval: 0.045
     upgradeCost: 6000

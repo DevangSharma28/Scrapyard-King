@@ -13,11 +13,11 @@ MonoBehaviour:
   m_Name: Task_t10_sell40
   m_EditorClassIdentifier: ScrapYardKing.Runtime::ScrapYardKing.Progression.TaskDefinition
   id: t10_sell40
-  title: Sell {0} metal
+  title: Sell {0} raw metal
   category: 0
   type: 4
   targetId: 
-  amount: 40
+  amount: 30
   rewardCash: 80
   rewardXp: 50
   rewardPremium: 0

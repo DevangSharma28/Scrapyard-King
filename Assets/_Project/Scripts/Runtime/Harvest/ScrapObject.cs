@@ -7,8 +7,9 @@ namespace ScrapYardKing.Harvest
 {
     /// <summary>
     /// A harvestable piece of scrap in the yard. Takes hits, sheds <see cref="ScrapPart"/>s at evenly spaced health
-    /// thresholds (dropping a share of its pieces each time), then bursts on break. Pooled and respawned by
-    /// <see cref="ScrapManager"/> / <see cref="ScrapSpawnPoint"/>.
+    /// thresholds (dropping a share of its pieces each time), then bursts on break. Boss scrap with a
+    /// <see cref="ScrapDefinition.BreakDelay"/> rattles and pops for a moment between the killing hit and the burst.
+    /// Pooled and respawned by <see cref="ScrapManager"/> / <see cref="ScrapSpawnPoint"/>.
     /// </summary>
     [DisallowMultipleComponent]
     public sealed class ScrapObject : MonoBehaviour
@@ -17,6 +18,7 @@ namespace ScrapYardKing.Harvest
         {
             Spawning,
             Alive,
+            Dying,
             Breaking,
             Dead
         }
@@ -41,7 +43,7 @@ namespace ScrapYardKing.Harvest
         Vector3 visualBasePosition, visualBaseScale;
         Phase phase = Phase.Alive;
         float health, phaseTime, shakeTime, shakeDuration, shakeAmplitude, punchScale, breakHoldDuration;
-        int partsDetached, piecesTotal, piecesRemaining;
+        int partsDetached, piecesTotal, piecesRemaining, throesFired;
 
         public event Action<ScrapObject> Broken;
 
@@ -140,7 +142,8 @@ namespace ScrapYardKing.Harvest
             DetachParts(hit, config);
 
             if (health > 0f) return false;
-            Break(config);
+            if (definition.BreakDelay > 0f) BeginDying();
+            else Break(config);
             return true;
         }
 
@@ -161,7 +164,7 @@ namespace ScrapYardKing.Harvest
             shakeAmplitude = config.HitShakeAmplitude;
             punchScale = config.HitPunchScale;
 
-            GameFeedback.Vfx(GameFeedback.Pick(definition.HitVfx, config.DefaultHitVfx), hit.Point, sparkRotation);
+            GameFeedback.Vfx(GameFeedback.Pick(definition.HitVfx, config.DefaultHitVfx), hit.Point, sparkRotation, definition.HitVfxScale);
             GameFeedback.Sfx(GameFeedback.Pick(definition.HitSfx, config.DefaultHitSfx));
             GameFeedback.HitStop(config.HitStopDuration, config.HitStopTimeScale);
             GameFeedback.CameraShake(config.HitCameraShake);
@@ -181,6 +184,50 @@ namespace ScrapYardKing.Harvest
                 DropPieces(pieces, part.transform.position, away);
                 if (config != null) GameFeedback.Sfx(config.PartDetachSfx);
             }
+        }
+
+        /// <summary>Killing hit on boss scrap: no more damage, the hull shakes itself apart until <see cref="Break"/>.</summary>
+        void BeginDying()
+        {
+            flashTime = 0f;
+            SetFlash(false);
+            phase = Phase.Dying;
+            phaseTime = 0f;
+            throesFired = 0;
+        }
+
+        void UpdateDying(float dt)
+        {
+            float duration = definition.BreakDelay;
+            phaseTime += dt;
+            float k = Mathf.Clamp01(phaseTime / duration);
+
+            var config = GameFeedback.Config;
+            float amplitude = (config != null ? config.HitShakeAmplitude : 0.05f) * (1f + 2f * k);
+            Vector3 jitter = UnityEngine.Random.insideUnitSphere * amplitude;
+            jitter.y *= 0.3f;
+            visualRoot.localPosition = visualBasePosition + jitter;
+            visualRoot.localScale = visualBaseScale;
+
+            // Explosions spread evenly over the delay, each a little higher-pitched than the last.
+            int bursts = definition.BreakDelayBursts;
+            while (throesFired < bursts && phaseTime >= duration * (throesFired + 0.5f) / bursts)
+            {
+                GameFeedback.Vfx(definition.BreakDelayVfx, RandomHullPoint(), Quaternion.identity, definition.BreakDelayVfxScale);
+                GameFeedback.Sfx(definition.BreakDelaySfx, 1f + throesFired * 0.06f);
+                GameFeedback.CameraShake(definition.BreakDelayShake);
+                throesFired++;
+            }
+
+            if (phaseTime >= duration) Break(config);
+        }
+
+        Vector3 RandomHullPoint()
+        {
+            if (hitCollider == null) return transform.position + Vector3.up;
+            var b = hitCollider.bounds;
+            return new Vector3(UnityEngine.Random.Range(b.min.x, b.max.x), UnityEngine.Random.Range(b.center.y, b.max.y),
+                UnityEngine.Random.Range(b.min.z, b.max.z));
         }
 
         void Break(FeedbackConfig config)
@@ -277,6 +324,10 @@ namespace ScrapYardKing.Harvest
                 case Phase.Alive:
                     UpdateShake(dt);
                     UpdateFlash(dt);
+                    break;
+
+                case Phase.Dying:
+                    UpdateDying(dt);
                     break;
 
                 case Phase.Breaking:

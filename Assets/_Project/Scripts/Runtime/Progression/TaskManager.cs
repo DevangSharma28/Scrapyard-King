@@ -23,8 +23,26 @@ namespace ScrapYardKing.Progression
     /// <see cref="GameEvents"/>; rewards go through the economy and progression services.
     /// </summary>
     [DefaultExecutionOrder(-400)]
-    public sealed class TaskManager : ServiceBehaviour<TaskManager>
+    public sealed class TaskManager : ServiceBehaviour<TaskManager>, ISaveable
     {
+        [Serializable]
+        sealed class TaskEntry
+        {
+            public string id;
+            public long progress;
+        }
+
+        [Serializable]
+        sealed class State
+        {
+            /// <summary>Id of the current main task (survives tasks being inserted into the chain); empty when the chain is done.</summary>
+            public string mainId;
+            public int mainIndex;
+            public long mainProgress;
+            public int sideCursor;
+            public List<TaskEntry> side = new();
+        }
+
         [SerializeField] TaskChain chain;
         [Tooltip("Seconds the completed main task stays on screen before the next one starts.")]
         [SerializeField, Min(0f)] float nextTaskDelay = 1.6f;
@@ -36,12 +54,15 @@ namespace ScrapYardKing.Progression
         EconomyManager economy;
         ProgressionManager progression;
         UpgradeManager upgrades;
-        int mainIndex = -1, sideCursor;
+        int mainIndex = -1, sideCursor, stateCheckFrames;
         float nextMainAt = -1f;
+        bool restored;
 
         public event Action<ActiveTask> TaskStarted;
         public event Action<ActiveTask> TaskProgressed;
         public event Action<ActiveTask> TaskCompleted;
+        /// <summary>The last main task was just finished (not raised when a save with a finished chain loads).</summary>
+        public event Action ChainCompleted;
 
         /// <summary>Current main task, or null between tasks and after the chain ends.</summary>
         public ActiveTask Main { get; private set; }
@@ -83,15 +104,79 @@ namespace ScrapYardKing.Progression
             Services.TryGet(out economy);
             Services.TryGet(out progression);
             Services.TryGet(out upgrades);
-            StartMain(0);
+            SaveRegistry.Register(this);
+            if (!restored) StartMain(0);
+        }
+
+        protected override void OnDestroy()
+        {
+            base.OnDestroy();
+            SaveRegistry.Unregister(this);
+        }
+
+        string ISaveable.SaveKey => "tasks";
+
+        string ISaveable.CaptureState()
+        {
+            var state = new State { sideCursor = sideCursor };
+            // A finished task that is still on screen counts as done: save the one that follows it.
+            var current = Main != null && Main.IsComplete ? pendingMain : Main;
+            if (current != null)
+            {
+                state.mainId = current.Definition.Id;
+                state.mainIndex = current == Main ? mainIndex : mainIndex + 1;
+                state.mainProgress = current.Progress;
+            }
+            else
+            {
+                state.mainId = string.Empty;
+                state.mainIndex = chain != null && chain.MainTasks != null ? chain.MainTasks.Length : 0;
+            }
+
+            foreach (var task in sideTasks)
+                if (!task.IsComplete) state.side.Add(new TaskEntry { id = task.Definition.Id, progress = task.Progress });
+            return JsonUtility.ToJson(state);
+        }
+
+        void ISaveable.RestoreState(string json)
+        {
+            var state = JsonUtility.FromJson<State>(json);
+            var main = chain != null ? chain.MainTasks : null;
+            if (state == null || main == null) return;
+
+            int index = string.IsNullOrEmpty(state.mainId) ? -1 : Array.FindIndex(main, t => t != null && t.Id == state.mainId);
+            bool sameTask = index >= 0;
+            // The saved task no longer exists (chain edited): continue from the same position.
+            if (index < 0) index = Mathf.Clamp(state.mainIndex, 0, main.Length);
+
+            restored = true;
+            sideCursor = Mathf.Max(0, state.sideCursor);
+            sideTasks.Clear();
+            if (chain.SideTasks != null && state.side != null)
+                foreach (var entry in state.side)
+                {
+                    var definition = Array.Find(chain.SideTasks, t => t != null && t.Id == entry.id);
+                    if (definition == null) continue;
+                    sideTasks.Add(new ActiveTask(definition) { Progress = Math.Min(definition.Amount, Math.Max(0, entry.progress)) });
+                }
+
+            pendingMain = index < main.Length && sameTask
+                ? new ActiveTask(main[index]) { Progress = Math.Min(main[index].Amount - 1, Math.Max(0, state.mainProgress)) }
+                : null;
+            StartMain(index);
+            // Upgrades restore as their owners register (this frame and, for locked areas, the next): look at state tasks after that.
+            stateCheckFrames = 3;
         }
 
         void Update()
         {
+            if (stateCheckFrames > 0 && --stateCheckFrames == 0) EvaluateAllState();
+
             if (nextMainAt >= 0f && Time.time >= nextMainAt)
             {
                 nextMainAt = -1f;
                 StartMain(mainIndex + 1);
+                if (Main == null) ChainCompleted?.Invoke();
             }
         }
 
@@ -200,7 +285,7 @@ namespace ScrapYardKing.Progression
             if (economy != null)
             {
                 if (d.RewardCash > 0) economy.AddCash(d.RewardCash);
-                if (d.RewardPremium > 0) economy.AddPremium(d.RewardPremium);
+                if (d.RewardPremium > 0) economy.AddPremium(d.RewardPremium, "task:" + d.Id);
             }
 
             if (progression != null && d.RewardXp > 0) progression.AddXp(d.RewardXp);

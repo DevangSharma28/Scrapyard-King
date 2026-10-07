@@ -41,7 +41,8 @@ namespace ScrapYardKing.Progression
                 {
                     if (IsMaxed) return string.Empty;
                     var stat = stats.Get(definition.Stat);
-                    float now = stat.Value;
+                    // both sides from the base: a running boost (FAST BOOTS) made it read "10.2 → 7.3 speed"
+                    float now = Preview(stat.BaseValue, Level);
                     float next = Preview(stat.BaseValue, Level + 1);
                     return string.Format(definition.EffectFormat, now, next);
                 }

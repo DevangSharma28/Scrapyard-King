@@ -1,0 +1,155 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8a6cd05040ab040e284d0ebeab1d70d0, type: 3}
+  m_Name: MissionConfig
+  m_EditorClassIdentifier: ScrapYardKing.Runtime::ScrapYardKing.Progression.MissionConfig
+  dailyCount: 3
+  dailyPool:
+  - id: d_break
+    title: BREAK {0} SCRAP
+    icon: {fileID: -8866178035913310689, guid: 97de2faf2e1c349e18006a41135ab133, type: 3}
+    stat: 0
+    baseTarget: 15
+    targetPerLevel: 3
+    minLevel: 1
+    reward:
+      cashPerLevel: 120
+      diamonds: 0
+      boost: {fileID: 0}
+      boostMinutes: 0
+  - id: d_collect
+    title: PICK UP {0} PIECES
+    icon: {fileID: 5396849714037720702, guid: 97de2faf2e1c349e18006a41135ab133, type: 3}
+    stat: 1
+    baseTarget: 120
+    targetPerLevel: 25
+    minLevel: 1
+    reward:
+      cashPerLevel: 150
+      diamonds: 0
+      boost: {fileID: 0}
+      boostMinutes: 0
+  - id: d_process
+    title: MACHINES PROCESS {0}
+    icon: {fileID: 2315796203375348938, guid: 97de2faf2e1c349e18006a41135ab133, type: 3}
+    stat: 2
+    baseTarget: 150
+    targetPerLevel: 40
+    minLevel: 1
+    reward:
+      cashPerLevel: 0
+      diamonds: 3
+      boost: {fileID: 0}
+      boostMinutes: 0
+  - id: d_sell
+    title: SELL {0} GOODS
+    icon: {fileID: 4118624626132021018, guid: 97de2faf2e1c349e18006a41135ab133, type: 3}
+    stat: 3
+    baseTarget: 60
+    targetPerLevel: 20
+    minLevel: 1
+    reward:
+      cashPerLevel: 200
+      diamonds: 0
+      boost: {fileID: 0}
+      boostMinutes: 0
+  - id: d_cash
+    title: EARN ${0}
+    icon: {fileID: 8991453293202524206, guid: f8e6658850c4d4b238187e2c8824bf85, type: 3}
+    stat: 4
+    baseTarget: 3000
+    targetPerLevel: 1500
+    minLevel: 1
+    reward:
+      cashPerLevel: 0
+      diamonds: 3
+      boost: {fileID: 0}
+      boostMinutes: 0
+  - id: d_serve
+    title: SERVE {0} CUSTOMERS
+    icon: {fileID: 7491017174358741252, guid: 97de2faf2e1c349e18006a41135ab133, type: 3}
+    stat: 5
+    baseTarget: 20
+    targetPerLevel: 3
+    minLevel: 1
+    reward:
+      cashPerLevel: 150
+      diamonds: 0
+      boost: {fileID: 0}
+      boostMinutes: 0
+  - id: d_boost
+    title: USE A BOOST PAD {0} TIME{s}
+    icon: {fileID: -959463724661337283, guid: f8e6658850c4d4b238187e2c8824bf85, type: 3}
+    stat: 6
+    baseTarget: 3
+    targetPerLevel: 0
+    minLevel: 3
+    reward:
+      cashPerLevel: 0
+      diamonds: 3
+      boost: {fileID: 0}
+      boostMinutes: 0
+  - id: d_orders
+    title: COMPLETE {0} TRUCK ORDER{s}
+    icon: {fileID: 5507044050822764509, guid: f8e6658850c4d4b238187e2c8824bf85, type: 3}
+    stat: 7
+    baseTarget: 3
+    targetPerLevel: 0
+    minLevel: 10
+    reward:
+      cashPerLevel: 0
+      diamonds: 5
+      boost: {fileID: 0}
+      boostMinutes: 0
+  achievements:
+  - id: a_scrap
+    title: BREAK {0} SCRAP
+    icon: {fileID: -8866178035913310689, guid: 97de2faf2e1c349e18006a41135ab133, type: 3}
+    stat: 0
+    targets: 6400000000000000f401000000000000d007000000000000401f000000000000a861000000000000
+    diamonds: 050000000a0000000f0000001900000028000000
+  - id: a_cash
+    title: EARN ${0} IN TOTAL
+    icon: {fileID: 7168540097607507331, guid: f8e6658850c4d4b238187e2c8824bf85, type: 3}
+    stat: 4
+    targets: 50c300000000000040420f0000000000809698000000000000e1f50500000000
+    diamonds: 050000000a0000001400000028000000
+  - id: a_sold
+    title: SELL {0} GOODS
+    icon: {fileID: 4118624626132021018, guid: 97de2faf2e1c349e18006a41135ab133, type: 3}
+    stat: 3
+    targets: f4010000000000008813000000000000a861000000000000a086010000000000
+    diamonds: 050000000a000000140000001e000000
+  - id: a_workers
+    title: HIRE {0} WORKER{s}
+    icon: {fileID: 7491017174358741252, guid: 97de2faf2e1c349e18006a41135ab133, type: 3}
+    stat: 9
+    targets: 030000000000000008000000000000000e000000000000001400000000000000
+    diamonds: 050000000a0000000f00000019000000
+  - id: a_areas
+    title: OPEN {0} AREA{s}
+    icon: {fileID: -5293596391537699389, guid: 97de2faf2e1c349e18006a41135ab133, type: 3}
+    stat: 10
+    targets: 030000000000000006000000000000000a00000000000000
+    diamonds: 050000000f0000001e000000
+  - id: a_orders
+    title: COMPLETE {0} TRUCK ORDER{s}
+    icon: {fileID: 5507044050822764509, guid: f8e6658850c4d4b238187e2c8824bf85, type: 3}
+    stat: 7
+    targets: 050000000000000019000000000000006400000000000000f401000000000000
+    diamonds: 0a0000000f0000001900000028000000
+  - id: a_upgrades
+    title: BUY {0} UPGRADES
+    icon: {fileID: 492138930416090773, guid: 97de2faf2e1c349e18006a41135ab133, type: 3}
+    stat: 8
+    targets: 190000000000000064000000000000002c01000000000000
+    diamonds: 050000000f0000001e000000
