@@ -41,6 +41,14 @@ namespace ScrapYardKing.Workers
         [Tooltip("Appears at the post instead of walking in from the yard entrance (posts outside the yard floor, e.g. the street side of a counter).")]
         [SerializeField] bool spawnAtSite;
 
+        [Header("Cutting (carriers in the scrap field)")]
+        [Tooltip("Chainsaw power: scrap needing more is left to the player. 0 = this worker never cuts.")]
+        [SerializeField, Min(0f)] float cutPower;
+        [Tooltip("Damage per cut. Keep the worker well below the player (player: power x cut rate).")]
+        [SerializeField, Min(0f)] float cutDamage = 10f;
+        [SerializeField, Min(0.1f)] float cutsPerSecond = 2.5f;
+        [SerializeField, Min(0.3f)] float cutReach = 1.4f;
+
         [Header("Hiring")]
         [Tooltip("Cost of the 1st, 2nd, ... hire. Its length is the maximum headcount.")]
         [SerializeField] long[] hireCosts = { 500 };
@@ -59,6 +67,11 @@ namespace ScrapYardKing.Workers
         public bool CollectLooseItems => collectLooseItems;
         public float WorkBoost => workBoost;
         public bool SpawnAtSite => spawnAtSite;
+        public bool Cuts => cutPower > 0f && cutDamage > 0f;
+        public float CutPower => cutPower;
+        public float CutDamage => cutDamage;
+        public float CutsPerSecond => cutsPerSecond;
+        public float CutReach => cutReach;
         public int MaxCount => hireCosts.Length;
 
         public long HireCost(int alreadyHired) => hireCosts[Mathf.Clamp(alreadyHired, 0, hireCosts.Length - 1)];

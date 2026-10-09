@@ -125,10 +125,6 @@ MonoBehaviour:
     unlockLevel: 9
     inPanel: 0
     group: 
-  - upgradeId: dockyard
-    unlockLevel: 11
-    inPanel: 0
-    group: 
   - upgradeId: claw_crane
     unlockLevel: 4
     inPanel: 0
@@ -173,7 +169,15 @@ MonoBehaviour:
     unlockLevel: 9
     inPanel: 0
     group: 
-  - upgradeId: ship_dock
-    unlockLevel: 11
+  - upgradeId: dump_yard
+    unlockLevel: 12
+    inPanel: 0
+    group: 
+  - upgradeId: heavy_crusher
+    unlockLevel: 12
     inPanel: 1
-    group: PORT
+    group: DUMP YARD
+  - upgradeId: dump_crane
+    unlockLevel: 12
+    inPanel: 1
+    group: DUMP YARD

@@ -22,25 +22,25 @@ MonoBehaviour:
     unitsPerSale: {x: 3, y: 5}
     priceMultiplier: 1
     counterCapacity: 16
-    queueCapacity: 3
+    queueCapacity: 7
     upgradeCost: 0
   - saleInterval: 0.27
     unitsPerSale: {x: 3, y: 6}
     priceMultiplier: 1.1
     counterCapacity: 20
-    queueCapacity: 4
+    queueCapacity: 7
     upgradeCost: 250
   - saleInterval: 0.24
     unitsPerSale: {x: 4, y: 7}
     priceMultiplier: 1.25
     counterCapacity: 26
-    queueCapacity: 5
+    queueCapacity: 7
     upgradeCost: 500
   - saleInterval: 0.21
     unitsPerSale: {x: 4, y: 8}
     priceMultiplier: 1.4
     counterCapacity: 32
-    queueCapacity: 6
+    queueCapacity: 7
     upgradeCost: 1500
   - saleInterval: 0.18
     unitsPerSale: {x: 5, y: 9}

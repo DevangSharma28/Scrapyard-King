@@ -529,6 +529,112 @@ shapes.
 Left open: a real store and ad SDK; device test (haptics, performance); a big spender can turn diamonds into more cash
 than the level gates let them use in the first days (a daily crate limit would be the lever, if the owner wants one).
 
+## Fun pass (owner's brief, 2026-10-09)
+
+The owner wants the game more fun, more addictive and a bit faster, with heavier automation in the Heavy Yard and no
+port. Built one step at a time like the revamp, each play-checked and reported:
+
+| Step | Scope | Status |
+|---|---|---|
+| F1 | Remove the port (Dockyard, ship, quay, Gate 4); machine boost pads offer a 2-minute 2X by video after the free burst; a fixed 2X CASH video button (2 min); customers served 0.5 s apart; check daily reward and offline earning | Done |
+| F2 | The Claw Crane grabs whole scrap (tyre, drum, car body) and drops it into the Crusher; a Scrapper worker who cuts scrap, picks the pieces up and feeds the Crusher, slower than the player | Done |
+| F3 | Trucks: better truck models, loading and leaving as a mini-show (tailgate, cargo visible, horn, drive-off), and trucks as customers at the ingot market (a lane of trucks instead of walking buyers) | Done (dock truck's arrival show built but not filmed) |
+| F4 | Conveyor model rework (frame, rollers, moving belt, end drums, legs) and a mesh-overlap audit with fixes across the world | Done |
+| F5 | Heavy Yard automation: a Heavy Crusher fed from the Heavy Yard, dump trucks driving heavy scrap to a dump yard, excavators and cranes working the piles; higher furnace levels ask for large amounts of scrap from that line | Done (furnace numbers unchanged, see result) |
+
+### F1 result (2026-10-09)
+Built: `F1_Build` (Assets, Scene); runtime `UI/CashBoostButton`, the video extension in `Tiles/OverdriveTile`
+(`OverdriveConfig.videoOffer / videoSeconds / offerEvery`, `AdOfferKind.MachineBoost`, `Offer_MachineBoost`), the HUD
+chip following the running pad (`BoostBar`), the explicit customer gap (`CustomerConfig.nextCustomerGap`,
+`Customer.Arriving`). Tests 89/89.
+
+- **No port.** Dockyard expansion, ship dock, quay, water, ship, quay cranes, Gate 4 and its tile removed; the hall's
+  east wall is one wall again; the grass runs on east (x 200) with the two warehouses M8 had taken away; NavMesh
+  rebaked. Data: catalog entry, task t50 and the 50-diamond milestone removed; the "open areas" achievement tops at 9.
+- **Machine boost by video.** After the free 10 s burst the pad shows OVERDRIVE! with OK / 2 MIN (video). Watched: the
+  machine (the whole furnace battery from its pad) runs 2X for 2 minutes; the pad and the HUD chip count it down. The
+  card comes at most every 90 s per pad and the offer has a 60 s cooldown and 15 a day, so standing on a pad never nags.
+- **2X CASH button.** Fixed on the left edge from yard Lv 3, shown while the offer is ready and the boost is not
+  running: 2 minutes of double cash. Taken out of the rotating offer (cooldown 8 min, 8 a day).
+- **Customers 0.5 s apart.** The next buyer is served 0.5 s after the last leaves, as soon as they are 0.8 m from the
+  counter, and the line holds 7 at every level (it used to run dry: 3–7 s while buyers walked in). Measured: one
+  customer every 0.65–0.75 s with stock on the counter (gap plus handing over 3–5 items).
+- **Daily reward and offline earning** were already in (U3/U4: 7-day calendar, WELCOME BACK with 2X); unchanged.
+
+### F2 result (2026-10-09)
+Built: `F2_Build` (Assets, Scene); runtime `ScrapObject.Lift / FeedInto / CanBeLifted` (a Carried phase),
+`ScrapDefinition.craneLiftable`, `ClawCrane.liftWholeScrap / feedRate`, `ScrapHit.Quiet`, cutting in `PorterBrain`
+(`WorkerDefinition.cutPower / cutDamage / cutsPerSecond / cutReach`). Tests 89/89.
+
+- **Crane lifts whole scrap.** The Claw Crane swings over the nearest untouched light object in reach (tyre stack,
+  drum, car, kart, stove, washer, fridge), lowers onto its top, lifts it whole and carries it over the Crusher, then
+  lowers it into the hopper and feeds its pieces in at up to 18 a second as the hopper makes room; the object shrinks
+  and is gone with the last piece (rare metal drops go in too). It leaves loose fragments alone and never takes scrap
+  somebody has started cutting. A full hopper keeps it hanging there, so the bottleneck still shows (seen in play:
+  Storage full → Crusher JAMMED → hopper FULL → the stove waits in the claw).
+- **Scrap Porter cuts.** With nothing loose to carry it walks to the nearest scrap in its zone that a level-1 chainsaw
+  can cut, cuts at 25 damage a second (the player: 70), collects what falls and delivers it. Its cuts make sparks and
+  sound but no hit-stop or camera shake. Seen in play: Collect → Deliver → Cut cycles.
+- The Heavy Yard crane still lifts loose pieces onto its belt; F5 reworks the Heavy Yard.
+
+### F3 result (2026-10-09)
+Built: `F3_Build` (Assets, Scene); runtime show fields on `TruckBay` (`sideGate`, `beacon`, `reverseLights`, `reverseSfx`,
+`gateSfx`, `hornSfx`, `fullSink`), `World/VehicleWheels`; `Sfx_TruckReverse`, `Sfx_TruckGate`; prefabs
+`Customer_Truck_Blue/Orange/Green`. Tests 89/89.
+
+- **Truck model.** One ArtKit truck for the dock and the road: rounded two-tone cab, wind fairing, light bar, air horns,
+  visor, wipers, mirrors on arms, chrome grille and bumper, twin stacks, fuel and air tanks, steps, fenders, mud flaps;
+  plank flatbed with a ladder rack, stake sides, tail and reverse lights; a separate drop-side, roof beacon and reverse
+  lights; wheels with tread, rim, hub and nuts. Same footprint as the old dock truck, so the cargo pile still fits.
+- **Dock truck show.** Backs in with the beacon turning, reverse lights blinking and beeping; the side drops open; the
+  body settles as the bed fills; when the order is met the side swings up, the horn sounds, and it pulls away.
+- **Trucks are the market's customers.** Buyers at the Metal Market (metals and ingots) drive in along the near lane
+  (z 6.4) from the east, queue in four slots 7 m apart, take their order onto the bed at the counter and turn off
+  south into a new side street at x 48. Measured: never closer than 7 m (5.8 m trucks), six trucks served in about 3 s
+  while stock lasted. The ambient road trucks moved to the far lanes (z 1.4 and 3.9).
+- Not filmed: the dock truck's arrival (it was already docked in the test); its states and the model were checked.
+
+### F4 result (2026-10-09)
+Built: `F4_Build.Scene` (belts + tidy); runtime `Conveyor.rollers / rollerRadius` (drums turn with the belt; an empty
+belt keeps running); tool `AgentScripts/Tools/MeshOverlap.cs`. Tests 89/89.
+
+- **Conveyors.** All 12 belts rebuilt: C-channel rails (yellow web and flanges, black stripes, bolts), rubber skirt
+  boards, the scrolling belt and a return belt with idlers, A-frame legs with braces and foot plates, and at each free
+  end a drum that turns with the belt in bearing blocks; the head end has a blue drive motor under a yellow guard. The
+  belt surface stays at 0.4 m, so items ride as before. Belts now run when empty too.
+- **Overlaps fixed.** The furnace collector chain overlapped at every joint (each frame ran 0.3 m past its end with a
+  doubled drum): joined ends now meet flush halfway. The Splitter's four fanned belts crossed each other's rails: they
+  are narrower and start a little after the chute. MeshOverlap then listed every station, tile and prop pair whose
+  bodies interpenetrate; fixed: a tank half inside a container (moved 2.7 m), pallets lying on the Smelter's hire tile
+  (moved to the old gateway, free since F1), pallets wedged between crushed cars and bales (removed), two flags flying
+  over the Sell Desk's stock and cash pads (removed), three trees and bushes growing through a backdrop warehouse
+  (removed). What remains on the list is on purpose: tree clusters, stacked crates, belts under the furnaces' outputs,
+  the crane jibs passing overhead.
+
+### F5 result (2026-10-09)
+Built: `F5_Build` (Assets, Scene); runtime `Factory/DumpRoute`, `Factory/DumpTruck`, `Factory/Excavator`; data
+`Machine_HeavyCrusher`, `ClawCrane_Dump`, `Expansion_DumpYard`, task `t51_dump_yard`. Tests 89/89.
+
+- **Dump Yard** (x 40–76, z 42–74): a fenced lot east of the Heavy Yard (its walls stand from the start), concrete with
+  a painted haul lane; opened for $25,000 at yard Lv 12 on a tile north of the excavator, through a gate in the Heavy
+  Yard's east wall at the cross lane. 40 diamonds when it opens; the main chain ends with "Open the Dump Yard".
+- **Excavator** in the Heavy Yard (the old garbage-truck bay): turns on its tracks, reaches with a two-link arm (IK),
+  scoops loose scrap within 8.5 m and drops it on the dump truck in the bay.
+- **Two dump trucks** loop: back into the bay, load, drive through the gate, tip the body and pour the load on the
+  dump pile, loop round and back in; one waits at the holding point while the other has the bay. Beacons, horn,
+  turning wheels, the body pitches on starts and stops.
+- **Dump Yard Crane** feeds the pile into the **Heavy Crusher** (1.4x the Crusher with twin drums and a caged
+  top; 3–4 pieces a cycle, hopper 60–130; upgrades in the panel under DUMP YARD). Its belt runs south through a gap in
+  the plant's north wall straight into the Metal Splitter.
+- Seen in play: trucks alternate Loading → Driving → Tipping → Holding, the excavator cycles, the crane fed the
+  crusher and Raw Metal rode the belt into the Splitter.
+- **Furnace levels unchanged.** The heavy line is the supply that keeps all four furnaces busy at their higher levels;
+  raising what a furnace level eats waits for the full-session run (late prices are still unmeasured).
+- Also: the port's last catalog entry (`ship_dock`) removed.
+
+Rules from the brief: every video stays a choice (nothing is blocked behind one), balance still holds with every video
+ignored, and workers stay slower than the player at anything the player can do.
+
 ## Tools
 - `AgentScripts/Tools/*.sh`: play-test helpers (focus-safe wait, captures, teleport, state dump).
 - `AgentScripts/Tools/ContactSheet.cs`: tiles N frames of game time into one PNG to judge motion and feedback.

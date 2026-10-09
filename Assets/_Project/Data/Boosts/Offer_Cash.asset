@@ -19,8 +19,8 @@ MonoBehaviour:
   boost: {fileID: 11400000, guid: 09405ae7d54ac468ab5e1e7154f72dcb, type: 2}
   cashPerLevel: 0
   showSeconds: 25
-  cooldown: 600
+  cooldown: 480
   minLevel: 2
-  weight: 1.2
-  dailyCap: 6
+  weight: 0
+  dailyCap: 8
   priority: 0

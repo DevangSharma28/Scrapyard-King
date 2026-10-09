@@ -33,6 +33,11 @@ namespace ScrapYardKing.Customers
         public Transform HandPoint => handPoint != null ? handPoint : transform;
         public bool IsWalking => pathIndex < path.Count || Time.time < waitUntil;
 
+        /// <summary>On the last leg and within <paramref name="distance"/> of where it is going (the counter can start).</summary>
+        public bool Arriving(float distance) =>
+            Time.time >= waitUntil && (pathIndex >= path.Count ||
+                                       (pathIndex == path.Count - 1 && (path[^1] - transform.position).sqrMagnitude <= distance * distance));
+
         // Order state, written by the queue.
         /// <summary>Material this customer buys (null = anything on the counter).</summary>
         public ItemDefinition OrderItem { get; set; }

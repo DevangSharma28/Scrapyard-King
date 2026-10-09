@@ -6,7 +6,9 @@ using UnityEngine;
 namespace ScrapYardKing.Workers
 {
     /// <summary>
-    /// Carrier job loop. Zone routes: walk to loose items in a pickup zone and let the collector vacuum them up.
+    /// Carrier job loop. Zone routes: walk to loose items in a pickup zone and let the collector vacuum them up; a carrier
+    /// with a chainsaw (<see cref="WorkerDefinition.Cuts"/>) cuts the nearest scrap in its zone when nothing is lying
+    /// around, slower than the player and quietly (no hit-stop or camera shake), then collects what fell.
     /// Pad routes: stand on the pickup pad until loaded. Then carry the load to the drop-off pad and wait there until
     /// the pad has unloaded it. Pads do every transfer, exactly as for the player, so a full hopper or counter makes
     /// the worker wait visibly.
@@ -21,7 +23,8 @@ namespace ScrapYardKing.Workers
             Collect,
             Load,
             Deliver,
-            Unload
+            Unload,
+            Cut
         }
 
         [SerializeField, Min(0.05f)] float thinkInterval = 0.35f;
@@ -35,6 +38,9 @@ namespace ScrapYardKing.Workers
         float nextThink, stateSince;
         int lastCount;
         Items.TransferPad loadPad;
+        ScrapManager scrapManager;
+        ScrapObject cutting;
+        float nextCut;
 
         public State Current { get; private set; }
 
@@ -105,7 +111,12 @@ namespace ScrapYardKing.Workers
                 case State.Idle:
                     if (TryFindItem(out var item)) Enter(State.Collect, item);
                     else if (stack.Count > 0) Enter(State.Deliver, Drop().transform.position);
+                    else if (TryFindScrap(out cutting)) Enter(State.Cut, cutting.ClosestPoint(transform.position));
                     else worker.MoveTo(route.IdlePosition);
+                    break;
+
+                case State.Cut:
+                    ThinkCut();
                     break;
 
                 case State.Collect:
@@ -155,6 +166,63 @@ namespace ScrapYardKing.Workers
                     else if (HorizontalDistance(Drop().transform.position) > arriveDistance) Enter(State.Deliver, Drop().transform.position);
                     break;
             }
+        }
+
+        void ThinkCut()
+        {
+            if (cutting == null || !cutting.IsTargetable)
+            {
+                worker.SetWorking(false);
+                cutting = null;
+                Enter(State.Idle, null);   // the pieces lie there now: the next think collects them
+                return;
+            }
+
+            if (cutting.SurfaceDistance(transform.position) > worker.Definition.CutReach)
+            {
+                worker.SetWorking(false);
+                worker.MoveTo(cutting.ClosestPoint(transform.position));
+            }
+            else
+            {
+                worker.Stop();
+                worker.SetWorking(true);
+            }
+        }
+
+        /// <summary>Cuts run every frame (between thinks) at the worker's own rate.</summary>
+        void LateUpdate()
+        {
+            if (Current != State.Cut || cutting == null || !cutting.IsTargetable || Time.time < nextCut) return;
+            var def = worker.Definition;
+            if (cutting.SurfaceDistance(transform.position) > def.CutReach) return;
+            nextCut = Time.time + 1f / def.CutsPerSecond;
+            Vector3 point = cutting.ClosestPoint(transform.position + Vector3.up);
+            Vector3 dir = cutting.Center - transform.position;
+            dir.y = 0f;
+            worker.FaceTowards(cutting.Center, 1080f);
+            cutting.ApplyHit(new ScrapHit(def.CutDamage, point, dir.sqrMagnitude > 0.001f ? dir.normalized : transform.forward, this, true));
+        }
+
+        /// <summary>Nearest scrap in the route's zones that the worker's chainsaw can cut and the player is not on.</summary>
+        bool TryFindScrap(out ScrapObject found)
+        {
+            found = null;
+            var def = worker.Definition;
+            if (def == null || !def.Cuts || route.UsesPad) return false;
+            if (scrapManager == null && !Services.TryGet(out scrapManager)) return false;
+            float best = float.MaxValue;
+            foreach (var s in scrapManager.Registered)
+            {
+                if (s == null || !s.IsTargetable || s.Definition.MinCutPower > def.CutPower || !route.InAnyZone(s.transform.position)) continue;
+                if (!worker.Collector.Wants(s.Definition.DropItem)) continue;
+                float d = (s.transform.position - transform.position).sqrMagnitude;
+                if (d >= best) continue;
+                best = d;
+                found = s;
+            }
+
+            return found != null;
         }
 
         /// <summary>The drop-off for the current load (routes with one pad always answer that pad).</summary>

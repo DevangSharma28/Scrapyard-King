@@ -25,5 +25,7 @@ MonoBehaviour:
   orderOptions: []
   preferInStock: 0.8
   settleAfter: 6
+  nextCustomerGap: 0.5
+  serveFromDistance: 0.8
   arriveSfx: {fileID: 11400000, guid: de0f4a1c9f1f64ba6a7bcc7f5f897277, type: 2}
   happySfx: {fileID: 11400000, guid: 1e10d6a13c536401999118d8103c7ae3, type: 2}

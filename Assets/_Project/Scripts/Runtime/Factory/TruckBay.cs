@@ -60,13 +60,30 @@ namespace ScrapYardKing.Factory
         [Tooltip("The carrier is already at the dock when the bay starts (a ship moored at the quay before the port opens), instead of driving in.")]
         [SerializeField] bool startDocked;
 
+        [Header("Show (optional parts of the truck model)")]
+        [Tooltip("Drop-side on the dock side: hinged at the bed edge, swings down while loading.")]
+        [SerializeField] Transform sideGate;
+        [SerializeField] Vector3 gateOpenEuler = new(0f, 0f, -100f);
+        [Tooltip("Roof beacon: spins while the truck moves or is about to leave.")]
+        [SerializeField] Transform beacon;
+        [Tooltip("White lights at the back: blink while reversing in.")]
+        [SerializeField] GameObject reverseLights;
+        [SerializeField] SfxDefinition reverseSfx;
+        [SerializeField] SfxDefinition gateSfx;
+        [SerializeField] SfxDefinition hornSfx;
+        [Tooltip("How far the body settles on its springs with a full bed (metres).")]
+        [SerializeField, Min(0f)] float fullSink = 0.12f;
+
         readonly Dictionary<ItemDefinition, int> manifest = new();
         // The current order: units asked for per product. What is loaded is always the manifest.
         readonly Dictionary<ItemDefinition, int> required = new();
         TruckContractDefinition contract;
         bool contractAnnounced;
         ItemPool pool;
-        float along, pathLength, returnAt, dockedAt, departAt = -1f;
+        float along, pathLength, returnAt, dockedAt, departAt = -1f, nextBeep;
+        bool leaving;
+        Quaternion gateClosed = Quaternion.identity;
+        Vector3 bodyRest;
         long cargoValue;
         Vector3 bodyScale = Vector3.one;
 
@@ -139,7 +156,7 @@ namespace ScrapYardKing.Factory
                 cargoValue += (long)missing * line.Key.BaseValue;
             }
 
-            departAt = Time.time + departDelay;
+            ReadyToLeave();
             AnnounceComplete();
             RefreshLabel();
             return true;
@@ -168,7 +185,14 @@ namespace ScrapYardKing.Factory
 
         void Awake()
         {
-            if (truckBody != null) bodyScale = truckBody.localScale;
+            if (truckBody != null)
+            {
+                bodyScale = truckBody.localScale;
+                bodyRest = truckBody.localPosition;
+            }
+
+            if (sideGate != null) gateClosed = sideGate.localRotation;
+            if (reverseLights != null) reverseLights.SetActive(false);
             ApplyLevel();
         }
 
@@ -222,6 +246,7 @@ namespace ScrapYardKing.Factory
             StationRegistry.Unregister(this);
             if (Services.TryGet(out UpgradeManager upgrades)) upgrades.Unregister(this);
             if (truckBody != null) truckBody.DOKill();
+            if (sideGate != null) sideGate.DOKill();
         }
 
         public void SetLevel(int newLevel)
@@ -351,7 +376,7 @@ namespace ScrapYardKing.Factory
             GameEvents.RaiseItemsDelivered(StationId, kind, 1);
             Punch(0.035f);
             bool met = ContractMet();
-            if (cargo.IsFull || met) departAt = Time.time + departDelay;
+            if (cargo.IsFull || met) ReadyToLeave();
             if (met && !contractAnnounced) AnnounceComplete();
             else if (!contractAnnounced) RaiseContract();
             RefreshLabel();
@@ -379,8 +404,60 @@ namespace ScrapYardKing.Factory
             manifest[kind] = manifest.TryGetValue(kind, out int n) ? n + 1 : 1;
         }
 
+        /// <summary>
+        /// The load is complete (or the bed full): the side swings up, the horn sounds and the beacon turns; the truck
+        /// pulls out departDelay later. Once per visit.
+        /// </summary>
+        void ReadyToLeave()
+        {
+            if (leaving)
+            {
+                departAt = Time.time + departDelay;
+                return;
+            }
+
+            leaving = true;
+            departAt = Time.time + departDelay;
+            Gate(false);
+            GameFeedback.Sfx(hornSfx);
+        }
+
+        void Gate(bool open)
+        {
+            if (sideGate == null) return;
+            sideGate.DOKill();
+            sideGate.DOLocalRotateQuaternion(open ? gateClosed * Quaternion.Euler(gateOpenEuler) : gateClosed, open ? 0.45f : 0.3f)
+                .SetEase(open ? Ease.OutBounce : Ease.InOutQuad);
+            GameFeedback.Sfx(gateSfx);
+        }
+
+        /// <summary>Beacon, reverse lights and beeps while reversing in; the body settles as the bed fills.</summary>
+        void Show()
+        {
+            bool moving = State is BayState.Arriving or BayState.Departing || leaving;
+            if (beacon != null && moving) beacon.Rotate(0f, 540f * Time.deltaTime, 0f, Space.Self);
+            if (State == BayState.Arriving)
+            {
+                bool on = Mathf.Repeat(Time.time, 0.5f) < 0.25f;
+                if (reverseLights != null && reverseLights.activeSelf != on) reverseLights.SetActive(on);
+                if (Time.time >= nextBeep)
+                {
+                    nextBeep = Time.time + 0.5f;
+                    GameFeedback.Sfx(reverseSfx);
+                }
+            }
+
+            if (truckBody != null && fullSink > 0f)
+            {
+                float fill = cargo.Capacity > 0 ? (float)cargo.Count / cargo.Capacity : 0f;
+                var target = bodyRest + Vector3.down * (fullSink * fill);
+                truckBody.localPosition = Vector3.MoveTowards(truckBody.localPosition, target, Time.deltaTime * 0.6f);
+            }
+        }
+
         void Update()
         {
+            Show();
             switch (State)
             {
                 case BayState.Away:
@@ -420,8 +497,12 @@ namespace ScrapYardKing.Factory
             along = 0f;
             PlaceTruck();
             RollContract();
-            departAt = cargo.IsFull || ContractMet() ? Time.time + departDelay : -1f;
+            departAt = -1f;
+            leaving = false;
+            if (cargo.IsFull || ContractMet()) ReadyToLeave();
             if (exhaust != null) exhaust.Stop();
+            if (reverseLights != null) reverseLights.SetActive(false);
+            Gate(true);
             GameFeedback.Sfx(definition.ArriveSfx);
             Punch(0.07f);
             RefreshLabel();
@@ -462,6 +543,8 @@ namespace ScrapYardKing.Factory
         void Leave()
         {
             State = BayState.Away;
+            leaving = false;
+            if (truckBody != null) truckBody.localPosition = bodyRest;
             if (exhaust != null) exhaust.Stop();
             truck.gameObject.SetActive(false);
 
@@ -519,7 +602,13 @@ namespace ScrapYardKing.Factory
             cargo.Capacity = Stats.capacity;
             if (levelVisuals != null) levelVisuals.Apply(level, animate);
             // A bigger bed can turn a truck that was "full" into one with room again.
-            if (!cargo.IsFull && !ContractMet()) departAt = -1f;
+            if (!cargo.IsFull && !ContractMet() && State == BayState.Loading && leaving)
+            {
+                departAt = -1f;
+                leaving = false;
+                Gate(true);
+            }
+            else if (!cargo.IsFull && !ContractMet()) departAt = -1f;
             RefreshLabel();
         }
 

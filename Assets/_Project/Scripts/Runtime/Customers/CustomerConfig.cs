@@ -36,6 +36,10 @@ namespace ScrapYardKing.Customers
         [Tooltip("A customer whose material is not on the counter settles for something that is after this many seconds " +
                  "(at once when the counter is full of other goods and could never take theirs). 0 = they wait forever.")]
         [SerializeField, Min(0f)] float settleAfter = 6f;
+        [Tooltip("Seconds between one customer leaving the counter and the next being served (owner: 0.5).")]
+        [SerializeField, Min(0f)] float nextCustomerGap = 0.5f;
+        [Tooltip("The next customer is served once this close to the counter, without waiting to stand still.")]
+        [SerializeField, Min(0f)] float serveFromDistance = 0.8f;
         [SerializeField] SfxDefinition arriveSfx;
         [SerializeField] SfxDefinition happySfx;
 
@@ -43,6 +47,8 @@ namespace ScrapYardKing.Customers
         public float WalkSpeed => walkSpeed;
         public float HandOverInterval => handOverInterval;
         public float SettleAfter => settleAfter;
+        public float NextCustomerGap => nextCustomerGap;
+        public float ServeFromDistance => serveFromDistance;
         public ItemDefinition OrderItem => orderItem;
         public SfxDefinition ArriveSfx => arriveSfx;
         public SfxDefinition HappySfx => happySfx;

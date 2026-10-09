@@ -13,7 +13,9 @@ namespace ScrapYardKing.Boosts
         /// <summary>Completes a loading truck's order at once. Offered on the HUD next to the order card.</summary>
         InstantTruck,
         /// <summary>Doubles the cash earned while away. Offered once per return on the welcome-back card.</summary>
-        OfflineDouble
+        OfflineDouble,
+        /// <summary>Keeps a machine's Overdrive running for minutes. Offered by its boost pad after the free burst.</summary>
+        MachineBoost
     }
 
     /// <summary>An optional rewarded-video offer on the HUD: what the player gets, how long it stays, how soon it may return.</summary>

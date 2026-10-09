@@ -57,6 +57,8 @@ namespace ScrapYardKing.Harvest
 
         [Header("Spawning")]
         [SerializeField, Min(0f)] float respawnDelay = 8f;
+        [Tooltip("Light enough for the Claw Crane to lift whole and drop into the Crusher (tyres, drums, cars).")]
+        [SerializeField] bool craneLiftable;
 
         [Header("Feedback (optional overrides)")]
         [SerializeField] SfxDefinition hitSfx;
@@ -85,6 +87,7 @@ namespace ScrapYardKing.Harvest
         public ScrapSizeClass SizeClass => sizeClass;
         public ScrapObject Prefab => prefab;
         public float MaxHealth => maxHealth;
+        public bool CraneLiftable => craneLiftable;
         public float MinCutPower => minCutPower;
         public ItemDefinition DropItem => dropItem;
         public Vector2Int DropAmount => dropAmount;

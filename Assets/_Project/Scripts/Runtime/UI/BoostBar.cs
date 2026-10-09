@@ -47,7 +47,7 @@ namespace ScrapYardKing.UI
         void OnOverdrive(string machineId)
         {
             bool wasOff = Time.time >= overdriveUntil;
-            overdriveUntil = Time.time + (overdrive != null ? overdrive.Duration : 10f);
+            overdriveUntil = Time.time + 0.1f;
             if (wasOff && chips.Length > 0 && chips[0].root != null) UIAnim.UnlockReveal(chips[0].root.transform);
         }
 
@@ -56,12 +56,16 @@ namespace ScrapYardKing.UI
             if (boosts == null) Services.TryGet(out boosts);
             int slot = 0;
 
-            float left = overdriveUntil - Time.time;
+            // the pad running longest (a video makes it two minutes)
+            Tiles.OverdriveTile longest = null;
+            foreach (var t in Tiles.OverdriveTile.Running)
+                if (longest == null || t.Remaining > longest.Remaining) longest = t;
+            float left = longest != null ? longest.Remaining : 0f;
             if (left > 0f && slot < chips.Length)
             {
-                float duration = overdrive != null ? overdrive.Duration : 10f;
+                overdriveUntil = Time.time + left;
                 string mult = overdrive != null ? $"{overdrive.SpeedMultiplier:0.#}X " : "";
-                Set(chips[slot++], overdriveIcon, left / duration, overdriveColor, left, mult);
+                Set(chips[slot++], overdriveIcon, left / Mathf.Max(1f, longest.RunLength), overdriveColor, left, mult);
             }
 
             if (boosts != null)

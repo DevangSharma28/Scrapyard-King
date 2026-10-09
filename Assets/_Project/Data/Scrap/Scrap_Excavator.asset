@@ -32,6 +32,7 @@ MonoBehaviour:
   rareDropAmount: {x: 6, y: 10}
   xpReward: 70
   respawnDelay: 22
+  craneLiftable: 0
   hitSfx: {fileID: 11400000, guid: 6e9e93e37e229422a9456a5073e48d46, type: 2}
   breakSfx: {fileID: 11400000, guid: 4b4153410c94f41319b2a2fe92f84312, type: 2}
   hitVfx: {fileID: 0}

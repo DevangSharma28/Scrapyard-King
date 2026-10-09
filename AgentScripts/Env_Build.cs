@@ -562,8 +562,7 @@ public static class Env_Build
     /// <summary>
     /// The grass everything stands on. Its mesh had shrunk to a 1 m cube (already so in the backup taken before the
     /// revamp), so outside the walls there was nothing: the backdrop trees stood over the void. It is rebuilt at an
-    /// explicit size: west and south far past the camera's view, east only to the quay's edge (the dock's water lies
-    /// lower and must not be covered). It stays out of the NavMesh bake, which was made without it.
+    /// explicit size: west and south far past the camera's view; east past where the port used to be (F1 removed it). It stays out of the NavMesh bake, which was made without it.
     /// </summary>
     static void WorldGround(Transform env)
     {
@@ -574,7 +573,7 @@ public static class Env_Build
             return;
         }
 
-        const float west = -90f, east = 97.4f, south = -70f, north = 170f, top = -0.05f, thick = 0.2f;
+        const float west = -90f, east = 200f, south = -70f, north = 170f, top = -0.05f, thick = 0.2f;
         slab.localScale = Vector3.one;
         var k = new MeshKit { UvScale = 1f };
         k.Box(0, slab.InverseTransformPoint(new Vector3((west + east) * 0.5f, top - thick * 0.5f, (south + north) * 0.5f)), new Vector3(east - west, thick, north - south), 0f);

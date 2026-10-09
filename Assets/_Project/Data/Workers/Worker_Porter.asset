@@ -15,7 +15,7 @@ MonoBehaviour:
   id: porter
   displayName: Scrap Porter
   icon: {fileID: 21300000, guid: ee4f94f62ff9644afbc7b3e6ab954c05, type: 3}
-  tagline: HAULS SCRAP TO THE CRUSHER
+  tagline: CUTS AND HAULS SCRAP
   role: 0
   prefab: {fileID: 2678992471162667569, guid: 41e102c46293b4a97a2907bbc679515b, type: 3}
   siteId: scrap
@@ -26,4 +26,8 @@ MonoBehaviour:
   collectLooseItems: 1
   workBoost: 1.5
   spawnAtSite: 1
+  cutPower: 10
+  cutDamage: 10
+  cutsPerSecond: 2.5
+  cutReach: 1.4
   hireCosts: 2c01000000000000e803000000000000

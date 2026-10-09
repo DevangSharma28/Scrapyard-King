@@ -16,6 +16,9 @@ MonoBehaviour:
   duration: 10
   chargeTime: 1.5
   cooldown: 6
+  videoOffer: {fileID: 11400000, guid: da5b131a303874baba1191aa6c68dc5b, type: 2}
+  videoSeconds: 120
+  offerEvery: 90
   chargeSfx: {fileID: 11400000, guid: c86172042210d4ec89a9eaf02247acbc, type: 2}
   startSfx: {fileID: 11400000, guid: c18771734b29441738cd13cd231509de, type: 2}
   endSfx: {fileID: 11400000, guid: 21d5d6a9784204c3a868a41b3adc736a, type: 2}

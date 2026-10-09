@@ -1,0 +1,26 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 57b1fa9e61f4f45d2aa89aa9a30456a5, type: 3}
+  m_Name: Offer_MachineBoost
+  m_EditorClassIdentifier: ScrapYardKing.Runtime::ScrapYardKing.Boosts.AdOfferDefinition
+  id: offer_machine_boost
+  title: 2X MACHINE
+  icon: {fileID: -959463724661337283, guid: f8e6658850c4d4b238187e2c8824bf85, type: 3}
+  kind: 5
+  boost: {fileID: 0}
+  cashPerLevel: 200
+  showSeconds: 4
+  cooldown: 60
+  minLevel: 1
+  weight: 0
+  dailyCap: 15
+  priority: 0

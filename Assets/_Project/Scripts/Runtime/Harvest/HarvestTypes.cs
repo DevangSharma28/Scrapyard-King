@@ -22,13 +22,16 @@ namespace ScrapYardKing.Harvest
         /// <summary>Horizontal direction from the cutter toward the object.</summary>
         public readonly Vector3 Direction;
         public readonly Object Source;
+        /// <summary>A bystander's hit (a worker): sparks and sound, but no hit-stop, camera shake or punch.</summary>
+        public readonly bool Quiet;
 
-        public ScrapHit(float damage, Vector3 point, Vector3 direction, Object source)
+        public ScrapHit(float damage, Vector3 point, Vector3 direction, Object source, bool quiet = false)
         {
             Damage = damage;
             Point = point;
             Direction = direction;
             Source = source;
+            Quiet = quiet;
         }
     }
 

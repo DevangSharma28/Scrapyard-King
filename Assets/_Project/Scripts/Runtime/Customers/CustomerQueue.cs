@@ -32,7 +32,7 @@ namespace ScrapYardKing.Customers
         readonly List<Customer> line = new();
         readonly Dictionary<Customer, Stack<Customer>> pools = new();
         readonly List<Vector3> scratch = new();
-        float nextArrival, nextServiceAt, nextHandOver, waitingSince = -1f;
+        float nextArrival, nextServiceAt, nextHandOver, nextCustomerAt, waitingSince = -1f;
         bool serving;
         ItemDefinition orderSold;
         Customer lastPrefab;
@@ -88,7 +88,7 @@ namespace ScrapYardKing.Customers
         void ServeFront()
         {
             var front = Front;
-            if (front == null || front.IsWalking)
+            if (front == null || !front.Arriving(config.ServeFromDistance) || Time.time < nextCustomerAt)
             {
                 desk.SetWaitingFor(null, false);
                 return;
@@ -185,6 +185,8 @@ namespace ScrapYardKing.Customers
         void Finish(Customer customer)
         {
             serving = false;
+            nextCustomerAt = Time.time + config.NextCustomerGap / Mathf.Max(0.1f, desk.ServiceSpeed.Value);
+            nextServiceAt = Mathf.Min(nextServiceAt, nextCustomerAt);
             desk.CompleteSale(orderSold, customer.Received, customer.Owed);
             CustomersServed++;
             GameEvents.RaiseCustomerServed(desk.StationId, customer.Received);

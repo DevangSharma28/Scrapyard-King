@@ -46,10 +46,10 @@ MonoBehaviour:
     diamonds: 25
     title: NEW AREA BONUS
     line: HEAVY SCRAP YARD OPEN
-  - expansionId: dockyard
-    diamonds: 50
-    title: PORT BONUS
-    line: THE DOCKYARD IS OPEN
+  - expansionId: dump_yard
+    diamonds: 40
+    title: NEW AREA BONUS
+    line: THE DUMP YARD IS OPEN
   levelUpDiamonds: 5
   levelUpFrom: 6
   levelUpEvery: 2

@@ -34,6 +34,7 @@ MonoBehaviour:
   rareDropAmount: {x: 1, y: 1}
   xpReward: 1
   respawnDelay: 4
+  craneLiftable: 1
   hitSfx: {fileID: 0}
   breakSfx: {fileID: 0}
   hitVfx: {fileID: 0}

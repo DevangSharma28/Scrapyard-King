@@ -187,7 +187,7 @@ roll it out after approval. The yard's sand became warm brick paving and the scr
 textures `T_GroundPavers`, `T_GroundGravel`; one material per ground slab because the repeat depends on its size).
 The pit has a yellow / dark hazard kerb with bollards at its three openings, and a lit SCRAP YARD KING billboard
 stands above the north wall. The first version also painted two asphalt lanes with the words SCRAP and SELL across
-the yard; the owner rejected them (a road under the light pole and the debris, text overlapping props), so the Old
+the yard; the owner rejected them (a road under the light pole and the debris, text overlapping props), so the Olds
 Yard has no painted lanes or floor words. Lesson: do not lay new ground graphics across props that are already there. Still the old look in the Old Yard: the
 walls, the machines, the office and props, the Back Lot's ground.
 

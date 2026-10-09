@@ -12,8 +12,10 @@ using UnityEngine;
 namespace ScrapYardKing.Factory
 {
     /// <summary>
-    /// A crane that feeds a machine without the player: it swings its jib over the nearest loose item the machine takes,
-    /// lowers the claw, lifts a handful and drops it into the hopper. Bought and upgraded like any station
+    /// A crane that feeds a machine without the player. With <c>liftWholeScrap</c> (the Claw Crane) it swings over the
+    /// nearest untouched light scrap (tyre stack, drum, car), lifts the whole object, carries it over the hopper and feeds
+    /// its pieces in as the hopper makes room; the object shrinks and is gone with the last piece. Without it (the Heavy
+    /// Yard crane) it lifts a handful of loose pieces. Bought and upgraded like any station
     /// (<see cref="IUpgradeable"/>; level 0 = not built, only its foundation stands). It uses the same two doors as the
     /// player and the porters: loose items come from <see cref="HarvestManager"/>, the hopper is an
     /// <see cref="IItemReceiver"/>. A full hopper leaves the claw waiting above it, so the bottleneck stays visible.
@@ -31,6 +33,10 @@ namespace ScrapYardKing.Factory
         [SerializeField] Transform dropPoint;
         [Tooltip("Items the crane handles. Empty = whatever the target accepts. Needed when the target is a belt, which takes anything.")]
         [SerializeField] ItemDefinition[] takes;
+        [Tooltip("Lift whole scrap objects (ScrapDefinition.CraneLiftable) instead of loose pieces.")]
+        [SerializeField] bool liftWholeScrap;
+        [Tooltip("Pieces fed into the hopper per second while a whole object hangs over it.")]
+        [SerializeField, Min(1f)] float feedRate = 18f;
 
         [Header("Rig")]
         [Tooltip("Everything that only exists once the crane is built.")]
@@ -63,6 +69,9 @@ namespace ScrapYardKing.Factory
         readonly List<WorldItem> held = new();
         IItemReceiver receiver;
         HarvestManager harvest;
+        ScrapManager scrapManager;
+        ScrapObject targetScrap, carried;
+        float carriedHeight, feedBudget;
         Phase phase;
         Vector3 goal;
         float yaw, reachNow, hoist, open = 1f, nextLook;
@@ -154,41 +163,100 @@ namespace ScrapYardKing.Factory
                     if (Travel(goal, travelHeight, speed)) phase = Phase.Lower;
                     break;
                 case Phase.Lower:
-                    if (Hoist(grabHeight, speed)) Grab();
+                    if (liftWholeScrap && (targetScrap == null || !targetScrap.CanBeLifted))
+                    {
+                        targetScrap = null;
+                        phase = Phase.Lift;   // somebody started cutting it: go back up empty
+                        break;
+                    }
+
+                    if (Hoist(liftWholeScrap ? targetScrap.TopHeight + 0.1f : grabHeight, speed)) Grab();
                     break;
                 case Phase.Lift:
                     open = Mathf.MoveTowards(open, 0f, Time.deltaTime * 8f);
-                    if (Hoist(travelHeight, speed)) phase = Phase.ToHopper;
+                    if (Hoist(CarryHeight, speed)) phase = carried != null || held.Count > 0 ? Phase.ToHopper : Phase.Idle;
                     break;
                 case Phase.ToHopper:
-                    if (Travel(dropPoint.position, travelHeight, speed)) phase = Phase.Release;
+                    if (Travel(dropPoint.position, CarryHeight, speed)) phase = Phase.Release;
                     break;
                 case Phase.Release:
-                    if (Hoist(Mathf.Min(travelHeight, dropPoint.position.y), speed)) Release();
+                    float over = carried != null ? dropPoint.position.y + carriedHeight * 0.6f : dropPoint.position.y;
+                    if (Hoist(Mathf.Min(CarryHeight, over), speed)) Release();
                     break;
                 case Phase.Waiting:
-                    // The hopper is full: hang above it with the load until there is room.
-                    if (Time.time >= nextLook) Release();
+                    // The hopper is full: hang above it with the load until there is room. A whole object feeds in
+                    // piece by piece at feedRate, shrinking as it goes.
+                    if (carried != null) Feed();
+                    else if (Time.time >= nextLook) Release();
                     break;
             }
 
             Pose();
         }
 
-        /// <summary>Picks the next piece: something the machine takes, lying inside the reach, while the hopper has room.</summary>
+        /// <summary>High enough that what hangs from the claw clears the hopper.</summary>
+        float CarryHeight => carried != null ? Mathf.Max(travelHeight, dropPoint.position.y + carriedHeight + 0.4f) : travelHeight;
+
+        /// <summary>Picks the next job: an untouched light scrap object in reach (whole mode) or a loose piece.</summary>
         void Look()
         {
             nextLook = Time.time + retryDelay;
-            if (harvest == null && !Services.TryGet(out harvest)) return;
             Vector3 origin = transform.position;
+            if (liftWholeScrap)
+            {
+                if (scrapManager == null && !Services.TryGet(out scrapManager)) return;
+                targetScrap = NearestLiftable(origin);
+                if (targetScrap == null) return;
+                goal = targetScrap.transform.position;
+                phase = Phase.ToItem;
+                return;
+            }
+
+            if (harvest == null && !Services.TryGet(out harvest)) return;
             if (!harvest.TryFindNearestCollectable(dropPoint.position, Stats.reach * 2f, Wanted, p => Flat(p - origin).sqrMagnitude <= Stats.reach * Stats.reach &&
                     Flat(p - origin).sqrMagnitude >= minTrolley * minTrolley, out var position)) return;
             goal = position;
             phase = Phase.ToItem;
         }
 
+        ScrapObject NearestLiftable(Vector3 origin)
+        {
+            ScrapObject best = null;
+            float bestDistance = float.MaxValue, reach2 = Stats.reach * Stats.reach, min2 = minTrolley * minTrolley;
+            foreach (var s in scrapManager.Registered)
+            {
+                if (s == null || !s.CanBeLifted || !Wanted(s.Definition.DropItem)) continue;
+                float d = Flat(s.transform.position - origin).sqrMagnitude;
+                if (d > reach2 || d < min2) continue;
+                float toHopper = Flat(s.transform.position - dropPoint.position).sqrMagnitude;
+                if (toHopper >= bestDistance) continue;
+                bestDistance = toHopper;
+                best = s;
+            }
+
+            return best;
+        }
+
         void Grab()
         {
+            if (liftWholeScrap)
+            {
+                var s = targetScrap;
+                targetScrap = null;
+                if (s == null || !s.Lift(hold != null ? hold : claw))
+                {
+                    phase = Phase.Lift;   // go back up empty and look again
+                    return;
+                }
+
+                carried = s;
+                carriedHeight = s.Height;
+                GameFeedback.Sfx(definition.GrabSfx);
+                claw.DOPunchScale(Vector3.one * 0.18f, 0.2f, 6, 0.6f).SetTarget(this);
+                phase = Phase.Lift;
+                return;
+            }
+
             Vector3 at = claw.position;
             at.y = 0f;
             for (int i = 0; i < Stats.grabSize; i++)
@@ -215,6 +283,14 @@ namespace ScrapYardKing.Factory
 
         void Release()
         {
+            if (carried != null)
+            {
+                GameFeedback.Sfx(definition.DropSfx);
+                feedBudget = 0f;
+                phase = Phase.Waiting;
+                return;
+            }
+
             for (int i = held.Count - 1; i >= 0; i--)
             {
                 var item = held[i];
@@ -238,6 +314,21 @@ namespace ScrapYardKing.Factory
 
             GameFeedback.Sfx(definition.DropSfx);
             open = 1f;
+            phase = Phase.Idle;
+            nextLook = Time.time + 0.1f;
+        }
+
+        void Feed()
+        {
+            open = Mathf.MoveTowards(open, 0.5f, Time.deltaTime * 3f);
+            feedBudget = Mathf.Min(feedBudget + feedRate * Time.deltaTime, 3f);
+            int now = Mathf.FloorToInt(feedBudget);
+            if (now <= 0) return;
+            feedBudget -= now;
+            if (!carried.FeedInto(receiver, dropPoint.position, now)) return;
+            carried = null;
+            open = 1f;
+            claw.DOPunchScale(Vector3.one * 0.12f, 0.2f, 6, 0.6f).SetTarget(this);
             phase = Phase.Idle;
             nextLook = Time.time + 0.1f;
         }

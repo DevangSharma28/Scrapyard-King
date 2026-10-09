@@ -62,11 +62,11 @@ Loop: walk into scrap to auto-cut. Pieces fly onto your back (max 8). Then:
 - **Orange UPGRADES tile** opens the upgrade panel while you stand on it (walk off to close).
 - **Dark tiles with a price** hire workers (Scrap Porter, Delivery Helper, Metal Hauler, Market Runner, Smelter, Loader,
   an Operator per machine, a Seller per counter) or open an area (Back Lot, Recycling Plant at the east gate, Furnace
-  hall in the plant, Heavy Scrap Yard at the north gate, Truck Dock in the plant's south-east corner, Dockyard through
-  the Furnace hall's east wall): stand on one and
+  hall in the plant, Heavy Scrap Yard at the north gate, Truck Dock in the plant's south-east corner): stand on one and
   your cash drains into it. "LV n" = yard level too low.
 - **Claw Crane** (tile beside the Scrap Porter's, from yard Lv 4, right after the Back Lot): a tower crane at the corner
-  of the work floor. It picks loose scrap inside its reach and drops it into the Crusher by itself. Two more levels on
+  of the work floor. It lifts whole light scrap (tyres, drums, cars) inside its reach and lowers it into the Crusher,
+  which takes the pieces as it makes room. The Scrap Porter also cuts scrap itself when nothing is lying around. Two more levels on
   the same tile: each adds a section of jib, a bigger grab and speed.
 - **Heavy Yard crane** (tile east of Gate 3 inside the Heavy Yard, yard Lv 9): picks loose scrap in the Heavy Yard and
   drops it on a belt that runs through the gate and tips it into the scrap pit, where the Claw Crane takes over.
@@ -74,10 +74,12 @@ Loop: walk into scrap to auto-cut. Pieces fly onto your back (max 8). Then:
   SCRAP RUSH, TRUCK RUSH) or FREE CASH for watching a video; after a completed truck order it offers to pay the order
   again. Running boosts show as chips under the cash. Ignoring the button costs nothing. In the Editor the "video" is
   a 0.8 s pause. After at least two minutes away the game opens with a "while you were away" cash gift.
-- **Round BOOST pads** next to the Crusher, Sorter and Furnace: stand on one for 1.5 s and the machine runs at 2x for 10 s.
+- **Round BOOST pads** next to the Crusher, Sorter and Furnace: stand on one for 1.5 s and the machine runs at 2x for 10 s;
+  a card then offers a video that keeps it at 2x for 2 minutes. A fixed **2X CASH** button on the left edge (from yard
+  Lv 3) gives 2 minutes of double cash for a video.
 - **Recycling Plant** (east of the yard): carry Raw Metal to the yellow Metal Splitter; it splits it into four
   colour-coded streams (iron, aluminum, copper, steel), each with its own belt and bin; stock the Metal Market from the
-  bins. Market customers ask for one material each. One full bin stops the Splitter.
+  bins. The market's customers are trucks queueing on the road; each asks for one material. One full bin stops the Splitter.
 - **Furnaces** (plant, north-east hall): four in a row against the north wall, one per metal. The Iron Furnace comes
   with the hall; Copper, Aluminum and Steel are bought on the tile in their slot, a yard level apart. Carry a metal from
   its bin to the pad in front of its furnace (the pad shows the metal); ingots ride one collector belt to the Ingot
@@ -92,13 +94,14 @@ Loop: walk into scrap to auto-cut. Pieces fly onto your back (max 8). Then:
   e.g. IRON ORDER 9/12). Carry bars from the Bar Storage to the blue pad. Bars the order asked for pay a bonus; the
   truck takes any bar. It leaves when the order is met or the bed is full and pays onto the dock's cash pallet. The
   Loader (hired on a tile that appears with the Press) feeds the Press and loads the truck.
+- **Dump Yard** (yard Lv 12, tile north of the excavator in the Heavy Yard, through a gate in its east wall): an
+  excavator loads loose heavy scrap onto two dump trucks that tip it on a pile; a crane feeds the pile to the Heavy
+  Crusher, whose belt carries Raw Metal into the Metal Splitter.
 - **Giant Scrap** (Heavy Scrap Yard, striped zone under the crane): every heavy vehicle you break counts on the sign
   (3 for the first, 8 after that). Then a Giant Truck drops in: cut power 40, 6,000 health, a boss bar on the HUD, 16
   parts that fly off, and a $5,000 bonus on top of 140+ pieces.
-- **Dockyard** (Gate 4, east wall of the Furnace hall): the ship and the two cranes are visible over the wall from the
-  start; opening the gate reveals the quay. The **cargo ship** is a dock like the truck's, four times the size: carry
-  bars to the blue pad at the quay's edge, they pile up on the stern, the ship sails when its order is met or the hold
-  is full, pays onto the pallet on the quay and comes back.
+- **No port** (owner, 2026-10-09): the Dockyard, ship and quay were removed in F1; the Furnace hall's east wall is
+  closed. Re-running `M8_Build` or `R6_Build` would bring them back: run `F1_Build` again after them.
 
 ## Project layout
 
@@ -197,6 +200,12 @@ Docs/                       ARCHITECTURE.md, THIRD_PARTY.md
 - **Boosts go through `BoostManager`, ads through `AdService`.** A new boost is a `BoostDefinition` (and, if it should
   be offered, an `AdOfferDefinition`). Never call an ad SDK from game code and never show a video the player did not
   tap for; plug the SDK in with `AdService.SetProvider`. Balance must hold with every offer ignored.
+- **Whole scrap goes through `ScrapObject.Lift` / `FeedInto`.** A crane (or anything else) that takes a whole object
+  lifts it (its spawn point starts counting) and feeds its pieces into an `IItemReceiver` as room frees; nothing
+  else removes live scrap. Mark new light scrap `craneLiftable`. Hits from workers are `ScrapHit.Quiet`.
+- **Vehicles on a loop are data in the scene.** A `DumpRoute` holds the points (load, tip, hold; `reverseInto` for
+  points a truck backs into) outside popped-in content; `DumpTruck` is an `IItemReceiver` only while it stands in the bay;
+  the `Excavator` fills whatever truck the route says is loading. More trucks = more `DumpTruck`s on the same route.
 - **The crane is a station too.** `ClawCrane` (data: `ClawCraneDefinition`) is an `IUpgradeable` that takes loose items
   from `HarvestManager` and gives them to an `IItemReceiver` (the Crusher), the same two doors the player and the
   porters use. Level 0 = only its foundation stands. Its motion is scripted (yaw, trolley, hoist). A full hopper leaves
@@ -244,8 +253,9 @@ Docs/                       ARCHITECTURE.md, THIRD_PARTY.md
   `IAPProductConfig` are for value checks only. Do not sell a product that does nothing (No Ads stays off while the
   game has no forced ads).
 - **Every video goes through `OfferDirector`.** Ask `Ready(offer)` before showing a video button; play with
-  `Watch(offer, reward)`. Never call `AdService` directly from UI, never show two video buttons at once (a HUD element
-  with its own video sets `OfferDirector.ContextualVisible`). Time-sensitive offer cards set `PopupRequest.MaxWait`.
+  `Watch(offer, reward)`. Never call `AdService` directly from UI. One rotating video button at a time (a HUD element
+  with its own video sets `OfferDirector.ContextualVisible`); the fixed 2X CASH button (`CashBoostButton`) is the one
+  permanent exception, at the owner's request. Time-sensitive offer cards set `PopupRequest.MaxWait`.
 - **Extras appear with the first diamond.** Shop, missions and daily rewards stay hidden in the first minutes
   (`Badges.ExtrasUnlocked`). New navigation gets one badge key, not its own dots.
 - **Missions listen, never get called.** New mission kinds = a `MissionStat` fed from a `GameEvents` event in
@@ -305,6 +315,21 @@ Docs/                       ARCHITECTURE.md, THIRD_PARTY.md
 After the milestones: **UI pass** (2026-10-06) with the owner's painted kit: HUD, upgrade panel, tiles, labels and
 bubbles restyled, loading screen with the title logo, app icon (`UI_Build`).
 
+**Fun pass F5** (2026-10-09, `F5_Build`): the Dump Yard east of the Heavy Yard; an excavator loads two dump trucks that
+tip on a pile; a crane feeds the Heavy Crusher, whose belt runs into the Metal Splitter. The F1–F5 plan is done.
+
+**Fun pass F4** (2026-10-09, `F4_Build`): every conveyor rebuilt (rails, skirts, legs, turning drums, drive motor;
+joined belts meet flush, fanned belts no longer cross) and the world's overlapping meshes tidied (`Tools/MeshOverlap.cs`).
+
+**Fun pass F3** (2026-10-09, `F3_Build`): a detailed truck model; the dock truck backs in, drops its side, settles
+and leaves with a horn; the Metal Market's buyers are trucks that queue on the road and turn off into a side street.
+
+**Fun pass F2** (2026-10-09, `F2_Build`): the Claw Crane lifts whole light scrap into the Crusher; the Scrap Porter
+cuts scrap itself (a third of the player's pace).
+
+**Fun pass F1** (2026-10-09, `F1_Build`): the port is gone; boost pads offer a 2-minute 2X by video; a fixed 2X CASH
+video button; customers served 0.5 s apart from a full line. Plan F1–F5 in `Docs/QUALITY_PLAN.md` ("Fun pass").
+
 **HUD layout pass** (2026-10-07, `HudLayout_Build`): audited every screen at 16:9, 20:9 with a notch and 3:4 with
 `Tools/UiAudit.cs`; the canvas scales with Expand, a cleaner top row, the boss bar at the bottom, station labels fade
 while they cover a buy tile, status tags fit their text, plus panel fixes (CLAIM, shop ribbon, slider, sheet bleed).
@@ -363,9 +388,8 @@ the player's arms finally hold and work the cutter (mask fix).
 four-way Metal Splitter with aluminum and steel. Next revamp steps are listed in `Docs/QUALITY_PLAN.md`.
 
 The eight planned milestones are built. What a next step would pick up:
-- **Dockyard content.** The quay is a reveal. Press hall = one more recipe `MachineDefinition` + boost pad + operator
-  console; shipping = a second `TruckBay`-style station (the ship as the "truck"). `TruckBayDefinition.accepts` is where
-  pressed goods go. The main chain ends at `t50_dockyard`; `M8_Build.IsM8Task` shows the id pattern.
+- **The port is gone** (F1). The main chain now ends with the Truck Dock tasks (`t48`, `t49`); the next steps are the
+  fun pass F2–F5 in `Docs/QUALITY_PLAN.md`.
 - **Offline income.** The save stores `savedAtUnix`; an `IdleIncomeManager` would be one more service reading it.
 - **Daily tasks / stages.** `TaskCategory.Daily` exists but has no content; each new system is one more `ISaveable`.
 - **Balance is only half measured.** `Docs/Pacing/README.md` has the runs: after the revamp the first 18 minutes (to
@@ -526,6 +550,8 @@ Shell helpers for driving a play test from the CLI (all take care of `--project-
 - `GuideBot.cs` (`--entry GuideBot.Start --args '["/abs/report.md 90 4"]'`): plays the game by following the guide
   (plus shopping trips) at 4x and writes a pacing timeline; reports stalls where the guide dead-ends. Each `run_script`
   is a separate assembly, so poll the report file for progress (it is rewritten every 30 s of game time).
+- `MeshOverlap.cs` (`--entry MeshOverlap.Run --args '["0.2"]'`, Play mode with areas open): stations, belts, tiles,
+  pads and props whose meshes run into each other, largest first. Clusters and stacks on purpose show up too.
 - `UiAudit.cs` (`--entry UiAudit.Run`, `UiAudit.Res`, `UiAudit.World`): layout audit of the screen UI and the world
   labels (see the rule "Check UI with the audit").
 - `Cheat.cs` (`--entry Cheat.Run --args '["level 9; cash 50000; buy furnace_hall; give iron 6; tp 63 31"]'`): play-mode
@@ -598,6 +624,20 @@ keeps GUIDs. Run them in this order:
 19. **Revamp 2 (furnace battery)**: `R2_Build.Assets`, `R2_Build.Prefabs`, `Art_Machines.Prefabs`, `Art_Machines.Icons`,
     `R2_Build.Icons`, `R2_Build.Scene`, then `Art_Machines.Scene`, `Env_Build.All`, `R1_Build.Bake`, `UI_Build.Apply`.
     `R2_Build.Balance` and the tables in `R2_Build.Assets` hold every furnace number.
+
+36. **Fun pass F5**: `F5_Build.Assets`, `F5_Build.Scene` (or `All`), then `F4_Build.Scene` (dresses the new belt) and
+    `R1_Build.Bake`. After F4.
+
+35. **Fun pass F4**: `F4_Build.Scene`, then `R1_Build.Bake`, after F3. It replaces `Art_Machines.BuildConveyorVisual`:
+    re-running `Art_Machines.Scene` brings the old belts back, so run F4 again after it.
+
+34. **Fun pass F3**: `F3_Build.Assets`, `F3_Build.Scene` (or `All`), after F2. It unpacks the Truck Dock's prefab instance
+    in the scene and rebuilds its truck.
+
+33. **Fun pass F2**: `F2_Build.Assets`, `F2_Build.Scene` (or `All`), after F1.
+
+32. **Fun pass F1**: `F1_Build.Assets`, `F1_Build.Scene` (or `All`), then `R1_Build.Bake`. After step 31, and after any
+    re-run of `M8_Build` / `R6_Build` (it removes the port they build).
 
 31. **HUD layout pass**: `HudLayout_Build.Scene`, after U6 (canvas Expand, top row, mission row, bundle ribbon, volume
     slider, upgrade sheet bleed, boss bar at the bottom, upgrade tile "!"). Run it last of the UI builders.

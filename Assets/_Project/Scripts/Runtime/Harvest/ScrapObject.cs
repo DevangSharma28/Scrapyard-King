@@ -20,6 +20,8 @@ namespace ScrapYardKing.Harvest
             Alive,
             Dying,
             Breaking,
+            /// <summary>Hanging from a crane: no hits; fed into a machine piece by piece.</summary>
+            Carried,
             Dead
         }
 
@@ -53,6 +55,12 @@ namespace ScrapYardKing.Harvest
         public float Health => health;
         public float Health01 => definition != null ? health / definition.MaxHealth : 0f;
         public bool IsTargetable => phase == Phase.Alive && isActiveAndEnabled;
+        /// <summary>Light scrap nobody has started on: a crane may lift it whole.</summary>
+        public bool CanBeLifted => IsTargetable && definition != null && definition.CraneLiftable && health >= definition.MaxHealth;
+        /// <summary>Height from its foot to its top (how far it hangs below a claw).</summary>
+        public float Height => hitCollider != null ? hitCollider.bounds.max.y - transform.position.y : 1f;
+
+        Transform homeParent;
         public Vector3 Center => hitCollider != null ? hitCollider.bounds.center : transform.position;
         public float TopHeight => hitCollider != null ? hitCollider.bounds.max.y : transform.position.y + 1f;
 
@@ -143,7 +151,7 @@ namespace ScrapYardKing.Harvest
 
             if (health > 0f) return false;
             if (definition.BreakDelay > 0f) BeginDying();
-            else Break(config);
+            else Break(config, hit.Quiet);
             return true;
         }
 
@@ -166,6 +174,7 @@ namespace ScrapYardKing.Harvest
 
             GameFeedback.Vfx(GameFeedback.Pick(definition.HitVfx, config.DefaultHitVfx), hit.Point, sparkRotation, definition.HitVfxScale);
             GameFeedback.Sfx(GameFeedback.Pick(definition.HitSfx, config.DefaultHitSfx));
+            if (hit.Quiet) return;
             GameFeedback.HitStop(config.HitStopDuration, config.HitStopTimeScale);
             GameFeedback.CameraShake(config.HitCameraShake);
         }
@@ -230,7 +239,7 @@ namespace ScrapYardKing.Harvest
                 UnityEngine.Random.Range(b.min.z, b.max.z));
         }
 
-        void Break(FeedbackConfig config)
+        void Break(FeedbackConfig config, bool quiet = false)
         {
             flashTime = 0f;
             SetFlash(false);
@@ -256,9 +265,12 @@ namespace ScrapYardKing.Harvest
             {
                 GameFeedback.Vfx(GameFeedback.Pick(definition.BreakVfx, config.DefaultBreakVfx), center, Quaternion.identity, definition.BreakVfxScale);
                 GameFeedback.Sfx(GameFeedback.Pick(definition.BreakSfx, config.DefaultBreakSfx));
-                GameFeedback.HitStop(config.BreakHitStopDuration, config.HitStopTimeScale);
-                GameFeedback.CameraShake(definition.BreakShake);
-                GameFeedback.CameraPunch(config.BreakCameraPunch);
+                if (!quiet)
+                {
+                    GameFeedback.HitStop(config.BreakHitStopDuration, config.HitStopTimeScale);
+                    GameFeedback.CameraShake(definition.BreakShake);
+                    GameFeedback.CameraPunch(config.BreakCameraPunch);
+                }
 
                 float top = hitCollider != null ? hitCollider.bounds.max.y : center.y + 1f;
                 var popupColor = definition.DropItem != null ? definition.DropItem.Color : config.PositivePopupColor;
@@ -267,6 +279,60 @@ namespace ScrapYardKing.Harvest
 
             GameEvents.RaiseScrapBroken(new ScrapBrokenEvent(definition, center, piecesTotal + rare));
             Broken?.Invoke(this);
+        }
+
+        /// <summary>
+        /// A crane takes the whole object: it hangs from <paramref name="holder"/> as it is (no hits, no bar) and its
+        /// spawn point starts counting to the next one. False when it is not liftable (somebody started cutting it).
+        /// </summary>
+        public bool Lift(Transform holder)
+        {
+            if (!CanBeLifted) return false;
+            phase = Phase.Carried;
+            shakeTime = 0f;
+            SetFlash(false);
+            if (hitCollider != null) hitCollider.enabled = false;
+            if (healthBar != null) healthBar.Hide();
+            homeParent = transform.parent;
+            transform.SetParent(holder, true);
+            Broken?.Invoke(this);
+            return true;
+        }
+
+        /// <summary>
+        /// Feeds up to <paramref name="maxPieces"/> of the carried object's pieces into <paramref name="receiver"/> while it
+        /// has room; the object shrinks as it empties and is gone with the last piece (rare drops go in too, or fall beside
+        /// <paramref name="at"/> when they do not fit). True once nothing is left.
+        /// </summary>
+        public bool FeedInto(Items.IItemReceiver receiver, Vector3 at, int maxPieces)
+        {
+            if (phase != Phase.Carried || definition == null) return true;
+            Services.TryGet(out Items.ItemPool pool);
+            int fed = 0;
+            while (piecesRemaining > 0 && fed < maxPieces && pool != null && receiver.CanAccept(definition.DropItem))
+            {
+                receiver.Accept(pool.Get(definition.DropItem, transform.position + UnityEngine.Random.insideUnitSphere * 0.3f, UnityEngine.Random.rotation));
+                piecesRemaining--;
+                fed++;
+            }
+
+            float left = piecesTotal > 0 ? (float)piecesRemaining / piecesTotal : 0f;
+            visualRoot.localScale = visualBaseScale * Mathf.Lerp(0.3f, 1f, left);
+            if (piecesRemaining > 0) return false;
+
+            int rare = definition.RollRareDropAmount();
+            for (int i = 0; i < rare && pool != null && definition.RareDropItem != null; i++)
+            {
+                if (receiver.CanAccept(definition.RareDropItem))
+                    receiver.Accept(pool.Get(definition.RareDropItem, transform.position, UnityEngine.Random.rotation));
+                else if (Services.TryGet(out HarvestManager harvest))
+                    harvest.SpawnDrops(definition.RareDropItem, 1, at, Vector3.zero, definition.DropLaunchSpeed, definition.DropSpread);
+            }
+
+            GameEvents.RaiseScrapBroken(new ScrapBrokenEvent(definition, at, piecesTotal + rare));
+            transform.SetParent(homeParent, true);
+            Die();
+            return true;
         }
 
         void DropPieces(int count, Vector3 origin, Vector3 bias, float overSeconds = 0f)

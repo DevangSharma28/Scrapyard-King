@@ -62,10 +62,10 @@ namespace ScrapYardKing.EditorTools
             public (string id, float minute)[] expansions =
             {
                 ("back_lot", 5), ("recycling_plant", 9), ("furnace_hall", 15), ("furnace_copper", 20), ("furnace_aluminum", 24),
-                ("furnace_steel", 30), ("build_press", 40), ("truck_dock", 48), ("heavy_yard", 58), ("dockyard", 85)
+                ("furnace_steel", 30), ("build_press", 40), ("truck_dock", 48), ("heavy_yard", 58), ("dump_yard", 95)
             };
 
-            /// <summary>Progress minutes of the first-session arc (the dockyard): the whole core game.</summary>
+            /// <summary>Progress minutes of the first-session arc (Heavy Yard, giants, specialists): the whole core game.</summary>
             public float coreGameMinutes = 90f;
             /// <summary>Main-chain tasks that pay diamonds complete around here.</summary>
             public float taskDiamondsMinute = 80f;

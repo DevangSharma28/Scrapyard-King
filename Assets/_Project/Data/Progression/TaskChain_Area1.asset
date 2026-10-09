@@ -78,8 +78,8 @@ MonoBehaviour:
   - {fileID: 11400000, guid: a1ccca55731c847c8864616fb5a64b02, type: 2}
   - {fileID: 11400000, guid: 5923ede6601944590acb47f557ce8705, type: 2}
   - {fileID: 11400000, guid: 7208017d44e604af8a418e84a9eeb2b6, type: 2}
-  - {fileID: 11400000, guid: 18cf5f10a84864f22a0758a895d1f7e8, type: 2}
   - {fileID: 11400000, guid: fad5bd493f37446698b65e4dcb2dafe0, type: 2}
+  - {fileID: 11400000, guid: b3a64454f2b614a9dbd68663cfae8900, type: 2}
   sideTasks:
   - {fileID: 11400000, guid: da254133649a248cab59c42050c382c5, type: 2}
   - {fileID: 11400000, guid: 9d7776b6ae51a486299c564118fe8961, type: 2}

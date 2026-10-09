@@ -79,7 +79,7 @@ public static class U4_Build
             ("a_cash", "EARN ${0} IN TOTAL", MissionStat.CashEarned, A("Icon_CashUp"), new long[] { 50000, 1000000, 10000000, 100000000 }, new[] { 5, 10, 20, 40 }),
             ("a_sold", "SELL {0} GOODS", MissionStat.ItemsSold, B("B_r4_c2"), new long[] { 500, 5000, 25000, 100000 }, new[] { 5, 10, 20, 30 }),
             ("a_workers", "HIRE {0} WORKER{s}", MissionStat.WorkersHired, B("B_r1_c11"), new long[] { 3, 8, 14, 20 }, new[] { 5, 10, 15, 25 }),
-            ("a_areas", "OPEN {0} AREA{s}", MissionStat.AreasOpened, B("B_r1_c8"), new long[] { 3, 6, 10 }, new[] { 5, 15, 30 }),
+            ("a_areas", "OPEN {0} AREA{s}", MissionStat.AreasOpened, B("B_r1_c8"), new long[] { 3, 6, 9 }, new[] { 5, 15, 30 }),
             ("a_orders", "COMPLETE {0} TRUCK ORDER{s}", MissionStat.OrdersCompleted, A("A_r1_c6"), new long[] { 5, 25, 100, 500 }, new[] { 10, 15, 25, 40 }),
             ("a_upgrades", "BUY {0} UPGRADES", MissionStat.UpgradesBought, B("Icon_Upgrade"), new long[] { 25, 100, 300 }, new[] { 5, 15, 30 }),
         };

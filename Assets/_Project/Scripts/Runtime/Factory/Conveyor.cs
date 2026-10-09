@@ -29,6 +29,9 @@ namespace ScrapYardKing.Factory
         [Tooltip("Belt renderers whose texture scrolls while items move.")]
         [SerializeField] Renderer[] belts;
         [SerializeField] Vector2 beltScroll = new(0f, -1f);
+        [Tooltip("Drums and rollers that turn with the belt (around their local X), radius in metres.")]
+        [SerializeField] Transform[] rollers;
+        [SerializeField, Min(0.01f)] float rollerRadius = 0.15f;
 
         readonly List<Rider> riders = new();
         IItemReceiver target;
@@ -65,9 +68,15 @@ namespace ScrapYardKing.Factory
 
         void Update()
         {
-            if (riders.Count == 0) return;
-
             float step = speed * Time.deltaTime;
+            if (riders.Count == 0)
+            {
+                // an empty belt keeps running: only a jam stops it
+                ScrollBelts(step);
+                TurnRollers(step);
+                return;
+            }
+
             bool moved = false;
             for (int i = 0; i < riders.Count; i++)
             {
@@ -88,7 +97,19 @@ namespace ScrapYardKing.Factory
                 target.Accept(front.Item);
             }
 
-            if (moved) ScrollBelts(step);
+            if (moved)
+            {
+                ScrollBelts(step);
+                TurnRollers(step);
+            }
+        }
+
+        void TurnRollers(float step)
+        {
+            if (rollers == null) return;
+            float degrees = step / rollerRadius * Mathf.Rad2Deg;
+            foreach (var r in rollers)
+                if (r != null) r.Rotate(degrees, 0f, 0f, Space.Self);
         }
 
         void ScrollBelts(float step)
